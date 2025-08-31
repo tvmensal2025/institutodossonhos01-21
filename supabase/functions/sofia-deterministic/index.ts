@@ -157,68 +157,88 @@ serve(async (req) => {
 });
 
 async function calculateDeterministicNutrition(supabase: any, foods: DetectedFood[]): Promise<NutritionCalculation> {
-  // Carregar dados da TACO
-  await loadTacoFoods(supabase);
-  
-  let totals = { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sodium: 0 };
-  let details: Array<{name: string; grams: number; tacoFood: any | null; contrib: any}> = [];
-  let missing: string[] = [];
-  let gramsTotal = 0;
-
-  console.log(`🔥 CÁLCULO NUTRICIONAL CORRETO - TACO FOODS - Processando ${foods.length} alimentos`);
-
-  for (const item of foods) {
-    const tacoFood = findTacoFood(item.name);
-    const g = Number(item.grams) || 100;
-    
-    console.log(`🔍 Buscando: ${item.name} (${g}g)`);
-    
-    if (!tacoFood || g <= 0) { 
-      missing.push(item.name);
-      console.warn(`❌ NÃO ENCONTRADO: ${item.name}`);
-      continue; 
-    }
-
-    const factor = g / 100.0;
-    const c = {
-      protein: (tacoFood.proteina_g || 0) * factor,
-      carbs: (tacoFood.carboidratos_g || 0) * factor,
-      fat: (tacoFood.lipidios_g || 0) * factor,
-      fiber: (tacoFood.fibra_alimentar_g || 0) * factor,
-      sodium: (tacoFood.sodio_mg || 0) * factor
-    };
-
-    // Somar macros (kcal será calculado depois usando a fórmula 4×P + 4×C + 9×G)
-    totals.protein += c.protein;
-    totals.carbs   += c.carbs;
-    totals.fat     += c.fat;
-    totals.fiber   += c.fiber;
-    totals.sodium  += c.sodium;
-    gramsTotal     += g;
-
-    details.push({ name: item.name, grams: g, tacoFood, contrib: c });
-    
-    console.log(`✅ TACO: ${tacoFood.nome_alimento}`);
-    console.log(`   ${g}g = ${c.protein.toFixed(1)}g prot, ${c.carbs.toFixed(1)}g carb, ${c.fat.toFixed(1)}g gord`);
-  }
-
-  // ✅ CALCULAR KCAL USANDO A FÓRMULA CORRETA: 4×P + 4×C + 9×G
-  totals.kcal = 4 * totals.protein + 4 * totals.carbs + 9 * totals.fat;
-
-  // Preparar resultado final
   const result: NutritionCalculation = {
-    total_kcal: Math.round(totals.kcal),
-    total_proteina: Math.round(totals.protein * 10) / 10,
-    total_carbo: Math.round(totals.carbs * 10) / 10,
-    total_gordura: Math.round(totals.fat * 10) / 10,
-    total_fibras: Math.round(totals.fiber * 10) / 10,
-    total_sodio: Math.round(totals.sodium),
-    matched_count: details.length,
+    total_kcal: 0,
+    total_proteina: 0,
+    total_carbo: 0,
+    total_gordura: 0,
+    total_fibras: 0,
+    total_sodio: 0,
+    matched_count: 0,
     total_count: foods.length,
-    unmatched_items: missing
+    unmatched_items: []
   };
 
-  console.log(`✅ RESUMO FINAL (Fórmula 4×P + 4×C + 9×G):`);
+  console.log(`🔥 CÁLCULO NUTRICIONAL DIRETO TACO - Processando ${foods.length} alimentos`);
+
+  for (const food of foods) {
+    const grams = Number(food.grams) || 100;
+    console.log(`🔍 Buscando na TACO: ${food.name} (${grams}g)`);
+
+    // Buscar na tabela taco_foods com normalização de texto
+    const normalizedName = normalizeText(food.name);
+    const { data: tacoData } = await supabase
+      .from('taco_foods')
+      .select('nome_alimento, energia_kcal, proteina_g, carboidratos_g, lipidios_g, fibra_alimentar_g, sodio_mg')
+      .order('id');
+
+    let selectedFood = null;
+    
+    if (tacoData && tacoData.length > 0) {
+      // Busca flexível por nome
+      selectedFood = tacoData.find(item => {
+        const itemName = normalizeText(item.nome_alimento);
+        return itemName.includes(normalizedName) || normalizedName.includes(itemName);
+      });
+      
+      // Se não encontrou, busca por palavras-chave
+      if (!selectedFood) {
+        const keywords = normalizedName.split(' ').filter(w => w.length > 2);
+        selectedFood = tacoData.find(item => {
+          const itemName = normalizeText(item.nome_alimento);
+          return keywords.some(keyword => itemName.includes(keyword));
+        });
+      }
+    }
+
+    if (selectedFood) {
+      const factor = grams / 100.0;
+      
+      // ✅ USAR VALORES DIRETOS DA TACO (não calcular kcal)
+      const item_kcal = Number(selectedFood.energia_kcal || 0) * factor;
+      const item_protein = Number(selectedFood.proteina_g || 0) * factor;
+      const item_carbs = Number(selectedFood.carboidratos_g || 0) * factor;
+      const item_fat = Number(selectedFood.lipidios_g || 0) * factor;
+      const item_fiber = Number(selectedFood.fibra_alimentar_g || 0) * factor;
+      const item_sodium = Number(selectedFood.sodio_mg || 0) * factor;
+      
+      // Somar ao total
+      result.total_kcal += item_kcal;
+      result.total_proteina += item_protein;
+      result.total_carbo += item_carbs;
+      result.total_gordura += item_fat;
+      result.total_fibras += item_fiber;
+      result.total_sodio += item_sodium;
+      
+      result.matched_count++;
+      
+      console.log(`✅ TACO: ${selectedFood.nome_alimento}`);
+      console.log(`   ${grams}g = ${Math.round(item_kcal)} kcal, ${item_protein.toFixed(1)}g prot, ${item_carbs.toFixed(1)}g carb, ${item_fat.toFixed(1)}g gord`);
+    } else {
+      result.unmatched_items.push(food.name);
+      console.warn(`❌ NÃO ENCONTRADO: ${food.name}`);
+    }
+  }
+
+  // Arredondar valores finais
+  result.total_kcal = Math.round(result.total_kcal);
+  result.total_proteina = Math.round(result.total_proteina * 10) / 10;
+  result.total_carbo = Math.round(result.total_carbo * 10) / 10;
+  result.total_gordura = Math.round(result.total_gordura * 10) / 10;
+  result.total_fibras = Math.round(result.total_fibras * 10) / 10;
+  result.total_sodio = Math.round(result.total_sodio);
+
+  console.log(`✅ RESUMO FINAL (Valores diretos TACO):`);
   console.log(`   🔥 ${result.total_kcal} kcal`);
   console.log(`   💪 ${result.total_proteina}g proteínas`);
   console.log(`   🍞 ${result.total_carbo}g carboidratos`);
