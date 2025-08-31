@@ -1,0 +1,127 @@
+version: "3.9"
+
+services:
+  reverse-proxy:
+    image: caddy:2.7
+    container_name: ids_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ids_ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=1h
+    networks:
+      - internal
+
+  ollama-proxy:
+    build: ./ollama_proxy
+    container_name: ids_ollama_proxy
+    restart: unless-stopped
+    environment:
+      - OLLAMA_URL=http://ids_ollama:11434
+    networks:
+      - internal
+    depends_on:
+      - ollama
+    labels:
+      caddy: ${OLLAMA_PROXY_DOMAIN}
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+
+  yolo-service:
+    build: ./yolo_service
+    container_name: ids_yolo
+    restart: unless-stopped
+    environment:
+      - YOLO_MODEL=${YOLO_MODEL}
+      - YOLO_TASK=${YOLO_TASK}
+      - YOLO_CONF=${YOLO_CONF}
+    networks:
+      - internal
+    volumes:
+      - ./static:/app/static
+    labels:
+      caddy: ${YOLO_SERVICE_DOMAIN}
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: ids_label_studio
+    restart: unless-stopped
+    environment:
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/data
+      - LABEL_STUDIO_DB=postgresql
+      - LABEL_STUDIO_DB_HOST=ids_label_studio_db
+      - LABEL_STUDIO_DB_PORT=5432
+      - LABEL_STUDIO_DB_NAME=labelstudio
+      - LABEL_STUDIO_DB_USER=labelstudio
+      - LABEL_STUDIO_DB_PASS=labelstudio123
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./label-studio-data:/label-studio/data
+      - ./static:/label-studio/data/static
+    networks:
+      - internal
+    depends_on:
+      - label-studio-postgres
+    labels:
+      caddy: ${LABEL_STUDIO_DOMAIN:-label-studio.localhost}
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+
+  label-studio-postgres:
+    image: postgres:13
+    container_name: ids_label_studio_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: labelstudio
+      POSTGRES_USER: labelstudio
+      POSTGRES_PASSWORD: labelstudio123
+    volumes:
+      - label_studio_postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  app:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./public:/usr/share/nginx/html/public
+    restart: unless-stopped
+
+  # Supabase local (opcional)
+  supabase:
+    image: supabase/postgres:15.1.0.117
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: your-super-secret-and-long-postgres-password
+      POSTGRES_DB: postgres
+    volumes:
+      - supabase_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  ollama_models:
+  label_studio_postgres_data:
+  supabase_data:
+
+networks:
+  internal:
+    driver: bridge 

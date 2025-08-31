@@ -1,0 +1,17 @@
+{
+	# Optional: Email para Let's Encrypt
+	email ${LETSENCRYPT_EMAIL}
+}
+
+# As labels no docker-compose já definem reverse proxy via docker-labelexporter
+# Este Caddyfile serve como fallback/local
+
+${OLLAMA_PROXY_DOMAIN} {
+	reverse_proxy ids_ollama_proxy:8000
+}
+
+${YOLO_SERVICE_DOMAIN} {
+	reverse_proxy ids_yolo:8000
+}
+
+

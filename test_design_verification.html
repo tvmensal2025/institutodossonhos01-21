@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teste do Novo Design Clínico</title>
+  <style>
+    /* Design Clínico Elegante - Instituto dos Sonhos */
+    :root {
+      --primary: #1E40AF;
+      --primary-light: #3B82F6;
+      --secondary: #059669;
+      --accent: #F59E0B;
+      --danger: #DC2626;
+      --warning: #D97706;
+      --success: #059669;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F9FAFB;
+      --bg-tertiary: #F3F4F6;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header Clínico */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(50%, -50%);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background: white;
+      padding: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .header-text h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .header-text p {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .header-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Botão de Impressão */
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      transition: all 0.2s ease;
+    }
+
+    .print-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    /* Seção do Dr. Vital */
+    .doctor-section {
+      background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+      border: 1px solid #BAE6FD;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .doctor-avatar {
+      font-size: 48px;
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+
+    .doctor-content h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .doctor-content p {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    /* Conteúdo Principal */
+    .content {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .content h1 {
+      color: var(--text-primary);
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .content h2 {
+      color: var(--primary);
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 12px;
+      margin-top: 32px;
+      margin-bottom: 16px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .content h3 {
+      color: var(--text-secondary);
+      margin-top: 24px;
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .content p {
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .content strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .content em {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 32px;
+      padding: 24px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .footer strong {
+      color: var(--warning);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+      
+      .header {
+        padding: 24px;
+      }
+      
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .content {
+        padding: 24px;
+      }
+      
+      .doctor-section {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* Impressão */
+    @media print {
+      .print-btn {
+        display: none;
+      }
+      
+      body {
+        background: white;
+      }
+      
+      .container {
+        padding: 0;
+        max-width: none;
+      }
+      
+      .header {
+        box-shadow: none;
+        border: 2px solid var(--primary);
+      }
+      
+      .content,
+      .doctor-section,
+      .footer {
+        box-shadow: none;
+        border: 1px solid var(--border);
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">
+    🖨️ Imprimir / Salvar PDF
+  </button>
+
+  <div class="container">
+    <!-- Header Clínico -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo">🏥</div>
+        <div class="header-text">
+          <h1>Relatório Médico Clínico</h1>
+          <p>Dr. Vital - IA Médica do Instituto dos Sonhos</p>
+          <p>Análise Clínica Integrativa e Preventiva</p>
+        </div>
+        <div class="header-badge">
+          22/08/2025
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção do Dr. Vital -->
+    <div class="doctor-section">
+      <div class="doctor-avatar">👨‍⚕️</div>
+      <div class="doctor-content">
+        <h2>Olá! Sou o Dr. Vital 👋</h2>
+        <p>Analisei seus exames com uma visão integrativa e preventiva. Vou explicar cada resultado de forma clara e mostrar como eles se conectam para compor um quadro completo da sua saúde.</p>
+        <p><strong>Principais achados:</strong> veja o resumo abaixo e os detalhes nas seções.</p>
+      </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="content">
+      <h1>Relatório Médico - Dr. Vital</h1>
+      
+      <h2>Informações do Paciente</h2>
+      <p><strong>Nome:</strong> Paciente Teste</p>
+      <p><strong>Data do Relatório:</strong> 22/08/2025</p>
+      <p><strong>Tipo de Exame:</strong> Exame Médico</p>
+      
+      <h2>Resumo Executivo</h2>
+      <p>Este é um teste do novo design clínico elegante. Se você está vendo este design, significa que a implementação está funcionando corretamente!</p>
+      
+      <h2>Análise Geral</h2>
+      <p>Este relatório foi gerado para testar se o novo design clínico elegante está funcionando corretamente no sistema.</p>
+      
+      <h3>Recomendações Gerais de Saúde</h3>
+      <p>🏃‍♀️ <strong>Atividade Física:</strong> Manter exercícios regulares conforme orientação médica</p>
+      <p>🥗 <strong>Alimentação:</strong> Seguir dieta equilibrada e nutritiva</p>
+      <p>💧 <strong>Hidratação:</strong> Consumir pelo menos 2 litros de água por dia</p>
+      <p>😴 <strong>Sono:</strong> Manter 7-8 horas de sono por noite</p>
+      <p>🧘‍♀️ <strong>Bem-estar Mental:</strong> Praticar técnicas de relaxamento</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>⚠️ Aviso Importante:</strong> Este documento é educativo e não substitui consulta médica. Não faz diagnóstico nem prescrição. Consulte sempre um profissional de saúde para interpretação adequada dos resultados.</p>
+      <p style="margin-top: 8px;">Relatório gerado por Dr. Vital - IA Médica do Instituto dos Sonhos</p>
+      <p style="margin-top: 4px;">Data: 22/08/2025 às 15:30</p>
+    </div>
+  </div>
+</body>
+</html>

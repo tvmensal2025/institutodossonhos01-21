@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste API Key</title>
+</head>
+<body>
+    <h1>Teste da API Key do Google TTS</h1>
+    <div id="result"></div>
+    <script type="module">
+        const apiKey = import.meta.env.VITE_GOOGLE_TTS_API_KEY;
+        document.getElementById('result').innerHTML = 
+            '<p>API Key encontrada: ' + (apiKey ? 'SIM' : 'NÃO') + '</p>' +
+            '<p>Primeiros 10 chars: ' + (apiKey ? apiKey.substring(0, 10) + '...' : 'N/A') + '</p>';
+        console.log('🔑 API Key no frontend:', apiKey);
+    </script>
+</body>
+</html>

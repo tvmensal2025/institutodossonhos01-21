@@ -1,0 +1,141 @@
+export interface Question {
+  id: number;
+  text: string;
+  category: string;
+  weight: number;
+}
+
+export const saboteurQuestions: Question[] = [
+  // PERFECCIONISMO (15 questões)
+  { id: 1, text: "Sinto que preciso ser perfeito em tudo que faço", category: 'perfeccionismo', weight: 3 },
+  { id: 2, text: "Fico frustrado quando não consigo atingir meus padrões muito altos", category: 'perfeccionismo', weight: 2 },
+  { id: 3, text: "Evito começar tarefas por medo de não fazer perfeitamente", category: 'perfeccionismo', weight: 3 },
+  { id: 4, text: "Reviso meu trabalho repetidamente em busca de imperfeições", category: 'perfeccionismo', weight: 2 },
+  { id: 5, text: "Sou muito crítico com a qualidade do meu trabalho", category: 'perfeccionismo', weight: 2 },
+  { id: 6, text: "Tenho dificuldade em aceitar elogios sobre meu trabalho", category: 'perfeccionismo', weight: 1 },
+  { id: 7, text: "Foco em detalhes irrelevantes em vez do resultado final", category: 'perfeccionismo', weight: 2 },
+  { id: 8, text: "Comparo meu trabalho com o de especialistas experientes", category: 'perfeccionismo', weight: 2 },
+  { id: 9, text: "Sinto que nunca estou fazendo o suficiente", category: 'perfeccionismo', weight: 3 },
+  { id: 10, text: "Procrastino por medo de não fazer perfeitamente", category: 'perfeccionismo', weight: 3 },
+  { id: 11, text: "Tenho padrões impossíveis de atingir", category: 'perfeccionismo', weight: 3 },
+  { id: 12, text: "Fico ansioso quando meu trabalho não está perfeito", category: 'perfeccionismo', weight: 2 },
+  { id: 13, text: "Evito mostrar meu trabalho por medo de críticas", category: 'perfeccionismo', weight: 2 },
+  { id: 14, text: "Sempre acho que posso fazer melhor", category: 'perfeccionismo', weight: 2 },
+  { id: 15, text: "Tenho dificuldade em finalizar projetos", category: 'perfeccionismo', weight: 2 },
+
+  // PROCRASTINAÇÃO (15 questões)
+  { id: 16, text: "Deixo tarefas importantes para o último minuto", category: 'procrastinacao', weight: 2 },
+  { id: 17, text: "Encontro desculpas para não fazer o que preciso", category: 'procrastinacao', weight: 2 },
+  { id: 18, text: "Sinto que trabalho melhor sob pressão", category: 'procrastinacao', weight: 1 },
+  { id: 19, text: "Distraio-me facilmente quando preciso focar", category: 'procrastinacao', weight: 2 },
+  { id: 20, text: "Tenho dificuldade em priorizar tarefas", category: 'procrastinacao', weight: 2 },
+  { id: 21, text: "Começo muitas coisas mas não termino", category: 'procrastinacao', weight: 2 },
+  { id: 22, text: "Uso redes sociais para evitar tarefas importantes", category: 'procrastinacao', weight: 2 },
+  { id: 23, text: "Sempre encontro algo mais interessante para fazer", category: 'procrastinacao', weight: 2 },
+  { id: 24, text: "Tenho dificuldade em manter rotinas", category: 'procrastinacao', weight: 2 },
+  { id: 25, text: "Fico sobrecarregado com muitas tarefas pendentes", category: 'procrastinacao', weight: 2 },
+  { id: 26, text: "Evito decisões difíceis", category: 'procrastinacao', weight: 2 },
+  { id: 27, text: "Tenho dificuldade em começar projetos grandes", category: 'procrastinacao', weight: 2 },
+  { id: 28, text: "Sempre deixo para amanhã o que posso fazer hoje", category: 'procrastinacao', weight: 2 },
+  { id: 29, text: "Tenho dificuldade em manter prazos", category: 'procrastinacao', weight: 2 },
+  { id: 30, text: "Fico ansioso quando tenho muitas tarefas", category: 'procrastinacao', weight: 2 },
+
+  // COMPARAÇÃO (15 questões)
+  { id: 31, text: "Comparo constantemente meu progresso com outras pessoas", category: 'comparacao', weight: 2 },
+  { id: 32, text: "Fico desmotivado quando vejo outras pessoas tendo mais sucesso", category: 'comparacao', weight: 3 },
+  { id: 33, text: "Uso redes sociais para me comparar com outros", category: 'comparacao', weight: 2 },
+  { id: 34, text: "Sinto-me inadequado quando vejo conquistas de outros", category: 'comparacao', weight: 3 },
+  { id: 35, text: "Foco no que outros têm em vez do que eu tenho", category: 'comparacao', weight: 2 },
+  { id: 36, text: "Tenho dificuldade em celebrar minhas próprias conquistas", category: 'comparacao', weight: 2 },
+  { id: 37, text: "Sempre acho que outros são melhores que eu", category: 'comparacao', weight: 2 },
+  { id: 38, text: "Fico ansioso quando vejo posts de sucesso nas redes", category: 'comparacao', weight: 2 },
+  { id: 39, text: "Comparo minha vida com a de celebridades", category: 'comparacao', weight: 1 },
+  { id: 40, text: "Sinto-me inferior quando outros se destacam", category: 'comparacao', weight: 3 },
+  { id: 41, text: "Tenho dificuldade em focar no meu próprio caminho", category: 'comparacao', weight: 2 },
+  { id: 42, text: "Fico desmotivado quando vejo outros progredindo", category: 'comparacao', weight: 3 },
+  { id: 43, text: "Sempre acho que deveria estar em outro lugar", category: 'comparacao', weight: 2 },
+  { id: 44, text: "Comparo minha aparência com a de outros", category: 'comparacao', weight: 2 },
+  { id: 45, text: "Fico frustrado quando outros têm o que eu quero", category: 'comparacao', weight: 2 },
+
+  // AUTOCRÍTICA (15 questões)
+  { id: 46, text: "Sou muito crítico comigo mesmo", category: 'autocritica', weight: 2 },
+  { id: 47, text: "Foco mais nos meus erros do que nos meus acertos", category: 'autocritica', weight: 3 },
+  { id: 48, text: "Tenho uma voz interna muito negativa", category: 'autocritica', weight: 2 },
+  { id: 49, text: "Tenho dificuldade em aceitar elogios", category: 'autocritica', weight: 2 },
+  { id: 50, text: "Sempre acho que posso fazer melhor", category: 'autocritica', weight: 2 },
+  { id: 51, text: "Foco nos meus pontos fracos em vez dos fortes", category: 'autocritica', weight: 2 },
+  { id: 52, text: "Tenho dificuldade em me perdoar por erros", category: 'autocritica', weight: 2 },
+  { id: 53, text: "Sempre espero o pior de mim mesmo", category: 'autocritica', weight: 2 },
+  { id: 54, text: "Tenho dificuldade em reconhecer minhas conquistas", category: 'autocritica', weight: 2 },
+  { id: 55, text: "Sou mais duro comigo mesmo do que com outros", category: 'autocritica', weight: 2 },
+  { id: 56, text: "Tenho dificuldade em aceitar que sou bom em algo", category: 'autocritica', weight: 2 },
+  { id: 57, text: "Sempre acho que não sou suficiente", category: 'autocritica', weight: 3 },
+  { id: 58, text: "Foco nos meus fracassos em vez dos sucessos", category: 'autocritica', weight: 2 },
+  { id: 59, text: "Tenho dificuldade em me valorizar", category: 'autocritica', weight: 2 },
+  { id: 60, text: "Sempre acho que deveria ter feito diferente", category: 'autocritica', weight: 2 },
+
+  // MEDO DE FALHA (15 questões)
+  { id: 61, text: "Evito tentar coisas novas por medo de falhar", category: 'medo_falha', weight: 3 },
+  { id: 62, text: "Fico ansioso quando preciso sair da minha zona de conforto", category: 'medo_falha', weight: 2 },
+  { id: 63, text: "Prefiro não tentar do que tentar e falhar", category: 'medo_falha', weight: 3 },
+  { id: 64, text: "Tenho medo do julgamento dos outros", category: 'medo_falha', weight: 2 },
+  { id: 65, text: "Evito situações onde posso ser avaliado", category: 'medo_falha', weight: 2 },
+  { id: 66, text: "Fico paralisado quando penso em possíveis falhas", category: 'medo_falha', weight: 3 },
+  { id: 67, text: "Tenho medo de não ser bom o suficiente", category: 'medo_falha', weight: 3 },
+  { id: 68, text: "Evito desafios que podem me expor", category: 'medo_falha', weight: 2 },
+  { id: 69, text: "Fico ansioso quando preciso tomar decisões importantes", category: 'medo_falha', weight: 2 },
+  { id: 70, text: "Tenho medo de decepcionar outras pessoas", category: 'medo_falha', weight: 2 },
+  { id: 71, text: "Evito responsabilidades por medo de falhar", category: 'medo_falha', weight: 2 },
+  { id: 72, text: "Fico ansioso quando preciso apresentar meu trabalho", category: 'medo_falha', weight: 2 },
+  { id: 73, text: "Tenho medo de não conseguir atingir minhas metas", category: 'medo_falha', weight: 2 },
+  { id: 74, text: "Evito situações onde posso ser rejeitado", category: 'medo_falha', weight: 2 },
+  { id: 75, text: "Fico ansioso quando preciso competir com outros", category: 'medo_falha', weight: 2 },
+
+  // PENSAMENTO BINÁRIO (15 questões)
+  { id: 76, text: "Vejo as coisas como 'tudo ou nada'", category: 'pensamento_binario', weight: 2 },
+  { id: 77, text: "Se não posso fazer algo perfeitamente, prefiro não fazer", category: 'pensamento_binario', weight: 2 },
+  { id: 78, text: "Tenho dificuldade em aceitar resultados intermediários", category: 'pensamento_binario', weight: 2 },
+  { id: 79, text: "Sou muito rígido em minhas opiniões", category: 'pensamento_binario', weight: 2 },
+  { id: 80, text: "Tenho dificuldade em ver nuances nas situações", category: 'pensamento_binario', weight: 2 },
+  { id: 81, text: "Sempre acho que algo é certo ou errado", category: 'pensamento_binario', weight: 2 },
+  { id: 82, text: "Tenho dificuldade em aceitar pontos de vista diferentes", category: 'pensamento_binario', weight: 2 },
+  { id: 83, text: "Sou muito inflexível em minhas decisões", category: 'pensamento_binario', weight: 2 },
+  { id: 84, text: "Tenho dificuldade em encontrar soluções intermediárias", category: 'pensamento_binario', weight: 2 },
+  { id: 85, text: "Sempre acho que algo é sucesso ou fracasso", category: 'pensamento_binario', weight: 2 },
+  { id: 86, text: "Tenho dificuldade em aceitar que a vida tem tons de cinza", category: 'pensamento_binario', weight: 2 },
+  { id: 87, text: "Sou muito extremo em minhas reações", category: 'pensamento_binario', weight: 2 },
+  { id: 88, text: "Tenho dificuldade em ser flexível", category: 'pensamento_binario', weight: 2 },
+  { id: 89, text: "Sempre acho que algo é bom ou ruim", category: 'pensamento_binario', weight: 2 },
+  { id: 90, text: "Tenho dificuldade em aceitar compromissos", category: 'pensamento_binario', weight: 2 },
+
+  // VÍTIMA (10 questões)
+  { id: 91, text: "Sempre acho que a vida é injusta comigo", category: 'vitima', weight: 2 },
+  { id: 92, text: "Culpo outros pelos meus problemas", category: 'vitima', weight: 2 },
+  { id: 93, text: "Sinto que não tenho controle sobre minha vida", category: 'vitima', weight: 3 },
+  { id: 94, text: "Sempre acho que outros têm mais sorte que eu", category: 'vitima', weight: 2 },
+  { id: 95, text: "Tenho dificuldade em assumir responsabilidade pelos meus erros", category: 'vitima', weight: 2 },
+  { id: 96, text: "Sinto que sou sempre prejudicado pelas circunstâncias", category: 'vitima', weight: 2 },
+  { id: 97, text: "Culpo o passado pelos meus problemas atuais", category: 'vitima', weight: 2 },
+  { id: 98, text: "Sempre acho que outros têm mais oportunidades", category: 'vitima', weight: 2 },
+  { id: 99, text: "Tenho dificuldade em ver como posso mudar minha situação", category: 'vitima', weight: 2 },
+  { id: 100, text: "Sinto que sou sempre a vítima das situações", category: 'vitima', weight: 2 },
+
+  // CONTROLE (10 questões)
+  { id: 101, text: "Preciso controlar tudo ao meu redor", category: 'controle', weight: 2 },
+  { id: 102, text: "Fico ansioso quando as coisas não saem como planejei", category: 'controle', weight: 2 },
+  { id: 103, text: "Tenho dificuldade em delegar tarefas para outros", category: 'controle', weight: 2 },
+  { id: 104, text: "Preciso saber de tudo que está acontecendo", category: 'controle', weight: 2 },
+  { id: 105, text: "Fico frustrado quando outros não fazem as coisas do meu jeito", category: 'controle', weight: 2 },
+  { id: 106, text: "Tenho dificuldade em aceitar mudanças inesperadas", category: 'controle', weight: 2 },
+  { id: 107, text: "Preciso ter um plano para tudo", category: 'controle', weight: 2 },
+  { id: 108, text: "Fico ansioso quando não tenho controle sobre uma situação", category: 'controle', weight: 2 },
+  { id: 109, text: "Tenho dificuldade em confiar que outros farão as coisas bem", category: 'controle', weight: 2 },
+  { id: 110, text: "Preciso verificar tudo repetidamente", category: 'controle', weight: 2 },
+
+  // APROVAÇÃO (5 questões)
+  { id: 111, text: "Preciso da aprovação dos outros para me sentir bem", category: 'aprovacao', weight: 2 },
+  { id: 112, text: "Fico ansioso quando outros não gostam de mim", category: 'aprovacao', weight: 2 },
+  { id: 113, text: "Tenho dificuldade em tomar decisões sem consultar outros", category: 'aprovacao', weight: 2 },
+  { id: 114, text: "Fico preocupado com o que outros pensam de mim", category: 'aprovacao', weight: 2 },
+  { id: 115, text: "Preciso agradar todos ao meu redor", category: 'aprovacao', weight: 2 }
+]; 

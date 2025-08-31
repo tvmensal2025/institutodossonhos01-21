@@ -1,0 +1,26 @@
+# 🦾 Requirements para Serviço YOLO de Detecção de Alimentos
+
+# Framework web
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# Visão computacional
+opencv-python==4.8.1.78
+Pillow==10.0.1
+numpy==1.24.3
+
+# YOLO (escolha uma das opções)
+# ultralytics==8.0.196  # YOLOv8
+# torch==2.0.1
+# torchvision==0.15.2
+
+# Requisições HTTP
+requests==2.31.0
+
+# Logging e utilitários
+python-dotenv==1.0.0
+gunicorn==21.2.0
+
+# Para produção (opcional)
+# redis==5.0.1
+# celery==5.3.4

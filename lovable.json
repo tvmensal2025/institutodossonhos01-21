@@ -1,0 +1,41 @@
+{
+  "name": "mission-health-nexus",
+  "description": "Plataforma completa de saúde e bem-estar com integração de balança inteligente, gamificação e acompanhamento personalizado",
+  "version": "1.0.0",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "environmentVariables": {
+    "VITE_SUPABASE_URL": "sua_url_do_supabase",
+    "VITE_SUPABASE_ANON_KEY": "sua_chave_anonima_do_supabase",
+    "VITE_OPENAI_API_KEY": "sua_chave_da_openai"
+  },
+  "domains": [
+    "mission-health-nexus.lovable.dev"
+  ],
+  "features": {
+    "autoDeploy": true,
+    "previewDeployments": true,
+    "customDomains": true,
+    "ssl": true
+  },
+  "ignore": [
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    "*.log",
+    ".env.local",
+    ".env.production",
+    "coverage",
+    ".nyc_output"
+  ],
+  "buildSettings": {
+    "nodeVersion": "18",
+    "installCommand": "npm ci",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist"
+  }
+} 

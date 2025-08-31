@@ -1,0 +1,227 @@
+{
+  "name": "Relatório Semanal WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 5"
+            }
+          ]
+        },
+        "options": {
+          "timezone": "America/Sao_Paulo"
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Agendamento Semanal",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://hlrkoyywjpckdotimtik.supabase.co/functions/v1/weekly-health-report",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhscmtveXl3anBja2RvdGltdGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNTMwNDcsImV4cCI6MjA2ODcyOTA0N30.kYEtg1hYG2pmcyIeXRs-vgNIVOD76Yu7KPlyFN0vdUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "testMode",
+              "value": "true"
+            },
+            {
+              "name": "testEmail",
+              "value": "tvmensal2025@gmail.com"
+            },
+            {
+              "name": "testUserName",
+              "value": "Sirlene Correa"
+            },
+            {
+              "name": "returnHTML",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "http-request",
+      "name": "Gerar HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "host": "ftp.institutodossonhos.com.br",
+        "port": 21,
+        "username": "{{ $env.FTP_USERNAME }}",
+        "password": "{{ $env.FTP_PASSWORD }}",
+        "remotePath": "/public_html/relatorio-semanal.html",
+        "binaryData": true,
+        "binaryPropertyName": "html"
+      },
+      "id": "ftp-upload",
+      "name": "Upload FTP",
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "to": "{{ $env.WHATSAPP_NUMBER }}",
+        "message": "🏥 Dr. Vita - Relatório Semanal\n\n📊 Seu relatório de saúde está disponível:\n🌐 https://institutodossonhos.com.br/relatorio-semanal.html\n\n📈 Acompanhe sua evolução semanal!\n\n📅 Gerado em: {{ $now }}"
+      },
+      "id": "whatsapp-send",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "error-check",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "error-check",
+      "name": "Verificar Erro",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 500]
+    },
+    {
+      "parameters": {
+        "to": "{{ $env.ADMIN_EMAIL }}",
+        "subject": "❌ Erro no Relatório Semanal",
+        "text": "Erro ao gerar relatório semanal:\n\n{{ $json.error }}\n\nData: {{ $now }}"
+      },
+      "id": "error-email",
+      "name": "Email de Erro",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [680, 500]
+    }
+  ],
+  "connections": {
+    "Agendamento Semanal": {
+      "main": [
+        [
+          {
+            "node": "Gerar HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar HTML": {
+      "main": [
+        [
+          {
+            "node": "Verificar Erro",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload FTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Erro": {
+      "main": [
+        [
+          {
+            "node": "Email de Erro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Upload FTP": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "id": "relatorio-semanal",
+      "name": "Relatório Semanal"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "versionId": "1"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1640 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-requested-with',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Max-Age': '86400',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // Inicializar Supabase (usar service role para ler configs com segurança)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Buscar configuração de IA para análise médica
+    const { data: aiConfig, error: configError } = await supabase
+      .from('ai_configurations')
+      .select('service, model, max_tokens, temperature, preset_level, system_prompt, is_enabled, is_active')
+      .eq('functionality', 'medical_analysis')
+      .single();
+
+    // Carregar chaves antes de montar config
+    const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+
+    // Modelo premium: OpenAI o4-mini (rápido e robusto)
+    const config = {
+      service: 'openai' as const,
+      model: 'o4-mini-2025-04-16',
+      max_tokens: 6000,
+      temperature: 0.1,
+      openai_key: OPENAI_API_KEY
+    };
+
+    console.log(`🔬 Análise médica usando: ${config.service} ${config.model} (${config.max_tokens} tokens, temp: ${config.temperature})`);
+    
+    if (config.service === 'gemini' && !GOOGLE_AI_API_KEY) {
+      throw new Error('GOOGLE_AI_API_KEY não configurada');
+    }
+    if (config.service === 'openai' && !OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY não configurada');
+    }
+
+    const { imageData, storagePath, storagePaths, examType, userId, documentId } = await req.json();
+    let userIdEffective: string | null = userId || null;
+    let examTypeEffective: string | null = examType || null;
+
+    // Buscar dados completos do usuário
+    const [
+      { data: profile },
+      { data: measurements },
+      { data: healthDiary },
+      { data: missions },
+      { data: goals }
+    ] = await Promise.all([
+      supabase.from('profiles').select('*').eq('user_id', userIdEffective ?? '').single(),
+      supabase.from('weight_measurements').select('*').eq('user_id', userIdEffective ?? '').order('measurement_date', { ascending: false }).limit(10),
+      supabase.from('health_diary').select('*').eq('user_id', userIdEffective ?? '').order('date', { ascending: false }).limit(7),
+      supabase.from('daily_mission_sessions').select('*').eq('user_id', userIdEffective ?? '').eq('is_completed', true).order('date', { ascending: false }).limit(10),
+      supabase.from('user_goals').select('*').eq('user_id', userIdEffective ?? '')
+    ]);
+
+    // Preparar contexto do usuário
+    const userContext = {
+      profile: profile || {},
+      recentMeasurements: measurements || [],
+      recentHealthDiary: healthDiary || [],
+      recentMissions: missions || [],
+      goals: goals || []
+    };
+
+    // Prompt específico para Dr. Vital gerar dados estruturados
+    let systemPrompt = `Você é o Dr. Vital, IA médica do Instituto dos Sonhos. Analise exames médicos a partir de IMAGENS e gere dados estruturados para um relatório médico preciso e clínico.
+
+REQUISITOS:
+1) Extraia APENAS dados do exame: nome do paciente, médico, clínica, data, TODOS os valores laboratoriais.
+2) Use referências AMERICANAS rigorosas para comparação.
+3) Agrupe exames similares em categorias clínicas.
+4) Seja preciso e objetivo - não invente dados.
+5) Foque apenas nos dados laboratoriais apresentados.
+
+FORMATO JSON QUE VOCÊ DEVE INCLUIR AO FINAL DO TEXTO:
+{
+  "patient_name": string,
+  "doctor_name": string|null,
+  "clinic_name": string|null,
+  "exam_date": string,
+  "summary": string,
+  "critical_findings": string[],
+  "important_findings": string[],
+  "sections": [
+    {
+      "title": string,
+      "icon": string,
+      "metrics": [
+        {
+          "name": string,
+          "value": string,
+          "unit": string,
+          "status": "normal"|"elevated"|"low",
+          "us_reference": string|null
+        }
+      ]
+    }
+  ],
+  "recommendations": {
+    "urgent": string[],
+    "high": string[],
+    "medium": string[],
+    "low": string[]
+  },
+  "risk_profile": {
+    "cardiovascular": "BAIXO"|"MODERADO"|"ALTO",
+    "oncological": "BAIXO"|"MODERADO"|"ALTO",
+    "metabolic": "BAIXO"|"MODERADO"|"ALTO",
+    "cardiovascular_factors": string,
+    "cardiovascular_protectors": string,
+    "oncological_factors": string,
+    "oncological_screening": string,
+    "metabolic_factors": string,
+    "metabolic_protectors": string
+  },
+  "follow_up": {
+    "thirty_days": string[],
+    "ninety_days": string[],
+    "exams": string[]
+  },
+  "lifestyle_guidance": {
+    "diet": string[],
+    "exercise": string[],
+    "lifestyle": string[]
+  }
+}
+
+CATEGORIAS CLÍNICAS (agrupe exames similares):
+- "Perfil Lipídico" (LDL, HDL, Colesterol Total, Triglicerídeos)
+- "Glicemia e Diabetes" (Glicose, HbA1c, Insulina)
+- "Função Renal" (Creatinina, Ureia, Ácido Úrico)
+- "Função Hepática" (TGO/TGP, GGT, Bilirrubina)
+- "Tireoide" (TSH, T4 Livre, T3)
+- "Vitaminas e Ferro" (B12, Ferritina, Ferro, Ácido Fólico)
+- "Hormônios" (Testosterona, Estradiol, Prolactina)
+- "Hemograma" (Hemoglobina, Leucócitos, Plaquetas)
+- "Outros" (exames que não se encaixam nas categorias acima)
+
+REFERÊNCIAS AMERICANAS IMPORTANTES:
+- Colesterol Total: <200 mg/dL
+- LDL: <100 mg/dL
+- HDL: >50 mg/dL
+- Triglicerídeos: <150 mg/dL
+- Glicemia: 70-99 mg/dL
+- HbA1c: <5.7%
+- TSH: 0.4-4.0 mIU/L
+- T4 Livre: 0.8-1.8 ng/dL
+- Creatinina: 0.6-1.1 mg/dL
+- Ferritina: 13-150 ng/mL
+- Vitamina B12: 200-900 pg/mL
+
+IMPORTANTE: Use APENAS dados extraídos das imagens. Não invente informações do paciente ou contexto externo.
+
+Tipo de exame: ${examType}
+
+ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados laboratoriais apresentados.`;
+
+    if ((aiConfig as any)?.system_prompt) {
+      systemPrompt = (aiConfig as any).system_prompt as string;
+    }
+
+    // Carregar uma ou múltiplas imagens
+    const guessMimeFromPath = (path: string): string => {
+      const ext = (path.split('.').pop() || '').toLowerCase();
+      if (['jpg', 'jpeg', 'jfif'].includes(ext)) return 'image/jpeg';
+      if (['png'].includes(ext)) return 'image/png';
+      if (['pdf'].includes(ext)) return 'application/pdf';
+      return 'image/jpeg';
+    };
+
+    const toBase64 = async (blob: Blob, fallbackMime?: string) => {
+      const arr = await blob.arrayBuffer();
+      const mt = (blob.type && blob.type !== 'application/octet-stream') ? blob.type : (fallbackMime || 'image/jpeg');
+      const bytes = new Uint8Array(arr);
+      const chunkSize = 0x8000; // 32KB por chunk para evitar stack overflow
+      let binary = '';
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode(...chunk);
+      }
+      const base64 = btoa(binary);
+      return { mime: mt, data: `data:${mt};base64,${base64}` };
+    };
+
+    // Resolver paths de imagens a partir do corpo ou do documento no banco
+    let resolvedPaths: string[] | undefined = Array.isArray(storagePaths) && storagePaths.length > 0 ? storagePaths : undefined;
+
+    if (!resolvedPaths && documentId) {
+      const { data: docRow } = await supabase
+        .from('medical_documents')
+        .select('user_id, type, file_url, report_meta')
+        .eq('id', documentId)
+        .single();
+      if (docRow) {
+        userIdEffective = userIdEffective || (docRow as any).user_id || null;
+        examTypeEffective = examTypeEffective || (docRow as any).type || null;
+        const metaPaths: string[] = (docRow as any)?.report_meta?.image_paths || [];
+        const fileUrl: string | null = (docRow as any)?.file_url || null;
+        const candidate: string[] = [];
+        if (Array.isArray(metaPaths) && metaPaths.length) candidate.push(...metaPaths);
+        if (fileUrl) candidate.push(fileUrl);
+        if (candidate.length) resolvedPaths = candidate;
+      }
+    }
+
+    // Limita número de imagens para payload confiável
+    const MAX_IMAGES = 6; // alinhado com o relatório premium para reduzir latência
+
+    let images: { mime: string; data: string }[] = [];
+    if (resolvedPaths && resolvedPaths.length > 0) {
+      console.log('📥 Iniciando download de', resolvedPaths.length, 'imagens...');
+      
+      // Atualiza progresso inicial no banco
+      await supabase
+        .from('medical_documents')
+        .update({ 
+          processing_stage: 'baixando_imagens', 
+          images_processed: 0, 
+          progress_pct: 5,
+          images_total: resolvedPaths.length
+        })
+        .eq('id', documentId || '')
+        .eq('user_id', userIdEffective || '');
+      
+      const toDownload = resolvedPaths;
+      let processed = 0;
+      
+      for (const p of toDownload) {
+        console.log(`📥 Baixando imagem ${processed + 1}/${toDownload.length}: ${p}`);
+        
+        const { data: dl, error: dlErr } = await supabase.storage.from('medical-documents').download(p);
+        if (dlErr) {
+          console.error('❌ Erro ao baixar imagem:', p, dlErr);
+          throw dlErr;
+        }
+        
+        images.push(await toBase64(dl as Blob, guessMimeFromPath(p)));
+        processed += 1;
+        
+        // Progresso mais granular: 5% a 75% durante download
+        const pct = Math.min(75, Math.round((processed / toDownload.length) * 70) + 5);
+        
+        console.log(`✅ Imagem ${processed}/${toDownload.length} processada. Progresso: ${pct}%`);
+        
+        await supabase
+          .from('medical_documents')
+          .update({ 
+            images_processed: processed, 
+            progress_pct: pct,
+            processing_stage: `baixando_imagens (${processed}/${toDownload.length})`
+          })
+          .eq('id', documentId || '')
+          .eq('user_id', userIdEffective || '');
+      }
+      
+      console.log('✅ Download de imagens concluído');
+    } else if (storagePath) {
+      const { data: dl, error: dlErr } = await supabase.storage.from('medical-documents').download(storagePath);
+      if (dlErr) throw dlErr;
+      images.push(await toBase64(dl as Blob, guessMimeFromPath(storagePath)));
+    } else if (imageData) {
+      if (Array.isArray(imageData)) {
+        images = imageData.map((d: string) => ({ mime: (d.split(';')[0].split(':')[1] || 'application/octet-stream'), data: d }));
+      } else {
+        const mt = imageData.startsWith('data:') ? imageData.split(';')[0].split(':')[1] : 'application/octet-stream';
+        images = [{ mime: mt, data: imageData }];
+      }
+    }
+
+    // Usar GPT-4 para gerar análise textual, depois criar HTML sem CSP issues
+    let analysis = '';
+    let extracted: any = null;
+    
+    const imagesLimited = images.slice(0, MAX_IMAGES);
+    
+    try {
+      console.log('🤖 Iniciando análise com IA...');
+      await supabase
+        .from('medical_documents')
+        .update({ 
+          processing_stage: 'analisando_com_ia', 
+          progress_pct: 80 
+        })
+        .eq('id', documentId || '')
+        .eq('user_id', userIdEffective || '');
+      // Função para chamar OpenAI com fallback robusto
+      const callOpenAI = async (model: string) => {
+        const body = {
+          model,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'text', text: systemPrompt },
+              ...imagesLimited.map(img => ({
+                type: 'image_url',
+                image_url: { url: img.data, detail: 'high' }
+              }))
+            ]
+          }],
+          temperature: 0.2,
+          max_completion_tokens: 4500
+        } as any;
+        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+        const json = await resp.json();
+        if (!resp.ok) throw new Error(json?.error?.message || 'OpenAI error');
+        return json;
+      };
+
+      let usedModel = 'o4-mini-2025-04-16';
+      let aiResponse: any;
+      
+      console.log('🤖 Chamando OpenAI com modelo:', usedModel);
+      await supabase
+        .from('medical_documents')
+        .update({ 
+          processing_stage: 'chamando_openai', 
+          progress_pct: 85 
+        })
+        .eq('id', documentId || '')
+        .eq('user_id', userIdEffective || '');
+      
+      try { 
+        aiResponse = await callOpenAI(usedModel); 
+        console.log('✅ OpenAI respondeu com sucesso');
+      }
+      catch (e) {
+        console.log('⚠️ Fallback para modelo alternativo:', e);
+        try { 
+          usedModel = 'gpt-4.1-2025-04-14'; 
+          aiResponse = await callOpenAI(usedModel); 
+          console.log('✅ Fallback 1 funcionou');
+        }
+        catch (e2) {
+          console.log('⚠️ Fallback para último modelo:', e2);
+          usedModel = 'gpt-4o'; 
+          aiResponse = await callOpenAI(usedModel); 
+          console.log('✅ Fallback 2 funcionou');
+        }
+      }
+
+      const rawText = aiResponse.choices?.[0]?.message?.content || '';
+      console.log('🔍 Conteúdo completo do modelo', usedModel, ':', rawText.substring(0, 1000) + '...');
+
+      // Extrair JSON dos dados
+      const jsonStart = rawText.indexOf('{');
+      const jsonEnd = rawText.lastIndexOf('}');
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        try {
+          extracted = JSON.parse(rawText.substring(jsonStart, jsonEnd + 1));
+          console.log('✅ JSON extraído com sucesso');
+        } catch (e) {
+          console.log('❌ Erro ao parsear JSON:', e);
+        }
+      }
+
+      // Análise textual (antes do JSON)
+      analysis = jsonStart > 0 ? rawText.substring(0, jsonStart).trim() : rawText;
+      console.log('📝 Análise textual extraída:', analysis.substring(0, 500) + '...');
+
+      console.log('✅ Análise gerada');
+      
+    } catch (error) {
+      console.error('❌ Erro ao gerar análise com OpenAI:', error);
+      analysis = 'Erro ao processar análise. Dados em processamento...';
+    }
+
+    // Dados estruturados
+    const parsed = extracted || {};
+    const patientName = (parsed.patient_name || parsed.patient || userContext.profile?.full_name || 'Paciente');
+    const examDate = new Date().toLocaleDateString('pt-BR');
+    
+    // HTML PREMIUM do Dr. Vital com design avançado e linguagem simples
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Médico Premium - ${patientName}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .dr-vital-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: 15px;
+        }
+
+        .header .tagline {
+            font-size: 1em;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        .patient-info {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .patient-info h2 {
+            color: #1e293b;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .info-item strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #1e293b;
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h3 {
+            color: #334155;
+            font-size: 1.4em;
+            margin: 30px 0 20px 0;
+            padding-left: 20px;
+            border-left: 5px solid #ef4444;
+            font-weight: 500;
+        }
+
+        .dr-vital-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dr-vital-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        .dr-vital-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .dr-vital-icon {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .dr-vital-title {
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .dr-vital-text {
+            color: #374151;
+            font-size: 1.05em;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .exam-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .exam-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .exam-title {
+            flex: 1;
+        }
+
+        .exam-title h4 {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 8px 0;
+        }
+
+        .exam-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exam-status.normal {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .exam-status.elevated {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .exam-status.low {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .exam-value {
+            text-align: right;
+        }
+
+        .value-number {
+            font-size: 1.8em;
+            font-weight: 800;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .value-number.normal {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .value-number.elevated {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .value-number.low {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .exam-reference {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .reference-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .reference-icon {
+            font-size: 1.2em;
+        }
+
+        .reference-header strong {
+            color: #991b1b;
+            font-size: 0.95em;
+        }
+
+        .reference-value {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .exam-explanation {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .explanation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .dr-vital-avatar-small {
+            width: 24px;
+            height: 24px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .explanation-title {
+            color: #0369a1;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .explanation-content {
+            color: #0c4a6e;
+            font-size: 1em;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .section-block {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .section-icon {
+            font-size: 24px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #5A3DF0, #2ED4FF);
+            color: white;
+            border-radius: 12px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .section-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .section-explanation {
+            background: linear-gradient(135deg, #fef7ff, #f3e8ff);
+            border: 1px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .section-comparison {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .comparison-icon {
+            font-size: 16px;
+        }
+        
+        .comparison-content {
+            color: #0c4a6e;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .clinical-analysis {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #5A3DF0;
+        }
+        
+        .analysis-icon {
+            font-size: 32px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #5A3DF0, #2ED4FF);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(90, 61, 240, 0.3);
+        }
+        
+        .analysis-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .analysis-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .section-subtitle {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .findings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .finding-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid;
+        }
+        
+        .finding-item.critical {
+            border-left-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        }
+        
+        .finding-item.important {
+            border-left-color: #d97706;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+        
+        .finding-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .finding-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        
+        .conclusion-section {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px solid #0ea5e9;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .conclusion-text p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #0c4a6e;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .conclusion-text strong {
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .normal { color: #059669; }
+        .elevated { color: #dc2626; }
+        .low { color: #d97706; }
+
+        .priority-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .priority-list li {
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            border-left: 6px solid;
+            font-weight: 500;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .urgent {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left-color: #dc2626;
+            color: #991b1b;
+        }
+
+        .high {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-left-color: #d97706;
+            color: #92400e;
+        }
+
+        .medium {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left-color: #2563eb;
+            color: #1e40af;
+        }
+
+        .low {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-left-color: #059669;
+            color: #065f46;
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #dc2626;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.1);
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .alert-icon {
+            width: 24px;
+            height: 24px;
+            background: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .alert-title {
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .conclusion h2 {
+            color: white;
+            border-bottom: 2px solid #3b82f6;
+            margin-bottom: 25px;
+        }
+
+        .footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+            font-style: italic;
+            color: #cbd5e1;
+        }
+
+        .signature strong {
+            color: white;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .logo-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 25px 20px;
+            }
+        }
+
+        .simple-explanation {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #10b981;
+        }
+
+        .simple-explanation h4 {
+            color: #065f46;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .simple-explanation p {
+            color: #374151;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-section">
+                <img src="http://45.67.221.216:8086/logoids.png" alt="Instituto dos Sonhos" class="logo">
+                <img src="http://45.67.221.216:8086/Dr.Vital.png" alt="Dr. Vital" class="dr-vital-avatar">
+            </div>
+            <h1>RELATÓRIO MÉDICO PREMIUM</h1>
+            <div class="subtitle">Dr. Vital - IA Médica do Instituto dos Sonhos</div>
+            <div class="tagline">
+                💡 Análise Simples e Clara para Todos
+            </div>
+        </div>
+
+        <div class="patient-info">
+            <h2>📋 Dados do Paciente</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Nome:</strong>
+                    ${patientName}
+                </div>
+                <div class="info-item">
+                    <strong>Data dos Exames:</strong>
+                    ${examDate}
+                </div>
+                <div class="info-item">
+                    <strong>Tipo de Exame:</strong>
+                    ${examType || 'Exame Laboratorial'}
+                </div>
+                <div class="info-item">
+                    <strong>Análise:</strong>
+                    Dr. Vital - IA Médica
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>🔬 Resultados dos Exames</h2>
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">📊</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Aqui estão os resultados dos seus exames organizados por categoria clínica. Cada resultado tem minha explicação direta e clara!"
+                    </div>
+                </div>
+                
+                ${parsed?.sections && parsed.sections.length > 0 ? `
+                <div class="results-grid">
+                    ${parsed.sections.map((section: any) => `
+                    <div class="section-block">
+                        <div class="section-header">
+                            <div class="section-icon">${section.icon || '🔬'}</div>
+                            <h3 class="section-title">${section.title || ''}</h3>
+                        </div>
+                        
+                        <div class="section-content">
+                            ${section.metrics && section.metrics.length > 0 ? section.metrics.map((metric: any) => `
+                            <div class="exam-card">
+                                <div class="exam-header">
+                                    <div class="exam-title">
+                                        <h4>${metric.name || ''}</h4>
+                                        <div class="exam-status ${metric.status === 'elevated' ? 'elevated' : metric.status === 'low' ? 'low' : 'normal'}">
+                                            ${metric.status === 'normal' ? '✅ Normal' : metric.status === 'elevated' ? '⚠️ Alto' : '⚠️ Baixo'}
+                                        </div>
+                                    </div>
+                                    <div class="exam-value">
+                                        <span class="value-number ${metric.status === 'elevated' ? 'elevated' : metric.status === 'low' ? 'low' : 'normal'}">${metric.value || ''} ${metric.unit || ''}</span>
+                                    </div>
+                                </div>
+                                
+                                ${metric.status !== 'normal' && metric.us_reference ? `
+                                <div class="exam-reference">
+                                    <div class="reference-header">
+                                        <span class="reference-icon">🇺🇸</span>
+                                        <strong>Referência Americana:</strong>
+                                    </div>
+                                    <span class="reference-value">${metric.us_reference}</span>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="exam-explanation">
+                                    <div class="explanation-header">
+                                        <img src="http://45.67.221.216:8086/Dr.Vital.png" alt="Dr. Vital" class="dr-vital-avatar-small">
+                                        <div class="explanation-title">Dr. Vital explica:</div>
+                                    </div>
+                                    <div class="explanation-content">
+                                        ${metric.status === 'normal' ? 
+                                            `"${metric.name || ''} está funcionando perfeitamente! Não há problemas aqui - é como ter uma peça da casa funcionando 100%."` :
+                                            metric.status === 'elevated' ?
+                                            `"${metric.name || ''} está um pouco alto. ${metric.us_reference ? `Está fora da referência americana (${metric.us_reference}). ` : ''}Precisa de atenção - é como ter um sistema da casa precisando de ajuste."` :
+                                            `"${metric.name || ''} está baixo. ${metric.us_reference ? `Está fora da referência americana (${metric.us_reference}). ` : ''}Vamos trabalhar para normalizar isso."`
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            `).join('') : ''}
+                        </div>
+                    </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+            </div>
+                                <span class="explanation-title">Dr. Vital explica:</span>
+                            </div>
+                            <div class="explanation-content">
+                                ${metric.status === 'normal' ? 
+                                    `"O ${metric.name.toLowerCase()} está funcionando perfeitamente! Não há problemas aqui - é como ter uma peça da casa funcionando 100%."` :
+                                    metric.status === 'elevated' ? 
+                                        `"O ${metric.name.toLowerCase()} está alto. ${metric.us_reference ? `Está acima da referência americana (${metric.us_reference}).` : ''} É como ter um sistema da casa funcionando em excesso - precisamos ajustar."` :
+                                        `"O ${metric.name.toLowerCase()} está baixo. ${metric.us_reference ? `Está abaixo da referência americana (${metric.us_reference}).` : ''} É como ter um sistema da casa funcionando pouco - precisamos aumentar."`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    `).join('') : 'Dados em processamento...'}
+                </div>
+                `).join('') : 'Análise em andamento...'}
+
+            </div>
+
+            ${parsed?.sections && parsed.sections.length > 0 ? `
+            <div class="section">
+                <h2>🔬 Resultados dos Exames</h2>
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">📊</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Aqui estão seus exames organizados de forma simples. Cada resultado tem minha explicação direta e clara!"
+                    </div>
+                </div>
+                
+                ${parsed.sections.map((section: any) => `
+                <div class="section-block">
+                    <div class="section-header">
+                        <div class="section-icon">${section.icon || '🔬'}</div>
+                        <h3 class="section-title">${section.title || ''}</h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        ${section.metrics && section.metrics.length > 0 ? section.metrics.map((metric: any) => `
+                        <div class="exam-card">
+                            <div class="exam-header">
+                                <div class="exam-title">
+                                    <h4>${metric.name || ''}</h4>
+                                    <div class="exam-status ${metric.status === 'elevated' ? 'elevated' : metric.status === 'low' ? 'low' : 'normal'}">
+                                        ${metric.status === 'normal' ? '✅ Normal' : metric.status === 'elevated' ? '⚠️ Alto' : '⚠️ Baixo'}
+                                    </div>
+                                </div>
+                                <div class="exam-value">
+                                    <span class="value-number ${metric.status === 'elevated' ? 'elevated' : metric.status === 'low' ? 'low' : 'normal'}">${metric.value || ''} ${metric.unit || ''}</span>
+                                </div>
+                            </div>
+                            
+                            ${metric.status !== 'normal' && metric.us_reference ? `
+                            <div class="exam-reference">
+                                <div class="reference-header">
+                                    <span class="reference-icon">🇺🇸</span>
+                                    <strong>Referência Americana:</strong>
+                                </div>
+                                <span class="reference-value">${metric.us_reference}</span>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="exam-explanation">
+                                <div class="explanation-header">
+                                    <img src="http://45.67.221.216:8086/Dr.Vital.png" alt="Dr. Vital" class="dr-vital-avatar-small">
+                                    <div class="explanation-title">Dr. Vital explica:</div>
+                                </div>
+                                <div class="explanation-content">
+                                    ${metric.status === 'normal' ? 
+                                        `"${metric.name || ''} está funcionando perfeitamente! Não há problemas aqui - é como ter uma peça da casa funcionando 100%."` :
+                                        metric.status === 'elevated' ?
+                                        `"${metric.name || ''} está um pouco alto. ${metric.us_reference ? `Está fora da referência americana (${metric.us_reference}). ` : ''}Precisa de atenção - é como ter um sistema da casa precisando de ajuste."` :
+                                        `"${metric.name || ''} está baixo. ${metric.us_reference ? `Está fora da referência americana (${metric.us_reference}). ` : ''}Vamos trabalhar para normalizar isso."`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        `).join('') : ''}
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+            ` : ''}
+
+            <div class="section">
+                <h2>⚠️ Pontos de Atenção</h2>
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">🎯</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Agora vou destacar os 'problemas' que encontrei na casa do corpo de ${patientName}. São como 'vazamentos' que precisamos consertar!"
+                    </div>
+                </div>
+                ${parsed?.important_findings ? `
+                <ol>
+                    ${parsed.important_findings.map((finding: string) => `<li><strong>${finding}</strong></li>`).join('')}
+                </ol>
+                ` : 'Análise em andamento...'}
+                
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">💭</div>
+                        <div class="dr-vital-title">Dr. Vital detalha:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        Vou explicar cada problema encontrado e o que significa para sua saúde. Vamos trabalhar juntos para consertar cada ponto!
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Plano de Ação</h2>
+                
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">📋</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Agora vou dar o 'plano de conserto' para resolver os problemas encontrados. É como criar uma lista de tarefas para melhorar a casa do corpo de ${patientName}!"
+                    </div>
+                </div>
+                
+                ${parsed?.recommendations ? `
+                <h3>🚨 URGENTE (fazer agora):</h3>
+                <ul class="priority-list">
+                    ${parsed.recommendations.urgent ? parsed.recommendations.urgent.map((rec: string) => `<li class="urgent"><strong>${rec}</strong></li>`).join('') : ''}
+                </ul>
+                
+                <h3>🔶 ALTA PRIORIDADE (fazer em breve):</h3>
+                <ul class="priority-list">
+                    ${parsed.recommendations.high ? parsed.recommendations.high.map((rec: string) => `<li class="high"><strong>${rec}</strong></li>`).join('') : ''}
+                </ul>
+                
+                <h3>🔷 MÉDIA PRIORIDADE (fazer quando possível):</h3>
+                <ul class="priority-list">
+                    ${parsed.recommendations.medium ? parsed.recommendations.medium.map((rec: string) => `<li class="medium"><strong>${rec}</strong></li>`).join('') : ''}
+                </ul>
+                
+                <h3>✅ BAIXA PRIORIDADE (manter em mente):</h3>
+                <ul class="priority-list">
+                    ${parsed.recommendations.low ? parsed.recommendations.low.map((rec: string) => `<li class="low"><strong>${rec}</strong></li>`).join('') : ''}
+                </ul>
+                ` : 'Recomendações em processamento...'}
+
+            </div>
+
+            <div class="section">
+                <h2>📊 Mapa de Riscos</h2>
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">🎲</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Agora vou avaliar os 'perigos' que ${patientName} tem, como se fosse um 'mapa de riscos' da casa. É importante saber quais são os pontos de atenção para prevenir problemas futuros!"
+                    </div>
+                </div>
+                ${parsed?.risk_profile ? `
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Risco do Coração: ${parsed.risk_profile.cardiovascular}</h4>
+                        <p><strong>Problemas:</strong> ${parsed.risk_profile.cardiovascular_factors || 'Nenhum identificado'}</p>
+                        <p><strong>Proteções:</strong> ${parsed.risk_profile.cardiovascular_protectors || 'Açúcar normal, colesterol bom adequado'}</p>
+                    </div>
+                    <div class="result-card">
+                        <h4>Risco de Câncer: ${parsed.risk_profile.oncological}</h4>
+                        <p><strong>Atenção:</strong> ${parsed.risk_profile.oncological_factors || 'Nenhum identificado'}</p>
+                        <p><strong>Prevenção:</strong> ${parsed.risk_profile.oncological_screening || 'Idade para exames de câncer'}</p>
+                    </div>
+                    <div class="result-card">
+                        <h4>Risco de Diabetes: ${parsed.risk_profile.metabolic}</h4>
+                        <p><strong>Açúcar:</strong> ${parsed.risk_profile.metabolic_factors || 'Normal'}</p>
+                        <p><strong>Controle:</strong> ${parsed.risk_profile.metabolic_protectors || 'Excelente'}</p>
+                    </div>
+                </div>
+                ` : 'Mapa de riscos em processamento...'}
+            </div>
+
+            <div class="section">
+                <h2>🗓️ Cronograma de Retornos</h2>
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">📅</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Agora vou criar um 'cronograma de manutenção' para a casa do corpo de ${patientName}. É como programar as 'vistorias' regulares para garantir que tudo continue funcionando bem!"
+                    </div>
+                </div>
+                ${parsed?.follow_up ? `
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Retorno em 30 dias:</h4>
+                        <ul>
+                            ${parsed.follow_up.thirty_days ? parsed.follow_up.thirty_days.map((item: string) => `<li>${item}</li>`).join('') : '<li>Reavaliação dos problemas urgentes</li><li>Ajustes no tratamento se necessário</li>'}
+                        </ul>
+                    </div>
+                    <div class="result-card">
+                        <h4>Retorno em 90 dias:</h4>
+                        <ul>
+                            ${parsed.follow_up.ninety_days ? parsed.follow_up.ninety_days.map((item: string) => `<li>${item}</li>`).join('') : '<li>Controle dos números alterados</li><li>Reavaliação geral</li>'}
+                        </ul>
+                    </div>
+                    <div class="result-card">
+                        <h4>Exames de Controle:</h4>
+                        <ul>
+                            ${parsed.follow_up.exams ? parsed.follow_up.exams.map((item: string) => `<li>${item}</li>`).join('') : '<li>Exames específicos baseados nos problemas</li><li>Exame de sangue em 6 meses</li>'}
+                        </ul>
+                    </div>
+                </div>
+                ` : 'Acompanhamento em processamento...'}
+            </div>
+
+            <div class="section">
+                <h2>💊 Dicas Práticas</h2>
+                <div class="dr-vital-box">
+                    <div class="dr-vital-header">
+                        <div class="dr-vital-icon">💡</div>
+                        <div class="dr-vital-title">Dr. Vital explica:</div>
+                    </div>
+                    <div class="dr-vital-text">
+                        "Agora vou dar as 'dicas práticas' para ${patientName} melhorar sua saúde. É como dar um 'manual de manutenção' para cuidar da própria casa do corpo!"
+                    </div>
+                </div>
+                ${parsed?.lifestyle_guidance ? `
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>🍽️ Alimentação:</h4>
+                        <ul>
+                            ${parsed.lifestyle_guidance.diet ? parsed.lifestyle_guidance.diet.map((item: string) => `<li>${item}</li>`).join('') : '<li>Reduzir gorduras ruins (frituras, carnes gordas)</li><li>Aumentar fibras (frutas, verduras, grãos)</li><li>Controlar quantidade de comida</li>'}
+                        </ul>
+                    </div>
+                    <div class="result-card">
+                        <h4>🏃‍♀️ Exercícios:</h4>
+                        <ul>
+                            ${parsed.lifestyle_guidance.exercise ? parsed.lifestyle_guidance.exercise.map((item: string) => `<li>${item}</li>`).join('') : '<li>Caminhada: 150 min/semana</li><li>Musculação: 2-3x/semana</li><li>Alongamento diário</li>'}
+                        </ul>
+                    </div>
+                    <div class="result-card">
+                        <h4>🌙 Estilo de Vida:</h4>
+                        <ul>
+                            ${parsed.lifestyle_guidance.lifestyle ? parsed.lifestyle_guidance.lifestyle.map((item: string) => `<li>${item}</li>`).join('') : '<li>Controlar nervosismo</li><li>Dormir bem (7-8h/noite)</li><li>Beber água (2L/dia)</li>'}
+                        </ul>
+                    </div>
+                </div>
+                ` : 'Dicas em processamento...'}
+            </div>
+
+            <div class="clinical-analysis">
+                <div class="analysis-header">
+                    <div class="analysis-icon">🔬</div>
+                    <h2 class="analysis-title">Análise Clínica Completa</h2>
+                </div>
+                
+                <div class="analysis-content">
+                    ${parsed?.critical_findings && parsed.critical_findings.length > 0 ? `
+                    <div class="critical-section">
+                        <h3 class="section-subtitle">🚨 Achados Críticos</h3>
+                        <div class="findings-list">
+                            ${parsed.critical_findings.map((finding: string) => `
+                            <div class="finding-item critical">
+                                <div class="finding-icon">⚠️</div>
+                                <div class="finding-text">${finding}</div>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${parsed?.important_findings && parsed.important_findings.length > 0 ? `
+                    <div class="important-section">
+                        <h3 class="section-subtitle">📊 Achados Importantes</h3>
+                        <div class="findings-list">
+                            ${parsed.important_findings.map((finding: string) => `
+                            <div class="finding-item important">
+                                <div class="finding-icon">📋</div>
+                                <div class="finding-text">${finding}</div>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="conclusion-section">
+                        <h3 class="section-subtitle">📝 Conclusão Clínica</h3>
+                        <div class="conclusion-text">
+                            <p><strong>${patientName}</strong>, sua avaliação laboratorial apresenta um perfil ${parsed?.critical_findings && parsed.critical_findings.length > 0 ? 'com alterações que requerem atenção médica' : 'geralmente normal'}. ${parsed?.critical_findings && parsed.critical_findings.length > 0 ? 'Recomendo acompanhamento médico próximo para monitoramento dos achados críticos.' : 'Mantenha os hábitos saudáveis e continue com o acompanhamento regular.'}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signature">
+                <strong>Dr. Vital</strong><br>
+                <em>IA Médica do Instituto dos Sonhos</em><br>
+                <em>Especialista em Análise Laboratorial</em><br>
+                <em>Data: ${examDate}</em>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Relatório Médico Premium - Dr. Vital</p>
+            <p>IA Médica do Instituto dos Sonhos</p>
+            <p>Análise Simples e Clara para Todos</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+    // 2) Salvar HTML no bucket "medical-documents-reports"
+    console.log('💾 Salvando relatório HTML...');
+    await supabase
+      .from('medical_documents')
+      .update({ 
+        processing_stage: 'gerando_html', 
+        progress_pct: 95 
+      })
+      .eq('id', documentId || '')
+      .eq('user_id', userIdEffective || '');
+    
+    const reportsPath = `${userIdEffective || userId || 'unknown'}/${documentId || `doc_${Date.now()}`}.html`;
+    
+    const encoder = new TextEncoder();
+    const htmlBytes = encoder.encode(html);
+    
+    // Remove arquivo anterior se existir
+    await supabase.storage.from('medical-documents-reports').remove([reportsPath]).catch(()=>{});
+    
+    // Upload com headers corretos
+    const { error: upErr } = await supabase.storage
+      .from('medical-documents-reports')
+      .upload(reportsPath, new Blob([htmlBytes], { type: 'text/html; charset=utf-8' }), { 
+        upsert: true, 
+        contentType: 'text/html; charset=utf-8'
+      });
+
+    if (upErr) {
+      console.error('❌ Erro ao salvar HTML:', upErr);
+      throw upErr;
+    }
+    
+    console.log('✅ Relatório HTML salvo com sucesso');
+
+    // 3) Atualizar registro do documento com caminho do relatório e status
+    if (documentId) {
+      console.log('🎉 Finalizando relatório para documento:', documentId);
+      const { error: updErr } = await supabase
+        .from('medical_documents')
+        .update({
+          analysis_status: 'ready',
+          report_path: reportsPath,
+          report_meta: {
+            generated_at: new Date().toISOString(),
+            service_used: 'openai-o4-mini',
+            image_count: imagesLimited.length,
+            image_paths: resolvedPaths || (storagePath ? [storagePath] : []),
+            exam_type: examTypeEffective
+          },
+          processing_stage: 'finalizado',
+          progress_pct: 100,
+          estimated_minutes: null
+        })
+        .eq('id', documentId)
+        .eq('user_id', userIdEffective ?? '');
+      if (updErr) {
+        console.error('❌ Erro ao atualizar medical_documents:', updErr);
+      } else {
+        console.log('✅ Documento atualizado com sucesso');
+      }
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Relatório HTML premium gerado com sucesso',
+      reportPath: reportsPath,
+      service: 'openai-o4-mini',
+      imageCount: imagesLimited.length
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('Erro na análise de exame:', error);
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Erro interno do servidor' 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});

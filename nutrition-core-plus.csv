@@ -1,0 +1,14 @@
+name,categoria,subcategoria,carbs_g,protein_g,fat_g,fiber_g,sodium_mg,kcal,aliases,density_g_ml,epf,yield_from_state,yield_to_state,yield_factor
+Creme de leite,laticinio,creme,3.0,2.0,20.0,0.0,45,193,creme de leite|creme,,, ,,
+Molho de tomate,condimento,molho,5.0,1.5,0.2,1.5,400,29,molho de tomate|molho,,, ,,
+Frango cozido,proteina,frango,0.0,27.0,3.6,0.0,74,153,frango cozido|frango,,, ,,
+Peixe cozido,proteina,peixe,0.0,26.0,2.0,0.0,60,128,peixe cozido|peixe,,, ,,
+Leite de coco,bebida,leite vegetal,6.4,2.3,23.8,2.2,15,230,leite de coco,1.02,,, ,,
+Pimentão,vegetal,fruto,6.0,1.0,0.3,2.1,2,31,pimentao|pimentão,,, ,,
+Cebola,vegetal,bulbo,9.0,1.1,0.1,1.7,4,40,cebola,,, ,,
+Batata palha,acompanhamento,batata,50.0,4.0,35.0,2.0,400,500,batata palha|batata frita palha,,, ,,
+Salada verde,vegetal,salada,2.0,1.5,0.2,2.0,20,20,salada|salada verde,,, ,,
+Arroz integral cozido,cereal,arroz,23.0,2.6,1.0,1.8,5,111,arroz integral cozido|arroz integral,,,cru,cozido,2.4
+Feijão carioca cozido,leguminosa,feijao,13.6,8.5,0.5,8.5,2,110,feijao carioca|feijão carioca,,,cru,cozido,2.5
+Peito de frango grelhado,proteina,frango,0.0,31.0,3.6,0.0,74,165,peito de frango|frango grelhado,,, ,,
+

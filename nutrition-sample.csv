@@ -1,0 +1,15 @@
+name,categoria,subcategoria,carbs_g,protein_g,fat_g,fiber_g,sodium_mg,kcal,aliases,density_g_ml,epf,yield_from_state,yield_to_state,yield_factor
+Lasanha (carne),prato,massa,14.4,7.9,6.3,1.2,350,149,lasanha|lasanha de carne,,, ,,
+Arroz branco cozido,cereal,arroz,28.0,2.7,0.3,0.4,1,130,arroz branco|arroz cozido,,,cru,cozido,2.5
+Brócolis cozido,vegetal,crucifero,7.0,2.8,0.4,3.3,41,35,brocolis|brócolis,,,cru,cozido,0.9
+Cenoura cozida,vegetal,raiz,8.2,0.8,0.2,2.9,58,35,cenoura,,,cru,cozido,0.8
+Couve-flor cozida,vegetal,crucifero,5.0,1.9,0.3,2.0,15,25,couve flor|couve-flor,,,cru,cozido,0.85
+Tomate cru,vegetal,fruto,3.9,0.9,0.2,1.2,5,18,tomate,,,,,
+Suco de laranja,bebida,suco,10.0,0.7,0.2,0.2,2,45,suco de laranja|suco laranja|suco,1.04,,, ,,
+Azeite,condimento,oleo,0,0,100,0,0,884,azeite de oliva|azeite extra virgem,0.91,,, ,,
+Feijão preto cozido,leguminosa,feijao,14.0,9.0,0.5,8.7,2,110,feijao preto|feijão preto,,,cru,cozido,2.5
+Carne bovina cozida,proteina,carne,0,26.0,15.0,0,70,250,carne bovina cozida|carne cozida,,,,,
+Linguiça cozida,proteina,embutido,1.0,20.0,25.0,0,1200,300,linguica|linguiça,,,,,
+Farofa (farinha de mandioca torrada),acompanhamento,farofa,80.0,2.0,5.0,6.0,300,370,farofa|farinha de mandioca,,, ,,
+Couve refogada,vegetal,folha,6.0,1.5,5.0,3.0,150,80,couve,,, ,,
+

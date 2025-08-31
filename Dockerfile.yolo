@@ -1,0 +1,45 @@
+# 🦾 Dockerfile para Serviço YOLO de Detecção de Alimentos
+FROM python:3.9-slim
+
+# Definir diretório de trabalho
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libgthread-2.0-0 \
+    libgtk-3-0 \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libatlas-base-dev \
+    gfortran \
+    wget \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements
+COPY requirements-yolo.txt .
+
+# Instalar dependências Python
+RUN pip install --no-cache-dir -r requirements-yolo.txt
+
+# Copiar código do serviço
+COPY yolo-service-example.py .
+
+# Expor porta
+EXPOSE 8001
+
+# Comando para iniciar o serviço
+CMD ["python", "yolo-service-example.py"]

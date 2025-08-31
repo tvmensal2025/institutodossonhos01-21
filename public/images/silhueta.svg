@@ -1,0 +1,32 @@
+<svg width="120" height="200" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Silhueta humana corporal básica -->
+  <g fill="currentColor" stroke="none">
+    <!-- Cabeça -->
+    <ellipse cx="60" cy="25" rx="15" ry="20"/>
+    
+    <!-- Pescoço -->
+    <rect x="55" y="42" width="10" height="8"/>
+    
+    <!-- Tronco/Torso -->
+    <ellipse cx="60" cy="80" rx="25" ry="35"/>
+    
+    <!-- Quadris -->
+    <ellipse cx="60" cy="125" rx="22" ry="15"/>
+    
+    <!-- Braço esquerdo -->
+    <ellipse cx="35" cy="70" rx="8" ry="25" transform="rotate(-10 35 70)"/>
+    <ellipse cx="30" cy="95" rx="6" ry="18" transform="rotate(-5 30 95)"/>
+    
+    <!-- Braço direito -->
+    <ellipse cx="85" cy="70" rx="8" ry="25" transform="rotate(10 85 70)"/>
+    <ellipse cx="90" cy="95" rx="6" ry="18" transform="rotate(5 90 95)"/>
+    
+    <!-- Perna esquerda -->
+    <ellipse cx="50" cy="155" rx="10" ry="25"/>
+    <ellipse cx="48" cy="180" rx="8" ry="15"/>
+    
+    <!-- Perna direita -->
+    <ellipse cx="70" cy="155" rx="10" ry="25"/>
+    <ellipse cx="72" cy="180" rx="8" ry="15"/>
+  </g>
+</svg>

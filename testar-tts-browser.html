@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Google TTS</title>
+</head>
+<body>
+    <h1>Teste Google TTS no Navegador</h1>
+    <button onclick="testarTTS()">Testar TTS</button>
+    <div id="resultado"></div>
+
+    <script>
+        async function testarTTS() {
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = 'Testando...';
+            
+            try {
+                const apiKey = 'AIzaSyBB1_I1XIfM9eXXdPaYV1FQys_6viFoXAs';
+                const text = 'Olá! Sou a Sofia, sua nutricionista virtual.';
+                
+                console.log('🔑 API Key:', apiKey.substring(0, 10) + '...');
+                console.log('📝 Texto:', text);
+                
+                const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        input: {
+                            text: text
+                        },
+                        voice: {
+                            languageCode: 'pt-BR',
+                            name: 'pt-BR-Neural2-C',
+                            ssmlGender: 'FEMALE'
+                        },
+                        audioConfig: {
+                            audioEncoding: 'MP3',
+                            speakingRate: 0.85,
+                            pitch: 1.5,
+                            volumeGainDb: 1.0,
+                            effectsProfileId: ['headphone-class-device']
+                        }
+                    })
+                });
+
+                console.log('📊 Status:', response.status);
+                console.log('📊 Status Text:', response.statusText);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Erro:', errorText);
+                    resultado.innerHTML = `❌ Erro: ${response.status} ${response.statusText}<br>${errorText}`;
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('✅ Sucesso:', data);
+                
+                // Reproduzir áudio
+                const audioContent = data.audioContent;
+                const audioBlob = new Blob(
+                    [Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))],
+                    { type: 'audio/mp3' }
+                );
+                
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+                
+                resultado.innerHTML = '✅ TTS funcionou! Áudio reproduzido.';
+                
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                resultado.innerHTML = `❌ Erro: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,732 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Health Platform Design System - Modern Health Theme with Medical Colors */
+
+@layer base {
+  :root {
+    /* Health Color Scheme - Verde, Azul e Branco */
+    --background: 0 0% 98%; /* Branco off-white para clareza */
+    --foreground: 210 40% 8%; /* Azul escuro para texto */
+    
+    /* Card system - Health style */
+    --card: 0 0% 100%; /* Branco puro para cards */
+    --card-foreground: 210 40% 8%;
+    
+    /* Popover system */
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 40% 8%;
+    
+    /* Tech Indigo/Violet primary + Neon Cyan accent */
+    --primary: 248 80% 67%;   /* #7C3AED */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 197 37% 96%; /* Azul claro suave */
+    --secondary-foreground: 210 40% 8%;
+    
+    /* UI colors Health style */
+    --muted: 210 40% 96%; /* Azul muito claro */
+    --muted-foreground: 215 16% 47%;
+    
+    --accent: 199 89% 48%; /* Azul médico #0ea5e9 */
+    --accent-foreground: 0 0% 100%;
+    
+    /* Status colors Health theme */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 32 95% 44%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Instituto cores ajustadas para Health theme */
+    --instituto-blue: 199 89% 48%; /* Azul médico */
+    --instituto-green: 142 76% 36%; /* Verde médico */
+    --instituto-red: 0 84% 60%; /* Vermelho suave */
+    --instituto-gray: 215 16% 47%; /* Cinza neutro */
+    
+    /* Interactive elements */
+    --border: 214 32% 91%; /* Bordas azul claro */
+    --input: 0 0% 100%; /* Inputs brancos */
+    --ring: 142 76% 36%; /* Focus ring verde */
+    
+    /* Health colors com Health theme */
+    --health-heart: 0 84% 60%; /* Vermelho coração */
+    --health-steps: 142 76% 36%; /* Verde atividade */
+    --health-calories: 32 95% 44%; /* Laranja energia */
+    --health-hydration: 199 89% 48%; /* Azul hidratação */
+    
+    /* Health Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 25%));
+    --gradient-dark: linear-gradient(135deg, hsl(210 40% 98%), hsl(210 40% 96%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(197 37% 96%));
+    --gradient-accent: linear-gradient(135deg, hsl(199 89% 48%), hsl(199 89% 38%));
+    
+    /* Health Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(142 76% 36% / 0.15);
+    --shadow-glow: 0 0 40px hsl(142 76% 36% / 0.2);
+    --shadow-card: 0 4px 20px hsl(210 40% 8% / 0.08);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Layout */
+    --radius: 0.75rem;
+
+    /* Health Sidebar */
+    --sidebar-background: 0 0% 100%; /* Branco sidebar Health */
+    --sidebar-foreground: 210 40% 8%;
+    --sidebar-primary: 142 76% 36%; /* Verde médico */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 197 37% 96%; /* Azul claro */
+    --sidebar-accent-foreground: 210 40% 8%;
+    --sidebar-border: 214 32% 91%; /* Bordas azul claro */
+    --sidebar-ring: 142 76% 36%; /* Focus ring verde */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+/* Mantendo conformidade com termos da Lovable - badge visível */
+
+@layer utilities {
+  /* Health Platform Custom Utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+/* Mobile responsiveness - Larger text sizes for mobile */
+  @media (max-width: 768px) {
+    .mobile-text-lg {
+      font-size: 1.25rem !important;
+      line-height: 1.75rem !important;
+    }
+    
+    .mobile-text-xl {
+      font-size: 1.5rem !important;
+      line-height: 2rem !important;
+    }
+    
+    .mobile-text-2xl {
+      font-size: 1.75rem !important;
+      line-height: 2rem !important;
+    }
+    
+    .mobile-weight-display {
+      font-size: 2.5rem !important;
+      line-height: 3rem !important;
+      font-weight: 700 !important;
+    }
+    
+    .mobile-padding {
+      padding: 1rem !important;
+    }
+    
+    .mobile-button-lg {
+      height: 3rem !important;
+      font-size: 1rem !important;
+      padding: 0 1.5rem !important;
+    }
+    
+    /* Prevent text overflow */
+    .mobile-stat-number {
+      font-size: 1.5rem !important;
+      line-height: 1.75rem !important;
+      word-break: break-word !important;
+    }
+  }
+
+  /* Extra small mobile devices */
+  @media (max-width: 480px) {
+    .xs-text-sm {
+      font-size: 0.875rem !important;
+      line-height: 1.25rem !important;
+    }
+    
+    .xs-text-base {
+      font-size: 1rem !important;
+      line-height: 1.5rem !important;
+    }
+    
+    .xs-text-lg {
+      font-size: 1.125rem !important;
+      line-height: 1.75rem !important;
+    }
+    
+    .xs-text-xl {
+      font-size: 1.25rem !important;
+      line-height: 1.75rem !important;
+    }
+    
+    .xs-text-2xl {
+      font-size: 1.5rem !important;
+      line-height: 2rem !important;
+    }
+    
+    .xs-text-3xl {
+      font-size: 1.875rem !important;
+      line-height: 2.25rem !important;
+    }
+    
+    .xs-p-2 {
+      padding: 0.5rem !important;
+    }
+    
+    .xs-p-3 {
+      padding: 0.75rem !important;
+    }
+    
+    .xs-gap-2 {
+      gap: 0.5rem !important;
+    }
+    
+    .xs-gap-3 {
+      gap: 0.75rem !important;
+    }
+    
+    .xs-min-h-180 {
+      min-height: 180px !important;
+    }
+    
+    .xs-min-h-200 {
+      min-height: 200px !important;
+    }
+  }
+  
+  .bg-gradient-dark {
+    background: var(--gradient-dark);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .bg-gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  /* Health-specific color utilities */
+  .text-health-heart {
+    color: hsl(var(--health-heart));
+  }
+  
+  .text-health-steps {
+    color: hsl(var(--health-steps));
+  }
+  
+  .text-health-calories {
+    color: hsl(var(--health-calories));
+  }
+  
+  .text-health-hydration {
+    color: hsl(var(--health-hydration));
+  }
+  
+  /* Animation utilities */
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  .hover-lift {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  /* Focus AA padrão clínico */
+  .focus-aa:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--ring)) , 0 0 0 4px white;
+    border-radius: var(--radius);
+  }
+}
+
+@layer components {
+  /* Custom animations */
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    0% { 
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  @keyframes glow {
+    0% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
+    100% { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
+  }
+  
+  /* Health card component styles */
+  .health-card {
+    @apply bg-gradient-card rounded-2xl p-6 shadow-card border border-border/50 hover-lift;
+  }
+  
+  .mission-card {
+    @apply bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-border/30 hover-lift transition-smooth;
+  }
+  
+  .stat-card {
+    @apply bg-gradient-card rounded-lg p-4 shadow-card border border-border/20;
+  }
+}
+
+/* Responsividade móvel - números maiores e botões grandes */
+.mobile-text-lg {
+  @apply text-xl md:text-2xl break-words overflow-hidden;
+}
+
+.mobile-text-xl {
+  @apply text-2xl md:text-3xl break-words overflow-hidden;
+}
+
+.mobile-text-2xl {
+  @apply text-3xl md:text-4xl break-words overflow-hidden;
+}
+
+.mobile-weight-display {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+}
+
+.mobile-padding {
+  @apply p-4 md:p-6;
+}
+
+.mobile-button-lg {
+  @apply h-14 md:h-16 text-lg md:text-xl px-6 py-4;
+}
+
+/* Botões grandes e roxos para todas as questões - Mobile First */
+.question-button {
+  @apply h-16 px-6 text-lg lg:h-12 lg:text-base font-medium transition-all duration-300;
+}
+
+.question-button-purple {
+  @apply bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 shadow-lg;
+}
+
+.question-button-outline {
+  @apply border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white;
+}
+
+/* Números e estatísticas maiores - Mobile optimized */
+.stat-number {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+}
+
+.mobile-stat-number {
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold break-words overflow-hidden;
+}
+
+/* Mobile chat optimizations */
+.mobile-chat-input {
+  @apply h-14 lg:h-10 text-lg lg:text-base;
+}
+
+.mobile-chat-button {
+  @apply h-14 w-14 lg:h-10 lg:w-10;
+}
+
+.mobile-chat-message {
+  @apply text-lg lg:text-base p-4 lg:p-3;
+}
+
+/* Mobile sidebar optimizations */
+.mobile-sidebar-button {
+  @apply h-16 lg:h-12 text-lg lg:text-base;
+}
+
+.mobile-sidebar-avatar {
+  @apply h-20 w-20 lg:h-16 lg:w-16;
+}
+
+/* Mobile grid layouts */
+.mobile-grid-1 {
+  @apply grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6;
+}
+
+.mobile-grid-2 {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6;
+}
+
+.mobile-grid-3 {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6;
+}
+
+.mobile-grid-4 {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6;
+}
+
+/* Cards de estatísticas responsivos */
+.stat-card-responsive {
+  @apply min-h-[120px] md:min-h-[140px] p-4 md:p-6;
+}
+
+.stat-number-responsive {
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold break-words overflow-hidden leading-tight;
+}
+
+/* Otimizações Mobile para Modal de Desafio */
+[data-radix-slider-thumb] {
+  @apply h-6 w-6 sm:h-4 sm:w-4;
+  touch-action: manipulation;
+}
+
+[data-radix-slider-track] {
+  @apply h-3 sm:h-2;
+}
+
+[data-radix-checkbox-root] {
+  @apply h-5 w-5;
+  touch-action: manipulation;
+}
+
+textarea {
+  -webkit-appearance: none;
+  resize: none;
+  font-size: 16px;
+}
+
+input[type="number"] {
+  -webkit-appearance: none;
+  font-size: 16px;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-radix-dialog-content] {
+  max-height: 95vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  [data-radix-dialog-content] {
+    margin: 0;
+    border-radius: 1rem 1rem 0 0;
+    max-height: 90vh;
+    width: 100vw;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Better mobile card spacing */
+  .health-card, .mission-card, .stat-card {
+    margin-bottom: 1rem;
+  }
+  
+  /* Mobile-specific text sizing */
+  h1 {
+    font-size: 1.875rem !important; /* 30px */
+    line-height: 2.25rem !important; /* 36px */
+  }
+  
+  h2 {
+    font-size: 1.5rem !important; /* 24px */
+    line-height: 2rem !important; /* 32px */
+  }
+  
+  h3 {
+    font-size: 1.25rem !important; /* 20px */
+    line-height: 1.75rem !important; /* 28px */
+  }
+}
+
+.active\:scale-95:active {
+  transform: scale(0.95);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2 outline-none;
+}
+
+/* Mobile responsive improvements */
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Mobile scroll improvements */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted)) transparent;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted));
+    border-radius: 2px;
+  }
+}
+
+/* Extra small screen optimizations */
+@media (max-width: 475px) {
+  .stat-card {
+    min-height: 140px !important;
+    padding: 0.75rem !important;
+  }
+  
+  .mission-card {
+    padding: 0.75rem !important;
+  }
+  
+  .health-card {
+    padding: 1rem !important;
+  }
+  
+  /* Ensure text remains readable on very small screens */
+  .text-xs {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+  
+  /* Optimize grid layouts for very small screens */
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  /* Reduce margins and padding for very small screens */
+  .space-y-2 > * + * {
+    margin-top: 0.5rem !important;
+  }
+  
+  .gap-2 {
+    gap: 0.5rem !important;
+  }
+  
+  /* Ensure buttons remain touch-friendly */
+  button, .btn {
+    min-height: 2.5rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+  
+  /* Optimize card spacing */
+  .p-1 {
+    padding: 0.5rem !important;
+  }
+  
+  .mb-2 {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+/* Ensure containers don't exceed viewport */
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Print styles for meal plans */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  
+  .print\\:hidden {
+    display: none !important;
+  }
+  
+  .print\\:block {
+    display: block !important;
+  }
+  
+  .print\\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  .print\\:gap-2 {
+    gap: 0.5rem !important;
+  }
+  
+  .print\\:text-xs {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+  
+  .print\\:p-4 {
+    padding: 1rem !important;
+  }
+  
+  .print\\:max-w-none {
+    max-width: none !important;
+  }
+  
+  .print\\:opacity-10 {
+    opacity: 0.1 !important;
+  }
+  
+  .print\\:break-inside-avoid {
+    break-inside: avoid !important;
+  }
+  
+  body {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+}
+
+/* Mobile navigation improvements */
+@media (max-width: 1024px) {
+  .fixed {
+    z-index: 50;
+  }
+}
+
+/* 3D Model iframe optimizations - Prevent scroll interference */
+iframe[title*="Personagem"] {
+  pointer-events: none !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  overscroll-behavior: contain !important;
+  scroll-behavior: auto !important;
+}
+
+/* Wrapper for 3D models to prevent scroll issues */
+.modelo-3d-wrapper {
+  isolation: isolate;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure 3D models don't interfere with page scroll */
+.modelo-3d-container {
+  overflow: hidden;
+  position: relative;
+  contain: layout style paint;
+}
+
+/* Prevent iframe from capturing scroll events */
+iframe[src*="sketchfab"] {
+  pointer-events: none !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  overscroll-behavior: contain !important;
+  scroll-behavior: auto !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Smart touch interaction for 3D models */
+.modelo-3d-container.interacting {
+  touch-action: manipulation !important;
+  overscroll-behavior: none !important;
+}
+
+.modelo-3d-container.interacting iframe {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+
+/* Touch gesture indicators */
+.touch-indicator {
+  transition: all 0.2s ease;
+  user-select: none;
+  pointer-events: none;
+}
+
+.touch-indicator.active {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Prevent text selection during 3D interaction */
+.modelo-3d-container.interacting * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
