@@ -71,15 +71,37 @@ Vou ajustar minha análise para ser mais precisa na próxima vez! Continue envia
       return n.includes('suco') || n.includes('refrigerante') || n.includes('água') || n.includes('agua') || n.includes('café') || n.includes('cafe') || n.includes('leite') || n.includes('vitamina') || n.includes('chá') || n.includes('cha');
     }
     const DEFAULT_PORTIONS: Record<string, number> = {
-      'ovo': 50,
-      'ovos': 100,
-      'arroz': 100,
-      'feijão': 80,
-      'feijao': 80,
-      'frango grelhado': 150,
-      'carne bovina': 150,
-      'salada': 50,
-      'batata': 150
+      'ovo': 50,           // 1 ovo médio
+      'ovos': 100,         // 2 ovos
+      'arroz': 80,         // 4 colheres de sopa
+      'arroz branco': 80,
+      'feijão': 70,        // 3 colheres de sopa
+      'feijao': 70,
+      'frango grelhado': 120,  // 1 filé pequeno
+      'frango': 120,
+      'carne bovina': 100,     // 1 bife pequeno
+      'carne': 100,
+      'salada': 50,        // 1 pires
+      'batata': 150,       // 1 batata média
+      'peixe': 120,        // 1 filé
+      'alface': 30,        // 3 folhas
+      'tomate': 80,        // 1 tomate médio
+      'banana': 90,        // 1 banana média
+      'maca': 150,         // 1 maçã média
+      'maça': 150,
+      'leite': 200,        // 1 copo
+      'pao': 50,           // 2 fatias
+      'pizza': 200,        // 2 fatias médias
+      'sanduiche': 150,    // 1 sanduíche
+      'lanche': 150,
+      'macarrao': 80,      // 1 porção (crú)
+      'macarrão': 80,
+      'salgado': 60,       // 1 unidade
+      'coxinha': 60,
+      'pastel': 80,
+      'bolo': 80,          // 1 fatia
+      'farofa': 40,        // 2 colheres de sopa
+      'lasanha': 200       // 1 porção
     };
     function guessPortion(name: string): number {
       const key = (name || '').toLowerCase().trim();
@@ -137,7 +159,7 @@ Vou ajustar minha análise para ser mais precisa na próxima vez! Continue envia
           if ((nk.includes('oleo') || nk.includes('azeite')) && Number(v?.quantity) > 0) { hasExplicitOilQty = true; break; }
         }
       }
-      if (hasOil) {
+      if (hasOilWord) {
         // Se houver quantidade explícita de óleo, não alterar batata nem remover óleo (evita dupla contagem e preserva a intenção do usuário)
         if (!hasExplicitOilQty) {
           for (let i = 0; i < items.length; i++) {
