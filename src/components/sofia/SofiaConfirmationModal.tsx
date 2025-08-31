@@ -40,9 +40,9 @@ const SofiaConfirmationModal: React.FC<SofiaConfirmationModalProps> = ({
   const normalizedInitialItems: FoodItem[] = useMemo(() => {
     const toArray = (detectedFoods || []).map((food) => {
       if (typeof food === 'object' && 'nome' in food) {
-        return { name: String((food as any).nome), quantity: Number((food as any).quantidade) || undefined } as { name: string; quantity?: number };
+        return { name: String((food as any).nome), quantity: Number((food as any).quantidade) || 100 } as { name: string; quantity: number };
       }
-      return { name: String(food) } as { name: string; quantity?: number };
+      return { name: String(food), quantity: 100 } as { name: string; quantity: number };
     });
 
     const removeAccents = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -73,7 +73,7 @@ const SofiaConfirmationModal: React.FC<SofiaConfirmationModalProps> = ({
       { test: /(pao|pão|torrada|pita|wrap)/, name: 'Pão' },
     ];
 
-    const resultMap = new Map<string, { quantity?: number; unit: string }>();
+    const resultMap = new Map<string, { quantity: number; unit: string }>();
     let hasSalad = false;
 
     for (const item of toArray) {
@@ -99,31 +99,24 @@ const SofiaConfirmationModal: React.FC<SofiaConfirmationModalProps> = ({
         }
       }
 
-      // MODO ESTRITO: não preencher quantidade por padrão; exigir confirmação do usuário
-      const chosenQuantity = (typeof item.quantity === 'number' && item.quantity > 0)
-        ? item.quantity
-        : undefined;
+      // ✅ CORRIGIDO: Usar quantidade padrão sensata, não somar quantidades
+      const quantity = getEstimatedQuantity(canonical);
       const unit = getUnit(canonical);
 
+      // ✅ CORRIGIDO: Não usar Math.max, apenas definir uma vez
       if (!resultMap.has(canonical)) {
-        resultMap.set(canonical, { quantity: chosenQuantity, unit });
-      } else {
-        // Se já existe, mantém a maior quantidade explícita
-        const prev = resultMap.get(canonical)!;
-        const nextQty = Math.max(prev.quantity || 0, chosenQuantity || 0) || chosenQuantity;
-        resultMap.set(canonical, { quantity: nextQty, unit: prev.unit });
+        resultMap.set(canonical, { quantity, unit });
       }
     }
 
     if (hasSalad) {
-      // Padrão solicitado: salada = 50g se IA não estimar
       resultMap.set('Salada', { quantity: 50, unit: 'g' });
     }
 
     // Converte para array ordenado por nome para estabilidade
     return Array.from(resultMap.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([name, v]) => ({ name, quantity: v.quantity ?? undefined, unit: v.unit }));
+      .map(([name, v]) => ({ name, quantity: v.quantity, unit: v.unit }));
   }, [detectedFoods]);
 
   const [foodItems, setFoodItems] = useState<FoodItem[]>(normalizedInitialItems);
@@ -179,8 +172,9 @@ const SofiaConfirmationModal: React.FC<SofiaConfirmationModalProps> = ({
     setFoodItems(prev => {
       const existsIndex = prev.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
       if (existsIndex >= 0) {
+        // ✅ CORRIGIDO: Substituir quantidade, não somar
         const updated = [...prev];
-        updated[existsIndex] = { ...updated[existsIndex], quantity: Math.max(updated[existsIndex].quantity, quantity), unit };
+        updated[existsIndex] = { ...updated[existsIndex], quantity, unit };
         return updated;
       }
       return [...prev, { name, quantity, unit }];
@@ -200,6 +194,11 @@ const SofiaConfirmationModal: React.FC<SofiaConfirmationModalProps> = ({
         foodLower.includes('leite') || foodLower.includes('café') ||
         foodLower.includes('chá') || foodLower.includes('refrigerante')) {
       return 200;
+    }
+    
+    // ✅ CORRIGIDO: Ovo tem quantidade padrão menor
+    if (foodLower.includes('ovo')) {
+      return 50; // 1 ovo médio = ~50g
     }
     
     // Carnes e proteínas
@@ -225,13 +224,13 @@ const SofiaConfirmationModal: React.FC<SofiaConfirmationModalProps> = ({
     if (foodLower.includes('salada') || foodLower.includes('alface') ||
         foodLower.includes('tomate') || foodLower.includes('cenoura') ||
         foodLower.includes('brócolis')) {
-      return 80;
+      return 50; // Reduzido para quantidades mais realistas
     }
     
     // Frutas
     if (foodLower.includes('banana') || foodLower.includes('maçã') ||
         foodLower.includes('laranja') || foodLower.includes('fruta')) {
-      return 150;
+      return 100; // Reduzido para tamanho médio de fruta
     }
     
     // Batata e tubérculos
