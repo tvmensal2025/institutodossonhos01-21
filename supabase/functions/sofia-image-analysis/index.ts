@@ -1536,135 +1536,17 @@ serve(async (req) => {
       // YOLO já cobriu
       // nada a fazer
     }
-                { inline_data: { mime_type: img.mime, data: img.base64 } }
-              ]
-            }],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
-          })
-        });
 
-        if (!visionResponse.ok) throw new Error(`Google AI error: ${visionResponse.status}`);
-        const visionData = await visionResponse.json();
-        const responseText = visionData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        try {
-          const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/) || responseText.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const analysisData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
-            isFood = analysisData.is_food || false;
-            confidence = analysisData.confidence || 0;
-            detectedFoods = analysisData.foods_detected || [];
-            detectedLiquids = analysisData.liquids_detected || [];
-            estimatedCalories = analysisData.estimated_calories || 0;
-            
-            // Novos campos para análise versátil
-            const contentType = analysisData.content_type || 'other';
-            const description = analysisData.description || '';
-            const objectsDetected = analysisData.objects_detected || [];
-            const analysis = analysisData.analysis || '';
-            
-            console.log('📊 Análise versátil:', { 
-              isFood, 
-              contentType, 
-              confidence,
-              description: description.substring(0, 100) + '...'
-            });
-          }
-        } catch (_parseError) {
-          isFood = false;
-          console.log('⚠️ Erro ao processar JSON da análise');
-        }
-
-        if (isFood) {
-          try {
-            const detailedResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${googleAIApiKey}`, {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{
-                  parts: [
-                    { text: `Você é um nutricionista especialista em alimentos brasileiros. Analise esta imagem com foco em ESTIMATIVAS PRECISAS DE PORÇÕES e retorne APENAS JSON válido:
-
-${yoloContext ? `🦾 CONTEXTO DO YOLO11: ${yoloContext.objects?.map((obj: any) => obj.class_name + ' (confiança: ' + obj.score + ')').join(', ') || 'Nenhum objeto detectado'}` : ''}
-
-ESPECIALIZAÇÃO EM PORÇÕES BRASILEIRAS:
-🍕 PIZZA: 1 fatia média = 120-150g (250-350 kcal), fatia grande = 180-220g (400-500 kcal)
-🥧 TORTA SALGADA: 1 fatia = 100-150g (280-420 kcal), pedaço pequeno = 80g (220 kcal)
-🥪 COXINHA: 1 unidade média = 60-80g (180-250 kcal), grande = 100g (300 kcal)
-🥪 PASTEL: 1 unidade = 50-70g (150-220 kcal), grande = 90g (280 kcal)
-🥪 EMPADA: 1 unidade = 40-60g (120-180 kcal)
-🍔 HAMBÚRGUER: simples = 150-200g (350-450 kcal), duplo = 250-300g (550-650 kcal)
-🌭 HOT DOG: tradicional = 120-150g (300-400 kcal), completo = 200g (500 kcal)
-🥪 SANDUÍCHE: simples = 100-150g (250-350 kcal), completo = 200-250g (400-500 kcal)
-
-INSTRUÇÕES DETALHADAS:
-- 🔍 IDENTIFIQUE cada alimento específico (não genérico)
-- ⚖️ ESTIME gramas baseado em porções brasileiras realistas
-- 🔥 CALCULE calorias considerando preparo (frito, assado, grelhado)
-- 📊 Use contexto visual para ajustar porções (compare com utensílios, mãos, pratos)
-- 🎯 Para alimentos similares no prato, some as quantidades
-
-REGRAS DE ESTIMATIVA:
-- Se vê 1 fatia de pizza → 130g (300 kcal média)
-- Se vê 2 coxinhas → 2x70g = 140g (420 kcal total)
-- Se vê porção de batata frita → 80-120g (200-300 kcal)
-- Se vê sanduíche grande → 200g (450 kcal)
-- Se vê bebida em copo → 250-350ml
-
-Para LÍQUIDOS use ML, para SÓLIDOS use GRAMAS.
-
-BASE (pt-BR): ${foodKnowledge}
-
-REGRAS:
-- Use o contexto do YOLO11 para focar nos objetos detectados
-- Liste todos os alimentos/ingredientes, molhos, temperos e bebidas presentes
-- Seja específico nos tipos (ex.: feijão preto, arroz branco, frango grelhado, salada verde)
-- Estime gramas (sólidos) ou mL (líquidos) realistas por item
-- Não some itens duplicados; prefira mesclar em um único item com quantidade total
-- Não use markdown, não use comentários, apenas JSON
-
-Retorne APENAS JSON válido:
-{
-  "detailed_foods": ["item1", "item2", ...],
-  "detailed_liquids": ["bebida1", "bebida2", ...],
-  "cooking_methods": ["grelhado", "refogado", ...],
-  "seasonings": ["tempero1", "molho1", ...],
-  "estimated_calories": numero,
-  "confidence": 0.0-1.0,
-  "items": [{"name":"arroz branco","grams":120,"ml":null,"method":"cozido","confidence":0.85},{"name":"suco de laranja","grams":null,"ml":200,"method":"liquido","confidence":0.9}] 
-}` },
-                    { inline_data: { mime_type: img.mime, data: img.base64 } }
-                  ]
-                }],
-                generationConfig: { temperature: 0.1, maxOutputTokens: 1200 }
-              })
-            });
-
-            if (detailedResponse.ok) {
-              const det = await detailedResponse.json();
-              const detailText = det.candidates?.[0]?.content?.parts?.[0]?.text || '';
-              const detailJsonMatch = detailText.match(/```json\s*([\s\S]*?)\s*```/) || detailText.match(/\{[\s\S]*\}/);
-              if (detailJsonMatch) {
-                const detailed = JSON.parse(detailJsonMatch[1] || detailJsonMatch[0]);
-                const extraFoods = [ ...(detailed.detailed_foods || []), ...(detailed.detailed_liquids || []), ...(detailed.seasonings || []) ];
-                const combined = [...(Array.isArray(detectedFoods) ? detectedFoods : []), ...extraFoods];
-                detectedFoods = removeDuplicatesAndEstimatePortions(combined.filter((x: string) => x && x.length > 0));
-                estimatedCalories = Math.max(estimatedCalories, detailed.estimated_calories || 0);
-                confidence = Math.max(confidence, detailed.confidence || 0);
-              }
-            }
-          } catch (_e) {
-            // mantém análise inicial
-          }
-        }
-
-      } catch (error) {
-        console.log('❌ Erro na análise da imagem:', error);
-        isFood = false;
-      }
-    } else {
-      // YOLO já cobriu
-      // nada a fazer
+    // 🍽️ PREPARAR RESPOSTA FINAL DA ANÁLISE
+    if (!isFood) {
+      return new Response(JSON.stringify({
+        success: false, 
+        message: "Sofia: Não consegui identificar alimentos nesta imagem. Pode tentar com uma foto mais clara? 📸"
+      }), { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      });
     }
-
 
     console.log('🔍 Verificando se detectou comida...');
     
