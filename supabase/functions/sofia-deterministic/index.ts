@@ -105,128 +105,6 @@ serve(async (req) => {
   }
 });
 
-async function findNutritionDataFromTaco(supabase: any, foodName: string) {
-  const normalized = normalize(foodName);
-  
-  console.log(`🔍 Buscando TACO: ${foodName}`);
-  
-  // USAR APENAS TABELA TACO_FOODS - mapeamentos específicos para busca na TACO
-  const foodMappings: Record<string, string[]> = {
-    'ovo': ['ovo de galinha', 'ovo inteiro'],
-    'ovos': ['ovo de galinha', 'ovo inteiro'],
-    'arroz': ['arroz branco', 'arroz polido'],
-    'arroz branco': ['arroz branco', 'arroz polido'],
-    'feijao': ['feijão', 'feijao preto', 'feijao carioca'],
-    'feijão': ['feijão', 'feijao preto', 'feijao carioca'],
-    'frango': ['frango peito', 'frango assado', 'frango cozido'],
-    'carne': ['carne bovina', 'carne de boi'],
-    'carne bovina': ['carne bovina', 'carne de boi'],
-    'peixe': ['peixe', 'tilapia', 'pescada'],
-    'batata': ['batata inglesa', 'batata cozida'],
-    'batata frita': ['batata frita', 'batata inglesa frita'],
-    'pao': ['pão', 'pao frances'],
-    'pão': ['pão', 'pao frances'],
-    'leite': ['leite integral', 'leite de vaca'],
-    'queijo': ['queijo minas', 'queijo prato'],
-    'pizza': ['pizza', 'massa', 'queijo']
-  };
-
-  // Tentar buscar com os mapeamentos específicos na tabela taco_foods
-  const searchTerms = foodMappings[normalized] || [normalized, foodName];
-  
-  for (const term of searchTerms) {
-    const { data: matches } = await supabase
-      .from('taco_foods')
-      .select('*')
-      .ilike('nome_alimento', `%${term}%`)
-      .order('codigo', { ascending: true })
-      .limit(5);
-    
-    if (matches && matches.length > 0) {
-      return selectBestTacoFood(matches, term);
-    }
-  }
-  
-  console.log(`❌ Não encontrado nas tabelas nutricionais: ${foodName}`);
-  return null;
-}
-
-// Função para selecionar o melhor alimento TACO baseado em critérios
-function selectBestTacoFood(foods: any[], searchTerm: string) {
-  if (!foods || foods.length === 0) return null;
-  
-  // Se só há um, retorna ele
-  if (foods.length === 1) {
-    return formatTacoFood(foods[0]);
-  }
-
-  // Agrupar por nome normalizado para remover duplicatas
-  const grouped = new Map();
-  
-  for (const food of foods) {
-    const normalizedDesc = normalize(food.nome_alimento);
-    
-    if (!grouped.has(normalizedDesc)) {
-      grouped.set(normalizedDesc, []);
-    }
-    grouped.get(normalizedDesc).push(food);
-  }
-
-  // Encontrar o melhor match por grupo
-  let bestFood = null;
-  let bestCompleteness = -1;
-  let bestCode = Number.MAX_SAFE_INTEGER;
-
-  for (const [groupName, groupFoods] of grouped) {
-    for (const food of groupFoods) {
-      // Calcular score de completude dos macros (priorizar quem tem macros completos)
-      const protein = Number(food.proteina_g || 0);
-      const carbs = Number(food.carboidratos_g || 0);
-      const fat = Number(food.lipidios_g || 0);
-      
-      const completeness = (protein > 0 ? 1 : 0) + (carbs > 0 ? 1 : 0) + (fat > 0 ? 1 : 0);
-      const code = Number(food.codigo || 9999);
-      
-      // Critério: 1º completude dos macros, 2º menor código
-      const shouldReplace = completeness > bestCompleteness || 
-                           (completeness === bestCompleteness && code < bestCode);
-      
-      if (shouldReplace) {
-        bestFood = food;
-        bestCompleteness = completeness;
-        bestCode = code;
-      }
-    }
-  }
-
-  return bestFood ? formatTacoFood(bestFood) : null;
-}
-
-// Função para formatar dados do alimento TACO
-function formatTacoFood(food: any) {
-  const protein = Number(food.proteina_g || 0);
-  const carbs = Number(food.carboidratos_g || 0);
-  const fat = Number(food.lipidios_g || 0);
-  
-  // Usar energia_kcal da tabela se disponível, senão calcular com fórmula
-  const tacoKcal = Number(food.energia_kcal || 0);
-  const calculatedKcal = tacoKcal > 0 ? tacoKcal : (protein * 4) + (carbs * 4) + (fat * 9);
-  
-  console.log(`✅ TACO: ${food.nome_alimento} (código: ${food.codigo}, kcal: ${Math.round(calculatedKcal)})`);
-  
-  return {
-    kcal: calculatedKcal,
-    protein: protein,
-    carbs: carbs,
-    fat: fat,
-    fiber: Number(food.fibra_alimentar_g || 0),
-    sodium: Number(food.sodio_mg || 0),
-    source: 'TACO_OFICIAL',
-    codigo: food.codigo,
-    descricao: food.nome_alimento
-  };
-}
-
 async function calculateDeterministicNutrition(supabase: any, foods: DetectedFood[]): Promise<NutritionCalculation> {
   const result: NutritionCalculation = {
     total_kcal: 0,
@@ -240,100 +118,83 @@ async function calculateDeterministicNutrition(supabase: any, foods: DetectedFoo
     unmatched_items: []
   };
 
-  console.log(`🔥 CÁLCULO USANDO TABELA TACO OFICIAL - Processando ${foods.length} alimentos`);
+  console.log(`🔥 CÁLCULO SIMPLES E CORRETO - TACO FOODS - Processando ${foods.length} alimentos`);
 
   for (const food of foods) {
-    // Ajustar quantidades para serem mais realistas
-    let grams = Number(food.grams);
-    
-    // Se não foi especificado, usar porções realistas baseadas no alimento
-    if (!grams || grams === 0) {
-      const normalized = normalize(food.name);
-      
-      // Porções realistas para alimentos comuns
-      const realisticPortions: Record<string, number> = {
-        'ovo': 50,           // 1 ovo médio
-        'arroz': 80,         // 4 colheres de sopa
-        'arroz branco': 80,
-        'feijao': 70,        // 3 colheres de sopa
-        'feijão': 70,
-        'frango': 120,       // 1 filé pequeno
-        'carne': 100,        // 1 bife pequeno
-        'carne bovina': 100,
-        'batata': 150,       // 1 batata média
-        'peixe': 120,        // 1 filé
-        'salada': 50,        // 1 pires
-        'alface': 30,
-        'tomate': 80,        // 1 tomate médio
-        'banana': 90,        // 1 banana média
-        'maca': 150,         // 1 maçã média
-        'maça': 150,
-        'leite': 200,        // 1 copo
-        'pao': 50,           // 2 fatias
-        'pizza': 200,        // 2 fatias
-        'sanduiche': 150,    // 1 sanduíche
-        'lanche': 150,
-        'macarrao': 80,      // crú
-        'macarrão': 80,
-        'salgado': 60,       // 1 unidade
-        'coxinha': 60,
-        'pastel': 80,
-        'bolo': 80           // 1 fatia
-      };
-      
-      grams = realisticPortions[normalized] || 100; // Default 100g se não especificado
-    }
-
+    const grams = Number(food.grams) || 100; // Se não especificado, usar 100g
     console.log(`🔍 Buscando na TACO: ${food.name} (${grams}g)`);
 
-    // USAR APENAS TABELA TACO OFICIAL
-    const foodData = await findNutritionDataFromTaco(supabase, food.name);
+    // Buscar na tabela taco_foods apenas
+    const { data: tacoData } = await supabase
+      .from('taco_foods')
+      .select('nome_alimento, energia_kcal, proteina_g, carboidratos_g, lipidios_g, fibra_alimentar_g, sodio_mg')
+      .ilike('nome_alimento', `%${food.name}%`)
+      .order('id')
+      .limit(1);
 
-    if (foodData) {
-      // Calcular nutrientes por grama
+    if (tacoData && tacoData.length > 0) {
+      const taco = tacoData[0];
       const factor = grams / 100.0;
       
-      // Não usar energia_kcal da tabela - calcular com fórmula
-      result.total_proteina += (foodData.protein || 0) * factor;
-      result.total_carbo += (foodData.carbs || 0) * factor;
-      result.total_gordura += (foodData.fat || 0) * factor;
-      result.total_fibras += (foodData.fiber || 0) * factor;
-      result.total_sodio += (foodData.sodium || 0) * factor;
+      // Valores por 100g da TACO
+      const kcal_100g = Number(taco.energia_kcal || 0);
+      const protein_100g = Number(taco.proteina_g || 0);
+      const carbs_100g = Number(taco.carboidratos_g || 0);
+      const fat_100g = Number(taco.lipidios_g || 0);
+      const fiber_100g = Number(taco.fibra_alimentar_g || 0);
+      const sodium_100g = Number(taco.sodio_mg || 0);
+      
+      // Calcular proporcionalmente
+      const item_kcal = kcal_100g * factor;
+      const item_protein = protein_100g * factor;
+      const item_carbs = carbs_100g * factor;
+      const item_fat = fat_100g * factor;
+      const item_fiber = fiber_100g * factor;
+      const item_sodium = sodium_100g * factor;
+      
+      // Somar ao total
+      result.total_kcal += item_kcal;
+      result.total_proteina += item_protein;
+      result.total_carbo += item_carbs;
+      result.total_gordura += item_fat;
+      result.total_fibras += item_fiber;
+      result.total_sodio += item_sodium;
       
       result.matched_count++;
-      console.log(`✅ TACO: ${food.name} - ${Math.round(foodData.kcal * factor)} kcal (código: ${foodData.codigo})`);
+      
+      console.log(`✅ TACO: ${taco.nome_alimento}`);
+      console.log(`   ${grams}g = ${Math.round(item_kcal)} kcal, ${item_protein.toFixed(1)}g prot, ${item_carbs.toFixed(1)}g carb, ${item_fat.toFixed(1)}g gord`);
     } else {
       result.unmatched_items.push(food.name);
-      console.warn(`⚠️ Alimento NÃO ENCONTRADO na TACO oficial: ${food.name}`);
+      console.warn(`❌ NÃO ENCONTRADO: ${food.name}`);
     }
   }
 
-  // Arredondar valores finais e calcular kcal com fórmula 4×P + 4×C + 9×G
-  result.total_kcal = Math.round(4 * result.total_proteina + 4 * result.total_carbo + 9 * result.total_gordura);
+  // Arredondar valores finais
+  result.total_kcal = Math.round(result.total_kcal);
   result.total_proteina = Math.round(result.total_proteina * 10) / 10;
   result.total_carbo = Math.round(result.total_carbo * 10) / 10;
   result.total_gordura = Math.round(result.total_gordura * 10) / 10;
   result.total_fibras = Math.round(result.total_fibras * 10) / 10;
-  result.total_sodio = Math.round(result.total_sodio * 10) / 10;
+  result.total_sodio = Math.round(result.total_sodio);
 
-  console.log(`✅ TACO OFICIAL - Cálculo concluído: ${result.matched_count}/${result.total_count} alimentos processados`);
+  console.log(`✅ RESUMO FINAL:`);
+  console.log(`   🔥 ${result.total_kcal} kcal`);
+  console.log(`   💪 ${result.total_proteina}g proteínas`);
+  console.log(`   🍞 ${result.total_carbo}g carboidratos`);
+  console.log(`   🥑 ${result.total_gordura}g gorduras`);
+  console.log(`   ✅ ${result.matched_count}/${result.total_count} alimentos encontrados`);
   
   return result;
 }
 
 function generateSofiaResponse(userName: string, nutrition: NutritionCalculation, foods: DetectedFood[]): string {  
-  // FORÇAR: Usar APENAS fórmula 4×P + 4×C + 9×G 
-  const calculatedKcal = Math.round(4 * nutrition.total_proteina + 4 * nutrition.total_carbo + 9 * nutrition.total_gordura);
-  
-  // SOBRESCREVER o total_kcal com o valor calculado pela fórmula
-  nutrition.total_kcal = calculatedKcal;
-  
   return `💪 Proteínas: ${nutrition.total_proteina.toFixed(1)} g
 🍞 Carboidratos: ${nutrition.total_carbo.toFixed(1)} g
 🥑 Gorduras: ${nutrition.total_gordura.toFixed(1)} g
-🔥 Estimativa calórica: ${calculatedKcal} kcal
+🔥 Estimativa calórica: ${nutrition.total_kcal} kcal
 
-✅ Obrigado! Seus dados estão salvos.`;
+✅ Dados salvos com sucesso!`;
 }
 
 async function saveFoodAnalysis(supabase: any, user_id: string, foods: DetectedFood[], nutrition: NutritionCalculation) {
