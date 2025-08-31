@@ -1528,54 +1528,14 @@ serve(async (req) => {
           confidence = 0;
         }
 
-EXPERTISE ESPECIAL - FOQUE NESTES ALIMENTOS:
-🍕 PIZZAS: fatia de pizza, pizza margherita, pizza calabresa, pizza quatro queijos, pizza portuguesa, pizza de frango, pizza vegetariana, pizza doce
-🥧 TORTAS: torta de frango, torta de palmito, torta de legumes, torta doce, torta de maçã, torta de chocolate, quiche, torta salgada
-🥪 SALGADOS: coxinha, pastel, empada, esfiha, quibe, risole, enroladinho, bolinha de queijo, pão de açúcar, joelho, croissant
-🍔 LANCHES: hambúrguer, sanduíche, wrap, hot dog, cachorro-quente, misto quente, x-burger, bauru, beirute
-🧁 DOCES: brigadeiro, beijinho, bem-casado, cupcake, brownie, cookie, bolinho, petit four
-
-REGRAS DE ANÁLISE APRIMORADA:
-- 🎯 Use o contexto do YOLO como ponto de partida, mas faça análise visual completa
-- 🔍 Para PIZZAS: identifique sabor, tamanho da fatia, ingredientes visíveis, tipo de massa
-- 🔍 Para TORTAS: determine se é doce ou salgada, recheio, tipo de massa, tamanho da porção  
-- 🔍 Para SALGADOS: identifique tipo específico, tamanho, formato, se é frito ou assado
-- 🔍 Para LANCHES: identifique ingredientes, tipo de pão, tamanho, acompanhamentos
-- 🔍 SEMPRE mencione detalhes visuais como cores, texturas, apresentação
-
-**SE FOR COMIDA:**
-- 🍽️ Identifique TODOS os alimentos sólidos com nomes específicos em português brasileiro
-- 🥤 Identifique TODOS os líquidos/bebidas presentes
-- 🔥 Estime calorias realistas considerando porções brasileiras (150-1500 kcal)
-- 🎨 Seja MUITO específico sobre tipos, sabores, preparos e apresentação
-- 📏 Estime tamanho/porção (pequena, média, grande, individual, para compartilhar)
-
-**SE NÃO FOR COMIDA:**
-- 📸 Descreva detalhadamente o que está na imagem
-- 🏷️ Identifique objetos, pessoas, lugares, documentos, etc.
-- 💬 Forneça uma análise útil e contextual
-
-**CONFIDENCE SCORING:**
-- 0.90-0.95: Alimentos claramente identificáveis, boa iluminação, foco nítido
-- 0.80-0.89: Alimentos bem visíveis com pequenas limitações
-- 0.70-0.79: Alimentos identificáveis mas com algumas dificuldades
-- 0.60-0.69: Alimentos parcialmente visíveis ou de difícil identificação
-- Abaixo de 0.60: Imagem muito escura, desfocada ou sem alimentos claros
-
-Retorne APENAS JSON válido:
-{
-  "is_food": true/false,
-  "confidence": 0.0-1.0,
-  "content_type": "food/document/person/object/place/other",
-  "description": "Descrição detalhada do conteúdo da imagem",
-  "foods_detected": ["alimento específico 1", "alimento específico 2"],
-  "liquids_detected": ["líquido1", "líquido2"],
-  "estimated_calories": número,
-  "meal_type": "breakfast/lunch/dinner/snack/dessert",
-  "portion_size": "pequena/média/grande/individual/compartilhar",
-  "objects_detected": ["objeto1", "objeto2"],
-  "analysis": "Análise completa e específica em português brasileiro"
-}` },
+      } catch (error) {
+        console.log('❌ Erro na análise da imagem:', error);
+        isFood = false;
+      }
+    } else {
+      // YOLO já cobriu
+      // nada a fazer
+    }
                 { inline_data: { mime_type: img.mime, data: img.base64 } }
               ]
             }],
