@@ -253,15 +253,37 @@ Vou ajustar minha análise para ser mais precisa na próxima vez! Continue envia
         return text.toLowerCase().normalize('NFD').replace(/\p{Diacritic}+/gu, '').replace(/[^a-z0-9 ]/g, ' ').trim().replace(/\s+/g, ' ');
       };
 
-      // Invocar nutrition-calc com itens explícitos; sem cálculos locais
+      // Invocar sofia-deterministic com itens explícitos para usar taco_foods
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
       const service = createClient(supabaseUrl, serviceKey);
-      const { data, error } = await service.functions.invoke('nutrition-calc', {
-        body: { items, locale: 'pt-BR' }
+      const { data, error } = await service.functions.invoke('sofia-deterministic', {
+        body: { 
+          detected_foods: items.map(item => ({
+            name: item.name,
+            grams: item.grams || 100,
+            ml: item.ml
+          })),
+          user_id: 'confirmation',
+          analysis_type: 'nutritional_sum'
+        }
       });
-      if (error || !data) return { totals: null, resolved: null };
-      return { totals: data.totals || null, resolved: data.resolved || null };
+      if (error || !data?.nutrition_data) {
+        console.log('⚠️ Erro no cálculo determinístico:', error);
+        return { totals: null, resolved: null };
+      }
+      
+      const nutrition = data.nutrition_data;
+      const totals = {
+        kcal: nutrition.total_kcal,
+        protein_g: nutrition.total_proteina,
+        carbs_g: nutrition.total_carbo,
+        fat_g: nutrition.total_gordura,
+        fiber_g: nutrition.total_fibras,
+        sodium_mg: nutrition.total_sodio
+      };
+      
+      return { totals, resolved: null };
     }
 
     // Buscar a análise original

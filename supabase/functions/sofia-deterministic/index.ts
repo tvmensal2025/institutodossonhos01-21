@@ -110,30 +110,7 @@ async function findNutritionDataFromTaco(supabase: any, foodName: string) {
   
   console.log(`🔍 Buscando TACO: ${foodName}`);
   
-  // PRIMEIRA TENTATIVA: usar tabela valores_nutricionais_completos (mais simples e confiável)
-  const { data: simpleMatches } = await supabase
-    .from('valores_nutricionais_completos')
-    .select('alimento_nome, kcal, proteina, gorduras, carboidratos, fibras, sodio')
-    .ilike('alimento_nome', `%${normalized}%`)
-    .limit(5);
-
-  if (simpleMatches && simpleMatches.length > 0) {
-    const bestMatch = simpleMatches[0]; // Usar o primeiro match
-    console.log(`✅ VALORES_NUTRICIONAIS: ${bestMatch.alimento_nome} - ${bestMatch.kcal} kcal/100g`);
-    
-    return {
-      kcal: Number(bestMatch.kcal || 0),
-      protein: Number(bestMatch.proteina || 0),
-      carbs: Number(bestMatch.carboidratos || 0),
-      fat: Number(bestMatch.gorduras || 0),
-      fiber: Number(bestMatch.fibras || 0),
-      sodium: Number(bestMatch.sodio || 0),
-      source: 'VALORES_NUTRICIONAIS',
-      descricao: bestMatch.alimento_nome
-    };
-  }
-
-  // SEGUNDA TENTATIVA: mapeamentos específicos para busca na TACO
+  // USAR APENAS TABELA TACO_FOODS - mapeamentos específicos para busca na TACO
   const foodMappings: Record<string, string[]> = {
     'ovo': ['ovo de galinha', 'ovo inteiro'],
     'ovos': ['ovo de galinha', 'ovo inteiro'],
