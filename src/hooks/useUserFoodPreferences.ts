@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -108,13 +108,13 @@ export const useUserFoodPreferences = () => {
     }
   };
 
-  const getRestrictionsArray = (): string[] => {
+  const getRestrictionsArray = useCallback((): string[] => {
     return restrictions.map(r => r.food_name);
-  };
+  }, [restrictions]);
 
-  const getPreferencesArray = (): string[] => {
+  const getPreferencesArray = useCallback((): string[] => {
     return preferences.map(p => p.food_name);
-  };
+  }, [preferences]);
 
   useEffect(() => {
     fetchPreferences();

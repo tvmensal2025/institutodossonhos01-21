@@ -117,7 +117,7 @@ export const MealPlanGeneratorModalV2: React.FC<MealPlanGeneratorModalV2Props> =
 
   // Carregar restrições salvas quando o modal abrir
   useEffect(() => {
-    if (open && !loadingPreferences && getRestrictionsArray && getPreferencesArray) {
+    if (open && !loadingPreferences) {
       try {
         const savedRestrictions = getRestrictionsArray();
         const savedPreferences = getPreferencesArray();
@@ -125,15 +125,10 @@ export const MealPlanGeneratorModalV2: React.FC<MealPlanGeneratorModalV2Props> =
         console.log('🔄 Carregando restrições salvas:', savedRestrictions);
         console.log('🔄 Carregando preferências salvas:', savedPreferences);
         
-        if (savedRestrictions && Array.isArray(savedRestrictions) && savedRestrictions.length > 0) {
-          setRestrictedFoods(savedRestrictions);
-        }
-        if (savedPreferences && Array.isArray(savedPreferences) && savedPreferences.length > 0) {
-          setPreferredFoods(savedPreferences);
-        }
+        setRestrictedFoods(savedRestrictions || []);
+        setPreferredFoods(savedPreferences || []);
       } catch (error) {
         console.error('Erro ao carregar preferências:', error);
-        // Manter arrays vazios em caso de erro
         setRestrictedFoods([]);
         setPreferredFoods([]);
       }
@@ -240,10 +235,18 @@ export const MealPlanGeneratorModalV2: React.FC<MealPlanGeneratorModalV2Props> =
   const removeRestrictedFood = async (food: string) => {
     if (!food || !removePreference) return;
     
+    console.log('🗑️ Tentando remover restrição:', food);
+    console.log('📝 Todas as restrições disponíveis:', restrictions);
+    
     try {
-      const preference = preferences?.find(p => p.food_name === food);
+      // Buscar tanto nas restrições quanto nas preferências (para restrições podem estar em ambos)
+      const allPreferences = [...(restrictions || []), ...(preferences || [])];
+      const preference = allPreferences.find(p => p.food_name === food);
+      
+      console.log('🔍 Preferência encontrada:', preference);
       
       if (preference) {
+        console.log('🗑️ Removendo do banco de dados:', preference.id);
         const success = await removePreference(preference.id);
         
         if (success) {
@@ -253,6 +256,7 @@ export const MealPlanGeneratorModalV2: React.FC<MealPlanGeneratorModalV2Props> =
           console.log('❌ Erro ao remover restrição do banco de dados');
         }
       } else {
+        // Se não encontrou no banco, remover apenas do estado local
         setRestrictedFoods(prev => prev.filter(f => f !== food));
         console.log('⚠️ Restrição removida apenas do estado local');
       }
