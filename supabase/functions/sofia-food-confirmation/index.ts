@@ -112,6 +112,10 @@ Vou ajustar minha análise para ser mais precisa na próxima vez! Continue envia
       if (key.includes('salada') || key.includes('verdura') || key.includes('legume')) return 50;
       return 100; // padrão
     }
+    
+    function getRealisticPortion(name: string): number {
+      return guessPortion(name);
+    }
     function normalize(text: string): string {
       return (text || '')
         .toLowerCase()
@@ -185,9 +189,49 @@ Vou ajustar minha análise para ser mais precisa na próxima vez! Continue envia
     }
 
     async function calcDeterministicTotals(names: string[]): Promise<{kcal:number, protein_g:number, carbs_g:number, fat_g:number, fiber_g:number, sodium_mg:number} | null> {
-      // Modo estrito: sem porções padrão. Apenas calcula quando houver quantidades explícitas.
-      // Se nomes vierem sem quantidades, retornamos null para o chamador pedir as gramas/ml.
-      return null;
+      // Calcular usando porções realistas quando o usuário apenas confirma sem especificar quantidades
+      const items = names.map(name => {
+        const normalized = normalize(name);
+        const grams = DEFAULT_PORTIONS[normalized] || getRealisticPortion(normalized);
+        
+        return {
+          name: name,
+          grams: grams
+        };
+      });
+      
+      // Usar a função sofia-deterministic para cálculo
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const service = createClient(supabaseUrl, serviceKey);
+      
+      try {
+        const { data, error } = await service.functions.invoke('sofia-deterministic', {
+          body: { 
+            detected_foods: items,
+            user_id: 'confirmation',
+            analysis_type: 'nutritional_sum'
+          }
+        });
+        
+        if (error || !data?.nutrition_data) {
+          console.log('⚠️ Erro no cálculo determinístico:', error);
+          return null;
+        }
+        
+        const nutrition = data.nutrition_data;
+        return {
+          kcal: nutrition.total_kcal,
+          protein_g: nutrition.total_proteina,
+          carbs_g: nutrition.total_carbo,
+          fat_g: nutrition.total_gordura,
+          fiber_g: nutrition.total_fibras,
+          sodium_mg: nutrition.total_sodio
+        };
+      } catch (error) {
+        console.log('⚠️ Erro ao chamar sofia-deterministic:', error);
+        return null;
+      }
     }
 
     // Cálculo direto com quantidades explícitas vindas do modal (usa nutrition-calc como fonte única)

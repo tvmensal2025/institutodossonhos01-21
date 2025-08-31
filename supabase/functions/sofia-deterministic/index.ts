@@ -105,69 +105,56 @@ serve(async (req) => {
   }
 });
 
-// Buscar alimento na tabela TACO oficial (taco_foods) - NOVA LÓGICA
 async function findNutritionDataFromTaco(supabase: any, foodName: string) {
-  console.log(`🔍 Buscando TACO: ${foodName}`);
-  
   const normalized = normalize(foodName);
   
-  // Mapeamentos específicos para alimentos brasileiros comuns
+  console.log(`🔍 Buscando TACO: ${foodName}`);
+  
+  // PRIMEIRA TENTATIVA: usar tabela valores_nutricionais_completos (mais simples e confiável)
+  const { data: simpleMatches } = await supabase
+    .from('valores_nutricionais_completos')
+    .select('alimento_nome, kcal, proteina, gorduras, carboidratos, fibras, sodio')
+    .ilike('alimento_nome', `%${normalized}%`)
+    .limit(5);
+
+  if (simpleMatches && simpleMatches.length > 0) {
+    const bestMatch = simpleMatches[0]; // Usar o primeiro match
+    console.log(`✅ VALORES_NUTRICIONAIS: ${bestMatch.alimento_nome} - ${bestMatch.kcal} kcal/100g`);
+    
+    return {
+      kcal: Number(bestMatch.kcal || 0),
+      protein: Number(bestMatch.proteina || 0),
+      carbs: Number(bestMatch.carboidratos || 0),
+      fat: Number(bestMatch.gorduras || 0),
+      fiber: Number(bestMatch.fibras || 0),
+      sodium: Number(bestMatch.sodio || 0),
+      source: 'VALORES_NUTRICIONAIS',
+      descricao: bestMatch.alimento_nome
+    };
+  }
+
+  // SEGUNDA TENTATIVA: mapeamentos específicos para busca na TACO
   const foodMappings: Record<string, string[]> = {
-    // Básicos
-    'arroz branco': ['arroz, branco', 'arroz branco', 'arroz cozido'],
-    'arroz': ['arroz, branco', 'arroz branco', 'arroz cozido'],
-    'feijao': ['feijao', 'feijão carioca', 'feijão preto'],
-    'feijão': ['feijao', 'feijão carioca', 'feijão preto'],
-    'frango': ['frango', 'frango assado', 'frango cozido', 'frango grelhado'],
-    'carne': ['carne bovina', 'carne', 'bife'],
-    'carne bovina': ['carne bovina', 'carne', 'bife'],
-    'batata': ['batata', 'batata cozida', 'batata assada'],
-    'ovo': ['ovo', 'ovo cozido', 'ovo frito'],
-    'peixe': ['peixe', 'peixe cozido', 'peixe assado'],
-    
-    // Massas e lanches
-    'pizza': ['massa', 'pão', 'queijo', 'farinha de trigo'],
-    'sanduiche': ['pão', 'sanduíche', 'pao de forma'],
-    'lanche': ['pão', 'sanduíche', 'pao de forma'],
-    'hamburguer': ['carne', 'pão', 'hambúrguer'],
-    'macarrao': ['macarrão', 'massa', 'espaguete'],
-    'macarrão': ['macarrão', 'massa', 'espaguete'],
-    'lasanha': ['massa', 'queijo', 'carne'],
-    
-    // Salgados
-    'salgado': ['coxinha', 'pastel', 'massa', 'farinha de trigo'],
-    'coxinha': ['frango', 'massa', 'farinha de trigo'],
-    'pastel': ['massa', 'farinha de trigo'],
-    'empada': ['massa', 'farinha de trigo', 'frango'],
-    'pao de acucar': ['pão', 'açúcar'],
-    'bolo': ['farinha de trigo', 'açúcar', 'ovo'],
-    
-    // Verduras e legumes
-    'salada': ['alface', 'folhosos', 'verdura'],
-    'alface': ['alface', 'folhosos'],
-    'tomate': ['tomate'],
-    'cenoura': ['cenoura'],
-    'brocolis': ['brócolis', 'couve-flor'],
-    'brócolis': ['brócolis', 'couve-flor'],
-    
-    // Frutas
-    'banana': ['banana'],
-    'maca': ['maçã', 'maca'],
-    'maça': ['maçã', 'maca'],
-    'laranja': ['laranja'],
-    'manga': ['manga'],
-    'uva': ['uva'],
-    
-    // Bebidas
-    'leite': ['leite'],
-    'cafe': ['café'],
-    'café': ['café'],
-    'suco': ['suco', 'laranja', 'frutas'],
-    'agua': ['água'],
-    'água': ['água']
+    'ovo': ['ovo de galinha', 'ovo inteiro'],
+    'ovos': ['ovo de galinha', 'ovo inteiro'],
+    'arroz': ['arroz branco', 'arroz polido'],
+    'arroz branco': ['arroz branco', 'arroz polido'],
+    'feijao': ['feijão', 'feijao preto', 'feijao carioca'],
+    'feijão': ['feijão', 'feijao preto', 'feijao carioca'],
+    'frango': ['frango peito', 'frango assado', 'frango cozido'],
+    'carne': ['carne bovina', 'carne de boi'],
+    'carne bovina': ['carne bovina', 'carne de boi'],
+    'peixe': ['peixe', 'tilapia', 'pescada'],
+    'batata': ['batata inglesa', 'batata cozida'],
+    'batata frita': ['batata frita', 'batata inglesa frita'],
+    'pao': ['pão', 'pao frances'],
+    'pão': ['pão', 'pao frances'],
+    'leite': ['leite integral', 'leite de vaca'],
+    'queijo': ['queijo minas', 'queijo prato'],
+    'pizza': ['pizza', 'massa', 'queijo']
   };
 
-  // Tentar buscar com os mapeamentos específicos primeiro
+  // Tentar buscar com os mapeamentos específicos na tabela taco_foods
   const searchTerms = foodMappings[normalized] || [normalized, foodName];
   
   for (const term of searchTerms) {
@@ -183,20 +170,8 @@ async function findNutritionDataFromTaco(supabase: any, foodName: string) {
     }
   }
   
-  // Buscar todos os registros que fazem match com o nome original
-  const { data: allMatches } = await supabase
-    .from('taco_foods')
-    .select('*')
-    .or(`nome_alimento.ilike.%${normalized}%,nome_alimento.ilike.%${foodName}%`)
-    .order('codigo', { ascending: true })
-    .limit(10);
-
-  if (!allMatches || allMatches.length === 0) {
-    console.log(`❌ Não encontrado na TACO: ${foodName}`);
-    return null;
-  }
-
-  return selectBestTacoFood(allMatches, foodName);
+  console.log(`❌ Não encontrado nas tabelas nutricionais: ${foodName}`);
+  return null;
 }
 
 // Função para selecionar o melhor alimento TACO baseado em critérios
@@ -256,10 +231,11 @@ function formatTacoFood(food: any) {
   const carbs = Number(food.carboidratos_g || 0);
   const fat = Number(food.lipidios_g || 0);
   
-  // NOVA REGRA: Calcular calorias usando fórmula 4×P + 4×C + 9×G
-  const calculatedKcal = (protein * 4) + (carbs * 4) + (fat * 9);
+  // Usar energia_kcal da tabela se disponível, senão calcular com fórmula
+  const tacoKcal = Number(food.energia_kcal || 0);
+  const calculatedKcal = tacoKcal > 0 ? tacoKcal : (protein * 4) + (carbs * 4) + (fat * 9);
   
-  console.log(`✅ TACO: ${food.nome_alimento} (código: ${food.codigo}, kcal calculada: ${Math.round(calculatedKcal)})`);
+  console.log(`✅ TACO: ${food.nome_alimento} (código: ${food.codigo}, kcal: ${Math.round(calculatedKcal)})`);
   
   return {
     kcal: calculatedKcal,
@@ -268,7 +244,7 @@ function formatTacoFood(food: any) {
     fat: fat,
     fiber: Number(food.fibra_alimentar_g || 0),
     sodium: Number(food.sodio_mg || 0),
-    source: 'TACO_calculated',
+    source: 'TACO_OFICIAL',
     codigo: food.codigo,
     descricao: food.nome_alimento
   };
