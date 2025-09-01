@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Cache - Instituto dos Sonhos</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #1a1a2e;
+            color: white;
+            text-align: center;
+        }
+        button { 
+            background: #6366f1; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { background: #5855eb; }
+        .status { 
+            margin: 20px 0; 
+            padding: 10px; 
+            border-radius: 5px;
+        }
+        .success { background: #059669; }
+        .error { background: #dc2626; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Limpeza de Cache</h1>
+    <p>Use esta página para resolver problemas de cache em dispositivos móveis.</p>
+    
+    <button onclick="clearAllCaches()">🗑️ Limpar Todo Cache</button>
+    <button onclick="clearStorage()">📱 Limpar Storage Local</button>
+    <button onclick="forceReload()">🔄 Recarregar Forçado</button>
+    <button onclick="goToApp()">🏠 Voltar ao App</button>
+    
+    <div id="status"></div>
+    
+    <h3>📋 Instruções para Problemas de Acesso:</h3>
+    <ol style="text-align: left; max-width: 600px; margin: 0 auto;">
+        <li>Clique em "Limpar Todo Cache"</li>
+        <li>Clique em "Limpar Storage Local"</li>
+        <li>Feche completamente o navegador</li>
+        <li>Abra novamente e acesse o app</li>
+        <li>Se ainda não funcionar, reinicie o celular</li>
+    </ol>
+    
+    <script>
+        function showStatus(message, type = 'success') {
+            const status = document.getElementById('status');
+            status.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => status.innerHTML = '', 3000);
+        }
+        
+        async function clearAllCaches() {
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                        cacheNames.map(cacheName => caches.delete(cacheName))
+                    );
+                    showStatus(`✅ ${cacheNames.length} caches limpos!`);
+                } else {
+                    showStatus('❌ Cache API não disponível', 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Erro ao limpar cache: ' + error.message, 'error');
+            }
+        }
+        
+        function clearStorage() {
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Limpar IndexedDB se disponível
+                if ('indexedDB' in window) {
+                    indexedDB.databases?.().then(databases => {
+                        databases.forEach(db => {
+                            indexedDB.deleteDatabase(db.name);
+                        });
+                    });
+                }
+                
+                showStatus('✅ Storage local limpo!');
+            } catch (error) {
+                showStatus('❌ Erro ao limpar storage: ' + error.message, 'error');
+            }
+        }
+        
+        function forceReload() {
+            // Desregistrar service workers
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => registration.unregister());
+                });
+            }
+            
+            // Reload forçado
+            window.location.reload(true);
+        }
+        
+        function goToApp() {
+            window.location.href = '/';
+        }
+        
+        // Auto-detectar problemas
+        window.addEventListener('load', () => {
+            if (navigator.onLine === false) {
+                showStatus('⚠️ Sem conexão com internet', 'error');
+            }
+            
+            // Testar conexão com Supabase
+            fetch('https://hlrkoyywjpckdotimtik.supabase.co/rest/v1/', { method: 'HEAD' })
+                .then(() => showStatus('✅ Conexão com servidor OK'))
+                .catch(() => showStatus('❌ Problema de conexão com servidor', 'error'));
+        });
+    </script>
+</body>
+</html>
