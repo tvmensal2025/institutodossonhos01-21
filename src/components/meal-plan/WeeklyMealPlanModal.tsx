@@ -608,7 +608,7 @@ export const WeeklyMealPlanModal: React.FC<WeeklyMealPlanModalProps> = ({
                       className="flex-1 text-xs h-8 sm:h-9"
                     >
                       <FileText className="w-3 h-3 mr-1" />
-                      Compacto
+                      Detalhado
                     </Button>
                   </div>
 
