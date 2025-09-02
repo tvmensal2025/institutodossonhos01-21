@@ -47,7 +47,7 @@ export const ViewMealPlanButton: React.FC<ViewMealPlanButtonProps> = ({ plan }) 
           open={!!selectedPlan}
           onOpenChange={handleClosePlanView}
           mealPlan={selectedPlan}
-          title="Cardápio Semanal - Histórico"
+          title="Cardápio Semanal – Educacional"
         />
       )}
 
