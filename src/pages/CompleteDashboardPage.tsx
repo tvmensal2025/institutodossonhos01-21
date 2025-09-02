@@ -153,7 +153,7 @@ const CompleteDashboardPage = () => {
     { id: 'challenges', icon: Award, label: 'Desafios Individuais', color: 'text-orange-500' },
     { id: 'saboteur-test', icon: Settings, label: 'Teste de Sabotadores', color: 'text-gray-500' },
     { id: 'sofia-nutricional', icon: Utensils, label: 'Sofia Nutricional', color: 'text-emerald-600' },
-    { id: 'dr-vital', icon: Stethoscope, label: 'Dr. Vital Enhanced', color: 'text-blue-600' },
+    { id: 'dr-vital', icon: Stethoscope, label: 'Dr.Vital', color: 'text-blue-600' },
     { id: 'subscriptions', icon: CreditCard, label: 'Assinaturas', color: 'text-purple-600' },
   ];
 
