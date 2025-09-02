@@ -20,16 +20,48 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { documentId, userId, examType, images } = await req.json();
+    const { documentId, userId, examType, images, tmpPaths, title, idempotencyKey } = await req.json();
     
     console.log('📋 Dados recebidos:', {
       documentId,
       userId,
       examType,
-      imagesCount: images?.length || 0
+      imagesCount: images?.length || 0,
+      tmpPathsCount: tmpPaths?.length || 0,
+      title,
+      idempotencyKey
     });
 
-    if (!documentId || !userId) {
+    // Se não tem documentId mas tem tmpPaths, criar documento primeiro
+    let actualDocumentId = documentId;
+    
+    if (!actualDocumentId && tmpPaths?.length > 0) {
+      console.log('📝 Criando documento a partir de tmpPaths...');
+      
+      // Criar documento na tabela medical_documents
+      const { data: newDoc, error: createError } = await supabase
+        .from('medical_documents')
+        .insert({
+          user_id: userId,
+          title: title || 'Exame',
+          type: examType || 'exame_laboratorial',
+          status: 'processing',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+        
+      if (createError) {
+        console.error('❌ Erro ao criar documento:', createError);
+        throw createError;
+      }
+      
+      actualDocumentId = newDoc.id;
+      console.log('✅ Documento criado:', actualDocumentId);
+    }
+
+    if (!actualDocumentId || !userId) {
       throw new Error('DocumentId e userId são obrigatórios');
     }
 
@@ -38,7 +70,7 @@ serve(async (req) => {
     
     const { data, error } = await supabase.functions.invoke('analyze-medical-exam', {
       body: {
-        documentId,
+        documentId: actualDocumentId,
         userId,
         examType,
         images: images || []
