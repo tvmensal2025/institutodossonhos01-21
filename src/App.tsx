@@ -13,7 +13,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { InstallPrompt } from "./components/InstallPrompt";
 import SofiaFloatingButton from "./components/SofiaFloatingButton";
-import PerformanceProvider from "./components/PerformanceProvider";
+import { PerformanceProvider } from "./components/PerformanceProvider";
+import RouterPerformanceProvider from "./components/RouterPerformanceProvider";
 
 // Core pages - loaded immediately
 import AuthPage from "./pages/AuthPage";
@@ -185,6 +186,7 @@ const App: React.FC = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <RouterPerformanceProvider>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Redirect to auth page by default */}
@@ -288,8 +290,9 @@ const App: React.FC = () => {
           {/* Sofia Floating Button - disponível em todas as páginas */}
           <SofiaFloatingButton />
 
-          {/* Tutorial da Sofia - Modal Global */}
-          <InteractiveTutorial />
+            {/* Tutorial da Sofia - Modal Global */}
+            <InteractiveTutorial />
+            </RouterPerformanceProvider>
           </BrowserRouter>
         </TooltipProvider>
       </PerformanceProvider>
