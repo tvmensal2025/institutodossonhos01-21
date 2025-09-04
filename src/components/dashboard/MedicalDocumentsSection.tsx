@@ -39,6 +39,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { useExamAccess } from '@/hooks/useExamAccess';
+import DidacticReportButton from './DidacticReportButton';
 
 interface MedicalDocument {
   id: string;
@@ -58,6 +59,7 @@ interface MedicalDocument {
   updated_at: string;
   analysis_status?: 'processing'|'ready'|'error';
   report_path?: string | null;
+  didactic_report_path?: string | null; // Novo campo para relatório didático
   report_meta?: any;
   // Progresso de processamento
   processing_started_at?: string | null;
@@ -850,6 +852,12 @@ const MedicalDocumentsSection: React.FC = () => {
                           >
                             <Printer className="w-4 h-4" />
                           </Button>
+                          
+                          <DidacticReportButton 
+                            documentId={doc.id}
+                            userId={doc.user_id}
+                            disabled={doc.analysis_status !== 'ready'}
+                          />
                           <Button
                             variant="outline"
                             size="sm"

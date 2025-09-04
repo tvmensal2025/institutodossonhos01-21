@@ -920,11 +920,11 @@ serve(async (req) => {
       if (
         model.startsWith('o4') ||
         model.startsWith('o3') ||
-        model.includes('gpt-5') ||
         model === 'gpt-4' ||
         model === 'gpt4' ||
         model === 'gpt-4o-2024' ||
-        model.includes('gpt-4.1')
+        model.includes('gpt-4.1') ||
+        model.includes('invalid')
       ) {
         return 'gpt-4o-mini';
       }

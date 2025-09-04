@@ -44,8 +44,8 @@ const corsHeaders = {
 };
 
 const pickModel = () => ({
-  primary: Deno.env.get("OPENAI_MODEL_PRIMARY") || "o4-mini-2025-04-16",
-  fallback: Deno.env.get("OPENAI_MODEL_FALLBACK") || "gpt-4.1-2025-04-14",
+  primary: Deno.env.get("OPENAI_MODEL_PRIMARY") || "gpt-4o",
+  fallback: Deno.env.get("OPENAI_MODEL_FALLBACK") || "gpt-4o-mini",
   legacy: Deno.env.get("OPENAI_MODEL_LEGACY") || "gpt-4o",
 });
 

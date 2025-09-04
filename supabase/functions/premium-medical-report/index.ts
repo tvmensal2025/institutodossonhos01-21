@@ -108,7 +108,7 @@ async function signUrl(bucket: string, path: string, expires = 3600) {
 async function callOpenAIExtraction(images: string[]) {
   if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not set");
   const body = {
-    model: "gpt-4.1-2025-04-14",
+    model: "gpt-4o",
     temperature: 0,
     messages: [
       {

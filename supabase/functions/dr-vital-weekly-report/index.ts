@@ -237,7 +237,7 @@ ANÁLISE DR. VITAL:`;
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'o3-2025-04-16',
+            model: 'gpt-4o',
             messages: [
               { 
                 role: 'system', 

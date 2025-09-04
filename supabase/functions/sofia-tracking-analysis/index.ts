@@ -50,7 +50,7 @@ serve(async (req) => {
       .single();
 
     const { data: measurements } = await supabase
-      .from('user_measurements')
+      .from('weight_measurements')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
@@ -86,7 +86,7 @@ Responda em português, de forma empática e profissional.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',

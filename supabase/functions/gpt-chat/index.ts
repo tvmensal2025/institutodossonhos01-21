@@ -54,8 +54,8 @@ const callOpenAI = async (
     messages,
     temperature,
   };
-  // Modelos mais novos (gpt-4.1*, o4-*) usam max_completion_tokens
-  if (/(o4|4\.1)/.test(model)) {
+  // Modelos mais novos (gpt-4o, gpt-4-turbo) usam max_completion_tokens
+  if (/(gpt-4o|gpt-4-turbo)/.test(model)) {
     body.max_completion_tokens = max_tokens;
   } else {
     body.max_tokens = max_tokens;

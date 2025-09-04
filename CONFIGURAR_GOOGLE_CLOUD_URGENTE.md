@@ -24,7 +24,7 @@
 ```
 http://localhost:3000
 http://localhost:8080  
-https://institutodossonhos.com.br
+https://web.institutodossonhos.com.br
 https://eb451b44-5d36-4bf7-8628-481a619af74a.lovableproject.com
 ```
 
@@ -32,7 +32,7 @@ https://eb451b44-5d36-4bf7-8628-481a619af74a.lovableproject.com
 ```
 http://localhost:3000/google-fit-callback
 http://localhost:8080/google-fit-callback
-https://institutodossonhos.com.br/google-fit-callback  
+https://web.institutodossonhos.com.br/google-fit-callback  
 https://eb451b44-5d36-4bf7-8628-481a619af74a.lovableproject.com/google-fit-callback
 ```
 

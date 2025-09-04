@@ -210,7 +210,7 @@ serve(async (req) => {
     };
 
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-    const MODEL = Deno.env.get("OPENAI_DR_VITAL_MODEL") || Deno.env.get("OPENAI_MODEL_PRIMARY") || "o4-mini-2025-04-16";
+    const MODEL = Deno.env.get("OPENAI_DR_VITAL_MODEL") || Deno.env.get("OPENAI_MODEL_PRIMARY") || "gpt-4o";
     if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY não configurada");
 
     const systemPrompt = `Você é o Dr. Vital, médico virtual especialista do Instituto dos Sonhos. Responda em português do Brasil,
@@ -268,7 +268,7 @@ INSTRUÇÕES FINAIS:
 - Resuma em 200-300 palavras, mas seja preciso e útil`;
 
     // Configurar parâmetros baseados no modelo
-    const isNewModel = MODEL.includes('o4-') || MODEL.includes('o3-') || MODEL.includes('gpt-5') || MODEL.includes('gpt-4.1');
+    const isNewModel = MODEL.includes('gpt-4o') || MODEL.includes('gpt-4-turbo');
     
     const requestBody: any = {
       model: MODEL,
@@ -339,13 +339,13 @@ INSTRUÇÕES FINAIS:
           value: { last_update: new Date().toISOString(), snippet },
         });
 
-        // 2) Extrator leve de fatos (o4-mini) — opcional e barato
+        // 2) Extrator leve de fatos (gpt-4o-mini) — opcional e barato
         const OPENAI_KEY = OPENAI_API_KEY;
         const extractor = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { Authorization: `Bearer ${OPENAI_KEY}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'o4-mini-2025-04-16',
+            model: 'gpt-4o-mini',
             max_completion_tokens: 200,
             response_format: { type: 'json_object' },
             messages: [

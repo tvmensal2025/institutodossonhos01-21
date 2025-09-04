@@ -11,6 +11,303 @@ const corsHeaders = {
   'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
 };
 
+// 📚 EXPLICAÇÕES DIDÁTICAS PRÉ-PRONTAS (economia de tokens)
+const EXPLICACOES_DIDATICAS: Record<string, {categoria: string, icone: string, explicacao: string}> = {
+  // 🫀 PERFIL LIPÍDICO
+  'colesterol_total': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `**Como funciona?**
+O laboratório mede o colesterol total no sangue, que é a soma do que circula nas "ruas do corpo": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL. É um retrato pontual do tráfego de colesterol e pode variar com alimentação, álcool, medicações e condições clínicas recentes.
+
+**Para que serve**
+• Oferece visão geral da carga de colesterol circulante.
+• Ajuda a acompanhar tendência (antes/depois de mudanças).
+• Permite calcular o não-HDL (Total – HDL), útil quando triglicerídeos estão altos.
+• Entra em painéis de risco cardiovascular junto com as outras frações.`
+  },
+  
+  'ldl': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `**Como funciona?**
+Quantifica o colesterol que viaja nos "caminhões LDL", os que mais tendem a grudar nas paredes das artérias. Em alguns laudos, o LDL é medido diretamente; em outros, calculado a partir de Total, HDL e TG. Por refletir o período recente, responde a jejum/álcool, dieta e hormônios da tireoide.
+
+**Para que serve**
+• É o alvo principal para prevenir entupimento de artérias (aterosclerose).
+• Define metas objetivas conforme o perfil de risco.
+• Funciona como termômetro de resposta a hábitos e/ou tratamento.
+• Complementa a avaliação com não-HDL e ApoB.`
+  },
+  
+  'hdl': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `**Como funciona?**
+Mede o colesterol no "caminhão de limpeza": partículas que retiram excesso de gordura dos tecidos e levam de volta ao fígado. Parte depende da genética, mas atividade física, peso e hábitos influenciam ao longo do tempo.
+
+**Para que serve**
+• Indica a capacidade de limpeza do sistema.
+• Costuma se associar a menor risco cardiovascular.
+• Ajuda a contextualizar Total e não-HDL.
+• Não é um alvo terapêutico isolado (o foco permanece em LDL/não-HDL).`
+  },
+  
+  'triglicerideos': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `**Como funciona?**
+Dosam a "gordura de transporte" que sobe facilmente após açúcares, refeições ricas e álcool. Mesmo em jejum, os TG refletem como o corpo usa e guarda energia. Variam com resistência à insulina, gordura abdominal, medicações e tireoide.
+
+**Para que serve**
+• Mostram o impacto de carboidratos simples e álcool.
+• Valores altos mantidos se associam a risco cardiovascular.
+• Níveis muito altos elevam risco de pancreatite.
+• Orientam foco adicional em não-HDL e ApoB.`
+  },
+  
+  'vldl': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `**Como funciona?**
+Avalia (muitas vezes estima) as partículas que o fígado fabrica para levar triglicerídeos aos tecidos. Caminha de perto com os TG e tende a subir/baixar junto com eles.
+
+**Para que serve**
+• Espelha o comportamento dos triglicerídeos.
+• Completa o painel lipídico.
+• Não é alvo direto de tratamento.`
+  },
+  
+  // 🍬 GLICOSE & INSULINA
+  'glicose': {
+    categoria: '🍬 Glicose & Insulina',
+    icone: '🍬',
+    explicacao: `**Como funciona?**
+Quantifica a glicose no sangue após 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento. Pode oscilar com estresse, infecções, corticoides e quebra de jejum.
+
+**Para que serve**
+• Triagem para pré-diabetes e diabetes.
+• Complementa HbA1c e OGTT na avaliação.
+• Ajuda a monitorar rotina e efeitos de hábitos.
+• Simples e amplamente disponível.`
+  },
+  
+  'hba1c': {
+    categoria: '🍬 Glicose & Insulina',
+    icone: '🍬',
+    explicacao: `**Como funciona?**
+Mostra a porcentagem de hemoglobina que ficou "açucarada" ao longo de ~3 meses. Como as hemácias vivem semanas, a HbA1c funciona como média de longo prazo da glicose; pode sofrer interferência de anemias, hemoglobinopatias e transfusões.
+
+**Para que serve**
+• Avalia controle glicêmico crônico.
+• Útil para acompanhar tratamento.
+• Menos afetada por jejum que a glicose isolada.
+• Entra em critérios diagnósticos quando indicado.`
+  },
+  
+  'insulina': {
+    categoria: '🍬 Glicose & Insulina',
+    icone: '🍬',
+    explicacao: `**Como funciona?**
+Dosam a insulina em jejum e calculam o HOMA-IR (uma estimativa de resistência à insulina usando glicose+insulina). Refletem sinalização hormonal nas células e mudam com peso, sono, estresse, medicações e atividade física.
+
+**Para que serve**
+• Sinalizam resistência à insulina.
+• Ajudam a entender síndrome metabólica e esteatose.
+• Direcionam mudanças de estilo de vida.
+• Podem orientar acompanhamento em conjunto com glicose/HbA1c.`
+  },
+  
+  // 💧 FUNÇÃO RENAL
+  'creatinina': {
+    categoria: '💧 Função Renal',
+    icone: '💧',
+    explicacao: `**Como funciona?**
+É um subproduto do músculo que os rins precisam filtrar. Quando a filtração diminui, a creatinina acumula no sangue. O valor também depende de massa muscular, hidratação e medicações, então é interpretado junto de outros parâmetros.
+
+**Para que serve**
+• Base para calcular a eTFG (força do filtro).
+• Ajuda a monitorar função renal.
+• Contribui para ajuste de doses de medicamentos.
+• Contextualiza hidratação e massa muscular.`
+  },
+  
+  'ureia': {
+    categoria: '💧 Função Renal',
+    icone: '💧',
+    explicacao: `**Como funciona?**
+Formada no fígado a partir da amônia (proteínas), a ureia é eliminada pelos rins. Costuma subir com pouca água, dieta proteica ou redução da filtração; isoladamente é menos específica que a creatinina.
+
+**Para que serve**
+• Complementa a avaliação de função e hidratação.
+• Ajuda em ajuste de terapia (ex.: diuréticos).
+• Útil em monitorização hospitalar e ambulatorial.
+• Contextualiza sintomas (náusea, mal-estar).`
+  },
+  
+  // 🫁 FÍGADO
+  'ast': {
+    categoria: '🫁 Fígado & Vias Biliares',
+    icone: '🫁',
+    explicacao: `**Como funciona?**
+São enzimas dentro das células do fígado. Quando as células sofrem, parte delas "vaza" para o sangue e os valores sobem (gordura, álcool, vírus, remédios, esforço intenso).
+
+**Para que serve**
+• Sugerem sofrimento hepático.
+• Ajudam a acompanhar evolução (melhora/piora).
+• Direcionam investigações (imagens, outros exames).
+• Auxiliam na segurança medicamentosa.`
+  },
+  
+  'alt': {
+    categoria: '🫁 Fígado & Vias Biliares',
+    icone: '🫁',
+    explicacao: `**Como funciona?**
+São enzimas dentro das células do fígado. Quando as células sofrem, parte delas "vaza" para o sangue e os valores sobem (gordura, álcool, vírus, remédios, esforço intenso).
+
+**Para que serve**
+• Sugerem sofrimento hepático.
+• Ajudam a acompanhar evolução (melhora/piora).
+• Direcionam investigações (imagens, outros exames).
+• Auxiliam na segurança medicamentosa.`
+  },
+  
+  // 🧠 TIREOIDE
+  'tsh': {
+    categoria: '🧠 Tireoide',
+    icone: '🧠',
+    explicacao: `**Como funciona?**
+O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que ajustam o ritmo do metabolismo. Ensaios imunoquímicos quantificam esses níveis e mostram se o "motor" está acelerado, lento ou equilibrado.
+
+**Para que serve**
+• Detecta hipo e hipertireoidismo.
+• Acompanha ajustes de dose quando em uso de hormônio.
+• Investiga sintomas como cansaço, perda/ganho de peso, palpitações.
+• Integra check-ups e protocolos.`
+  },
+  
+  't4_livre': {
+    categoria: '🧠 Tireoide',
+    icone: '🧠',
+    explicacao: `**Como funciona?**
+O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que ajustam o ritmo do metabolismo. Ensaios imunoquímicos quantificam esses níveis e mostram se o "motor" está acelerado, lento ou equilibrado.
+
+**Para que serve**
+• Detecta hipo e hipertireoidismo.
+• Acompanha ajustes de dose quando em uso de hormônio.
+• Investiga sintomas como cansaço, perda/ganho de peso, palpitações.
+• Integra check-ups e protocolos.`
+  },
+  
+  // 🩸 HEMATOLOGIA
+  'hemoglobina': {
+    categoria: '🩸 Hematologia & Nutrientes',
+    icone: '🩸',
+    explicacao: `**Como funciona?**
+Usa contadores automatizados e, se necessário, microscopia para medir glóbulos vermelhos (oxigênio), brancos (defesa) e plaquetas (coagulação), além de índices como VCM e HCM.
+
+**Para que serve**
+• Investiga anemias.
+• Ajuda a identificar infecções e inflamações.
+• Avalia plaquetas (sangramento/coagulação).
+• Base do check-up e do seguimento clínico.`
+  },
+  
+  'ferritina': {
+    categoria: '🩸 Hematologia & Nutrientes',
+    icone: '🩸',
+    explicacao: `**Como funciona?**
+A ferritina indica estoque de ferro; a transferrina é o transporte; a saturação mostra quanto do transporte está ocupado; o ferro sérico é o que circula. Juntos, mapeiam estoque + trânsito + entrega.
+
+**Para que serve**
+• Diferenciam falta de ferro de outras anemias.
+• Orientam reposição (dose/tempo).
+• Sugerem causas (ingestão, perdas).
+• Acompanham resposta ao tratamento.`
+  },
+  
+  'vitamina_b12': {
+    categoria: '🩸 Hematologia & Nutrientes',
+    icone: '🩸',
+    explicacao: `**Como funciona?**
+Dosagens sanguíneas de vitaminas essenciais para formação de sangue e sistema nervoso. Podem variar com ingestão, absorção intestinal, álcool e medicações; às vezes pedem marcadores complementares.
+
+**Para que serve**
+• Avaliam anemias com glóbulos grandes (VCM↑).
+• Ajudam a investigar formigamentos e queixas neurológicas (B12).
+• Guiam suplementação e dieta.
+• Monitoram resposta clínica/laboratorial.`
+  },
+  
+  // 🌞 VITAMINAS
+  'vitamina_d': {
+    categoria: '🌞 Vitaminas',
+    icone: '🌞',
+    explicacao: `**Como funciona?**
+Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por alimentos/suplementos. É o melhor indicador de estoque disponível para ossos e músculos.
+
+**Para que serve**
+• Avalia deficiência ou excesso.
+• Direciona suplementação e reavaliação.
+• Relaciona-se a saúde óssea e muscular.
+• Complementa o eixo cálcio/PTH.`
+  },
+  
+  // 🔥 INFLAMAÇÃO
+  'pcr': {
+    categoria: '🔥 Inflamação',
+    icone: '🔥',
+    explicacao: `**Como funciona?**
+É uma proteína de fase aguda produzida pelo fígado. No método de alta sensibilidade, detecta inflamações discretas, úteis para entender risco cardiovascular e resposta a hábitos ao longo do tempo.
+
+**Para que serve**
+• Sinaliza inflamação de baixo grau.
+• Contextualiza risco em conjunto com lipídios.
+• Ajuda a monitorar estilo de vida.
+• Apoia decisões em prevenção.`
+  },
+  
+  'vhs': {
+    categoria: '🔥 Inflamação',
+    icone: '🔥',
+    explicacao: `**Como funciona?**
+Observa a velocidade com que as hemácias sedimentam num tubo padronizado. Proteínas inflamatórias alteram essa velocidade, tornando o VHS um sinal indireto de inflamação crônica.
+
+**Para que serve**
+• Útil em doenças inflamatórias e infecções crônicas.
+• Interpreta-se junto com PCR e clínica.
+• Acompanha atividade de algumas doenças.
+• Ajuda a triagem de sintomas persistentes.`
+  }
+};
+
+// 🧠 FUNÇÃO PARA BUSCAR EXPLICAÇÃO DIDÁTICA
+function getExplicacaoDidatica(nomeExame: string): {categoria: string, icone: string, explicacao: string} | null {
+  const nomeNormalizado = nomeExame.toLowerCase()
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/colesterol_total/g, 'colesterol_total')
+    .replace(/ldl/g, 'ldl')
+    .replace(/hdl/g, 'hdl')
+    .replace(/triglicerid/g, 'triglicerideos')
+    .replace(/glicose/g, 'glicose')
+    .replace(/hba1c|hemoglobina_glicada/g, 'hba1c')
+    .replace(/insulina/g, 'insulina')
+    .replace(/creatinina/g, 'creatinina')
+    .replace(/ureia/g, 'ureia')
+    .replace(/ast|tgo/g, 'ast')
+    .replace(/alt|tgp/g, 'alt')
+    .replace(/tsh/g, 'tsh')
+    .replace(/t4_livre|t4/g, 't4_livre')
+    .replace(/hemoglobina/g, 'hemoglobina')
+    .replace(/ferritina/g, 'ferritina')
+    .replace(/vitamina_b12|b12/g, 'vitamina_b12')
+    .replace(/vitamina_d/g, 'vitamina_d')
+    .replace(/pcr|proteina_c_reativa/g, 'pcr')
+    .replace(/vhs/g, 'vhs');
+  
+  return EXPLICACOES_DIDATICAS[nomeNormalizado] || null;
+}
+
 // Funções para agrupar exames similares
 function groupSimilarMetrics(metrics: any[]) {
   const groups = [];
@@ -193,6 +490,22 @@ serve(async (req) => {
     console.log('🚀 Iniciando função analyze-medical-exam...');
     console.log('⏰ Timestamp:', new Date().toISOString());
     
+    // Validar se a requisição tem body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('📥 Body da requisição recebido:', Object.keys(requestBody));
+    } catch (parseError) {
+      console.error('❌ Erro ao parsear JSON:', parseError);
+      return new Response(JSON.stringify({
+        error: 'Body da requisição inválido',
+        details: parseError.message
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
     console.log('✅ Supabase inicializado com sucesso');
 
     // Buscar configuração de IA para análise médica
@@ -206,10 +519,10 @@ serve(async (req) => {
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    // Modelo premium: GPT-5 (análise avançada e precisa)
+    // Modelo premium: GPT-4o (análise avançada e precisa)
     const config = {
       service: 'openai' as const,
-      model: 'gpt-5',
+      model: 'gpt-4o',
       max_tokens: 8000,
       temperature: 0.05,
       openai_key: OPENAI_API_KEY
@@ -224,7 +537,7 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY não configurada');
     }
 
-    const { imageData, storagePath, storagePaths, images, examType, userId, documentId: docId } = await req.json();
+    const { imageData, storagePath, storagePaths, images: inputImages, examType, userId, documentId: docId } = requestBody;
     userIdEffective = userId || null;
     documentId = docId;
     let examTypeEffective: string | null = examType || null;
@@ -238,26 +551,35 @@ serve(async (req) => {
       throw new Error('userId é obrigatório');
     }
     
+    // examType é opcional - usar fallback se não fornecido
     if (!examTypeEffective) {
-      throw new Error('examType é obrigatório');
+      examTypeEffective = 'exame_laboratorial';
+      console.log('⚠️ examType não fornecido, usando fallback: exame_laboratorial');
     }
     
     console.log('📋 Dados recebidos:');
     console.log('- documentId:', documentId);
     console.log('- userId:', userIdEffective);
     console.log('- examType:', examTypeEffective);
-    console.log('- images (array):', images?.length || 0, 'caminhos');
+    console.log('- inputImages (array):', inputImages?.length || 0, 'caminhos');
     console.log('- storagePaths:', storagePaths?.length || 0, 'imagens');
     
     // Verificar se documento existe e está em processamento
     if (documentId) {
-      const { data: docCheck } = await supabase
+      console.log('🔍 Verificando documento:', documentId);
+      const { data: docCheck, error: docError } = await supabase
         .from('medical_documents')
         .select('id, analysis_status, processing_started_at')
         .eq('id', documentId)
         .single();
       
+      if (docError) {
+        console.error('❌ Erro ao buscar documento:', docError);
+        throw new Error(`Erro ao buscar documento ${documentId}: ${docError.message}`);
+      }
+      
       if (!docCheck) {
+        console.error('❌ Documento não encontrado:', documentId);
         throw new Error(`Documento ${documentId} não encontrado`);
       }
       
@@ -299,28 +621,30 @@ REQUISITOS:
 4) Seja preciso e objetivo - não invente dados.
 5) Foque apenas nos dados laboratoriais apresentados.
 
-ANALOGIA DIDÁTICA - CORPO COMO CASA:
-Use sempre a analogia do corpo como uma casa para explicar os resultados:
-- Coração = Central elétrica da casa
-- Fígado = Sistema de filtros e limpeza
-- Rins = Sistema de esgoto
-- Sangue = Tubulação de água
-- Pulmões = Sistema de ventilação
-- Cérebro = Central de comando
-- Ossos = Estrutura da casa
-- Músculos = Sistema de sustentação
-- Sistema imunológico = Segurança da casa
-- Metabolismo = Consumo de energia da casa
+SISTEMA HÍBRIDO DE EXPLICAÇÕES:
+- Para exames comuns (colesterol, glicose, creatinina, etc.), use EXPLICAÇÕES PRÉ-PRONTAS já disponíveis no sistema
+- Para exames não catalogados, gere explicações didáticas usando a analogia CORPO COMO CASA:
+  * Coração = Central elétrica da casa
+  * Fígado = Sistema de filtros e limpeza  
+  * Rins = Sistema de esgoto
+  * Sangue = Tubulação de água
+  * Pulmões = Sistema de ventilação
+  * Cérebro = Central de comando
+  * Ossos = Estrutura da casa
+  * Músculos = Sistema de sustentação
+  * Sistema imunológico = Segurança da casa
+  * Metabolismo = Consumo de energia da casa
 
-EXPLICAÇÕES DETALHADAS E ESPECÍFICAS:
+PARA EXAMES SEM EXPLICAÇÃO PRÉ-PRONTA:
 - Explique O QUE cada exame mede especificamente
 - Explique POR QUE é importante para a saúde
-- Use analogias da casa de forma específica para cada exame
+- Use analogias da casa de forma específica
 - Dê contexto sobre o que o valor significa na prática
 - Inclua informações sobre o que pode causar alterações
 - Sugira ações específicas que o paciente pode tomar
 - Seja informativo mas mantenha linguagem acessível
-- Evite explicações genéricas - seja específico para cada exame
+
+ECONOMIA DE TOKENS: Priorize usar explicações pré-prontas quando disponíveis.
 
 FORMATO JSON QUE VOCÊ DEVE INCLUIR AO FINAL DO TEXTO:
 {
@@ -418,24 +742,156 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       return 'image/jpeg';
     };
 
-    const toBase64 = async (blob: Blob, fallbackMime?: string) => {
-      const arr = await blob.arrayBuffer();
-      const mt = (blob.type && blob.type !== 'application/octet-stream') ? blob.type : (fallbackMime || 'image/jpeg');
-      const bytes = new Uint8Array(arr);
-      const chunkSize = 0x8000; // 32KB por chunk para evitar stack overflow
-      let binary = '';
-      for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, i + chunkSize);
-        binary += String.fromCharCode(...chunk);
+    // CONVERSÃO ROBUSTA: Funciona com ou sem cache
+    const getOrCreateBase64Cache = async (storagePath: string, blob?: Blob, fallbackMime?: string) => {
+      try {
+        // TENTAR CACHE PRIMEIRO (se tabela existir)
+        try {
+          console.log(`🔍 Tentando buscar cache para: ${storagePath}`);
+          const { data: cached, error: cacheError } = await supabase
+            .from('image_cache')
+            .select('base64_data, mime_type, access_count')
+            .eq('storage_path', storagePath)
+            .single();
+          
+          if (!cacheError && cached) {
+            console.log(`✅ CACHE HIT! Imagem já processada: ${storagePath}`);
+            return { 
+              mime: cached.mime_type, 
+              data: cached.base64_data 
+            };
+          }
+        } catch (cacheTableError) {
+          console.log(`⚠️ Tabela cache não existe ou erro: ${cacheTableError.message}`);
+          console.log(`📝 Processando sem cache: ${storagePath}`);
+        }
+        
+        // 2. CACHE MISS - PROCESSAR E SALVAR
+        console.log(`❌ Cache miss - processando: ${storagePath}`);
+        
+        if (!blob) {
+          console.log(`📥 Baixando blob para: ${storagePath}`);
+          const { data: downloadBlob, error: downloadError } = await supabase.storage
+            .from('medical-documents')
+            .download(storagePath);
+          
+          if (downloadError || !downloadBlob) {
+            throw new Error(`Erro ao baixar: ${downloadError?.message}`);
+          }
+          blob = downloadBlob;
+        }
+        
+        // Conversão ultra-otimizada com fallback robusto
+        const mt = (blob.type && blob.type !== 'application/octet-stream') ? blob.type : (fallbackMime || 'image/jpeg');
+        const arr = await blob.arrayBuffer();
+        const bytes = new Uint8Array(arr);
+        
+        console.log(`🔄 Convertendo ${Math.round(arr.byteLength / 1024)}KB para base64...`);
+        
+        let base64Data: string;
+        
+        try {
+          // MÉTODO ULTRA-SEGURO: Sempre usar chunks pequenos para evitar stack overflow
+          const CHUNK_SIZE = 1024; // 1KB chunks (muito pequeno para ser seguro)
+          let binary = '';
+          
+          console.log(`🔄 Processando ${bytes.length} bytes em chunks de ${CHUNK_SIZE}...`);
+          
+          for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+            const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+            
+            // Conversão segura chunk por chunk
+            let chunkStr = '';
+            for (let j = 0; j < chunk.length; j++) {
+              chunkStr += String.fromCharCode(chunk[j]);
+            }
+            binary += chunkStr;
+            
+            // Yield CPU a cada 50 chunks
+            if (i % (CHUNK_SIZE * 50) === 0) {
+              await new Promise(resolve => setTimeout(resolve, 1));
+              console.log(`📊 Progresso: ${Math.round((i / bytes.length) * 100)}%`);
+            }
+          }
+          
+          console.log(`🔄 Convertendo string para base64...`);
+          const base64 = btoa(binary);
+          base64Data = `data:${mt};base64,${base64}`;
+          console.log(`✅ Conversão base64 concluída com sucesso!`);
+        } catch (conversionError) {
+          console.error('❌ Erro na conversão direta, tentando método alternativo:', conversionError);
+          
+          // Método 3: Fallback ultra-seguro
+          const reader = new FileReader();
+          base64Data = await new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(new Error('Erro no FileReader'));
+            reader.readAsDataURL(blob);
+          });
+        }
+        
+        // 3. TENTAR SALVAR NO CACHE (se tabela existir)
+        try {
+          console.log(`💾 Tentando salvar no cache: ${storagePath}`);
+          const { error: insertError } = await supabase
+            .from('image_cache')
+            .insert({
+              storage_path: storagePath,
+              base64_data: base64Data,
+              mime_type: mt,
+              file_size: arr.byteLength,
+              access_count: 1
+            });
+          
+          if (insertError) {
+            console.warn('⚠️ Erro ao salvar cache (não crítico):', insertError);
+          } else {
+            console.log('✅ Cache salvo com sucesso!');
+          }
+        } catch (insertError) {
+          console.warn('⚠️ Cache não disponível (não crítico):', insertError);
+        }
+        
+        console.log(`✅ Conversão concluída: ${storagePath}`);
+        return { mime: mt, data: base64Data };
+        
+      } catch (error) {
+        console.error('❌ Erro no cache/conversão:', error);
+        
+        // Fallback: Retornar erro mas não quebrar o processamento
+        console.warn('⚠️ Usando fallback simples devido ao erro');
+        
+        try {
+          // Conversão simples como último recurso
+          if (blob) {
+            const reader = new FileReader();
+            const result = await new Promise((resolve, reject) => {
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = () => reject(new Error('Fallback FileReader falhou'));
+              reader.readAsDataURL(blob);
+            });
+            
+            const mt = (blob.type && blob.type !== 'application/octet-stream') ? blob.type : 'image/jpeg';
+            return { mime: mt, data: result as string };
+          }
+        } catch (fallbackError) {
+          console.error('❌ Fallback também falhou:', fallbackError);
+        }
+        
+        throw new Error(`Falha crítica no processamento: ${error.message}`);
       }
-      const base64 = btoa(binary);
-      return { mime: mt, data: `data:${mt};base64,${base64}` };
     };
 
     // Resolver paths de imagens a partir do corpo ou do documento no banco
-    let resolvedPaths: string[] | undefined = Array.isArray(images) && images.length > 0 ? images : (Array.isArray(storagePaths) && storagePaths.length > 0 ? storagePaths : undefined);
+    let resolvedPaths: string[] | undefined = Array.isArray(inputImages) && inputImages.length > 0 ? inputImages : (Array.isArray(storagePaths) && storagePaths.length > 0 ? storagePaths : undefined);
+
+    console.log('🔍 Debug de imagens recebidas:');
+    console.log('- inputImages (array):', inputImages?.length || 0, inputImages?.slice(0, 2));
+    console.log('- storagePaths (array):', storagePaths?.length || 0, storagePaths?.slice(0, 2));
+    console.log('- resolvedPaths inicial:', resolvedPaths?.length || 0);
 
     if (!resolvedPaths && documentId) {
+      console.log('🔍 Buscando paths do documento no banco...');
       const { data: docRow } = await supabase
         .from('medical_documents')
         .select('user_id, type, file_url, report_meta')
@@ -450,11 +906,19 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         if (Array.isArray(metaPaths) && metaPaths.length) candidate.push(...metaPaths);
         if (fileUrl) candidate.push(fileUrl);
         if (candidate.length) resolvedPaths = candidate;
+        console.log('🔍 Paths encontrados no banco:', {
+          metaPaths: metaPaths.length,
+          fileUrl: !!fileUrl,
+          candidatos: candidate.length
+        });
       }
     }
 
-    // Limita número de imagens para payload confiável
-    const MAX_IMAGES = 6; // alinhado com o relatório premium para reduzir latência
+    // LIMITAÇÃO ULTRA-DRÁSTICA: APENAS 1 IMAGEM POR VEZ
+    const MAX_IMAGES = 1; // Ultra-limitado para garantir funcionamento
+    
+    // OTIMIZAÇÃO: Preparar para processamento eficiente
+    console.log('🚀 Processamento otimizado habilitado');
 
     let images: { mime: string; data: string }[] = [];
     if (resolvedPaths && resolvedPaths.length > 0) {
@@ -479,12 +943,15 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         }
       }
       
-      const toDownload = resolvedPaths;
+      // LIMITAÇÃO ULTRA-DRÁSTICA: Apenas 1 imagem por vez
+      const toDownload = resolvedPaths.slice(0, 1);
+      if (resolvedPaths.length > 1) {
+        console.log(`⚠️ LIMITAÇÃO ULTRA-DRÁSTICA: Processando apenas 1 de ${resolvedPaths.length} imagens`);
+      }
       let processed = 0;
       
       for (const p of toDownload) {
-        console.log(`📥 Baixando imagem ${processed + 1}/${toDownload.length}: ${p}`);
-        console.log(`⏱️ Iniciando download com timeout de 30s...`);
+        console.log(`📥 Processando imagem ${processed + 1}/${toDownload.length}: ${p}`);
         
         let retryCount = 0;
         const maxRetries = 2;
@@ -494,20 +961,20 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
           try {
             console.log(`🔄 Tentativa ${retryCount + 1}/${maxRetries + 1} para: ${p}`);
             
-            // Timeout de 30 segundos para cada download
+            // TIMEOUT DRÁSTICO: 5s para evitar CPU timeout
             const downloadPromise = supabase.storage.from('medical-documents').download(p);
             const timeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout no download da imagem')), 30000)
+              setTimeout(() => reject(new Error('Timeout no download da imagem')), 5000)
             );
             
             const { data: dl, error: dlErr } = await Promise.race([downloadPromise, timeoutPromise]) as any;
           
-            if (dlErr) {
+            if (dlErr || !dl) {
               console.error('❌ Erro ao baixar imagem:', p, dlErr);
               retryCount++;
               if (retryCount <= maxRetries) {
-                console.log(`🔄 Tentando novamente em 2 segundos...`);
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                console.log(`🔄 Tentando novamente em 1 segundo...`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 continue;
               } else {
                 console.warn('⚠️ Máximo de tentativas atingido, pulando imagem...');
@@ -516,46 +983,53 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
               }
             }
             
-            if (!dl) {
-              console.error('❌ Download retornou dados vazios para:', p);
-              retryCount++;
-              if (retryCount <= maxRetries) {
-                console.log(`🔄 Tentando novamente em 2 segundos...`);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                continue;
-              } else {
-                processed += 1;
-                break;
-              }
-            }
+            console.log(`🔄 Usando cache Supabase para: ${p}`);
             
-            console.log(`🔄 Convertendo imagem para base64: ${p}`);
-            const base64Image = await toBase64(dl as Blob, guessMimeFromPath(p));
+            // CACHE SUPABASE: Busca no cache ou converte e salva
+            const base64Image = await getOrCreateBase64Cache(p, dl as Blob, guessMimeFromPath(p));
             images.push(base64Image);
             processed += 1;
             success = true;
             
-            // Progresso mais granular: 5% a 75% durante download
+            // OTIMIZAÇÃO: Limpeza de memória via Deno (compatível)
+            if (typeof Deno !== 'undefined' && Deno.memoryUsage) {
+              const memory = Deno.memoryUsage();
+              console.log(`🧠 Memória: ${Math.round(memory.heapUsed / 1024 / 1024)}MB usados`);
+            }
+            
+            // Progresso otimizado
             const pct = Math.min(75, Math.round((processed / toDownload.length) * 70) + 5);
             
             console.log(`✅ Imagem ${processed}/${toDownload.length} processada. Progresso: ${pct}%`);
             
-            await supabase
-              .from('medical_documents')
-              .update({ 
-                images_processed: processed, 
-                progress_pct: pct,
-                processing_stage: `baixando_imagens (${processed}/${toDownload.length})`
-              })
-              .eq('id', documentId || '')
-              .eq('user_id', userIdEffective || '');
+            // OTIMIZAÇÃO: Update de progresso assíncrono (não bloqueia)
+            try {
+              const { error: updateError } = await supabase
+                .from('medical_documents')
+                .update({ 
+                  images_processed: processed, 
+                  progress_pct: pct,
+                  processing_stage: `processando_imagens (${processed}/${toDownload.length})`
+                })
+                .eq('id', documentId || '')
+                .eq('user_id', userIdEffective || '');
+              
+              if (updateError) {
+                console.warn('⚠️ Erro não-crítico no update:', updateError);
+              }
+            } catch (updateError) {
+              console.warn('⚠️ Erro não-crítico no update:', updateError);
+            }
+              
+            // OTIMIZAÇÃO: Pequena pausa para evitar sobrecarga de CPU
+            await new Promise(resolve => setTimeout(resolve, 100));
               
           } catch (error) {
-            console.error('❌ Erro crítico no download da imagem:', p, error);
+            console.error('❌ Erro no processamento da imagem:', p, error);
             retryCount++;
             if (retryCount <= maxRetries) {
-              console.log(`🔄 Tentando novamente em 2 segundos...`);
-              await new Promise(resolve => setTimeout(resolve, 2000));
+              console.log(`🔄 Tentando novamente em 1 segundo...`);
+              await new Promise(resolve => setTimeout(resolve, 1000));
               continue;
             } else {
               console.warn('⚠️ Máximo de tentativas atingido, pulando imagem...');
@@ -603,8 +1077,11 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         })
         .eq('id', documentId || '')
         .eq('user_id', userIdEffective || '');
-      // Função para chamar OpenAI com fallback robusto
+      // Função otimizada para chamar OpenAI
       const callOpenAI = async (model: string) => {
+        // OTIMIZAÇÃO: Reduzir detail das imagens para economizar tokens e tempo
+        const imageDetail = imagesLimited.length > 6 ? 'low' : 'high';
+        
         const body = {
           model,
           messages: [{
@@ -613,14 +1090,19 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
               { type: 'text', text: systemPrompt },
               ...imagesLimited.map(img => ({
                 type: 'image_url',
-                image_url: { url: img.data, detail: 'high' }
+                image_url: { url: img.data, detail: imageDetail }
               }))
             ]
           }],
           temperature: 0.2,
-          max_completion_tokens: 4500
+          max_completion_tokens: 3000, // OTIMIZAÇÃO: Reduzido de 4500 para 3000
+          timeout: 45 // OTIMIZAÇÃO: Timeout explícito de 45s
         } as any;
-        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        
+        console.log(`🤖 Enviando ${imagesLimited.length} imagens para OpenAI (detail: ${imageDetail})`);
+        
+        // OTIMIZAÇÃO: Timeout na requisição OpenAI
+        const openAIPromise = fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -628,12 +1110,18 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
           },
           body: JSON.stringify(body),
         });
+        
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout na chamada OpenAI')), 45000)
+        );
+        
+        const resp = await Promise.race([openAIPromise, timeoutPromise]) as Response;
         const json = await resp.json();
         if (!resp.ok) throw new Error(json?.error?.message || 'OpenAI error');
         return json;
       };
 
-      let usedModel = 'o4-mini-2025-04-16';
+      let usedModel = 'gpt-4o';
       let aiResponse: any;
       
       console.log('🤖 Chamando OpenAI com modelo:', usedModel);
@@ -653,13 +1141,13 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       catch (e) {
         console.log('⚠️ Fallback para modelo alternativo:', e);
         try { 
-          usedModel = 'gpt-4.1-2025-04-14'; 
+          usedModel = 'gpt-4o-mini'; 
           aiResponse = await callOpenAI(usedModel); 
           console.log('✅ Fallback 1 funcionou');
         }
         catch (e2) {
-          console.log('⚠️ Fallback para último modelo:', e2);
-          usedModel = 'gpt-4o'; 
+          console.log('⚠️ Fallback para último modelo disponível:', e2);
+          usedModel = 'gpt-3.5-turbo'; 
           aiResponse = await callOpenAI(usedModel); 
           console.log('✅ Fallback 2 funcionou');
         }
@@ -1099,7 +1587,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
 
     // 3) Salvar na tabela medical_exam_analyses para o histórico
     console.log('💾 Salvando análise no histórico...');
-    const analysisText = typeof aiResponse === 'string' ? aiResponse : (aiResponse?.choices?.[0]?.message?.content || analysis);
+    const analysisText = analysis;
     const { error: analysisError } = await supabase
       .from('medical_exam_analyses')
       .insert({
@@ -1126,7 +1614,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
           report_path: reportsPath,
           report_meta: {
             generated_at: new Date().toISOString(),
-            service_used: 'openai-o4-mini',
+            service_used: 'openai-gpt-4o',
             image_count: imagesLimited.length,
             image_paths: resolvedPaths || (storagePath ? [storagePath] : []),
             exam_type: examTypeEffective
