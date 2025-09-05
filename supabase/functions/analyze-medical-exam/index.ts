@@ -903,10 +903,10 @@ serve(async (req) => {
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    // Modelo GPT-4 Turbo (Premium) com tokens ajustados conforme a quantidade de exames
+    // Modelo GPT-4o (omni - suporta imagens nativamente)
     const config = {
       service: 'openai' as const,
-      model: 'gpt-4o', // GPT-4o para qualidade premium máxima
+      model: 'gpt-4o', // GPT-4o é o modelo mais recente com suporte nativo para visão
       max_completion_tokens: 4000, // Valor base que será ajustado conforme o número de imagens
       openai_key: OPENAI_API_KEY
     };
@@ -1738,7 +1738,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         });
         
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout na chamada OpenAI')), 45000)
+          setTimeout(() => reject(new Error('Timeout na chamada OpenAI')), 60000) // Aumentar para 60 segundos
         );
         
         const resp = await Promise.race([openAIPromise, timeoutPromise]) as Response;
@@ -1766,17 +1766,46 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         console.log('✅ OpenAI Premium respondeu com sucesso');
       }
       catch (e) {
-        console.log('⚠️ Fallback para modelo avançado:', e);
+        console.log('⚠️ Fallback para GPT-4 Turbo:', e);
         try { 
-          usedModel = 'gpt-4o'; 
+          usedModel = 'gpt-4-turbo'; 
           aiResponse = await callOpenAI(usedModel); 
-          console.log('✅ Fallback 1 funcionou');
+          console.log('✅ Fallback 1 (GPT-4 Turbo) funcionou');
         }
         catch (e2) {
-          console.log('⚠️ Fallback para modelo básico:', e2);
-          usedModel = 'gpt-3.5-turbo'; 
-          aiResponse = await callOpenAI(usedModel); 
-          console.log('✅ Fallback 2 funcionou');
+          console.log('⚠️ Fallback para modelo de texto:', e2);
+          // GPT-3.5-turbo não suporta imagens, então vamos usar apenas texto
+          usedModel = 'gpt-3.5-turbo';
+          
+          // Se temos texto OCR, usar apenas ele
+          if (extractedText && extractedText.length > 0) {
+            console.log('📝 Usando apenas texto OCR para GPT-3.5');
+            const textOnlyResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                model: usedModel,
+                messages: [{
+                  role: 'user',
+                  content: systemPrompt + '\n\nTEXTO EXTRAÍDO DO EXAME:\n' + extractedText + '\n\nAnalise os dados acima e responda no formato JSON especificado.'
+                }],
+                max_tokens: 4000,
+                temperature: 0.1
+              })
+            });
+            
+            if (!textOnlyResponse.ok) {
+              throw new Error('Falha no fallback de texto');
+            }
+            
+            aiResponse = await textOnlyResponse.json();
+            console.log('✅ Fallback 2 com texto funcionou');
+          } else {
+            throw new Error('GPT-3.5 não suporta imagens e não há texto OCR disponível');
+          }
         }
       }
 
@@ -2785,7 +2814,14 @@ Exemplo:
       });
 
     if (analysisError) {
-      console.error('❌ Erro ao salvar no histórico:', analysisError);
+      console.error('❌ Erro ao salvar no histórico:', JSON.stringify(analysisError, null, 2));
+      console.error('Dados que tentamos inserir:', {
+        user_id: userIdEffective,
+        document_id: documentId,
+        exam_type: examTypeEffective || 'exame_laboratorial',
+        analysis_result_length: analysisText?.length,
+        image_url: resolvedPaths?.[0] || null
+      });
       // Não falha a operação, apenas loga o erro
     } else {
       console.log('✅ Análise salva no histórico com sucesso');
