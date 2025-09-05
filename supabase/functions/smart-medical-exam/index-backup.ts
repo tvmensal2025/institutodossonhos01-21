@@ -385,8 +385,8 @@ serve(async (req) => {
     // Gerar HTML
     const htmlReport = generateCompleteHTMLReport(processedExams, profile, document, userId, documentId);
     
-    // Salvar no storage com nome específico para relatório didático premium
-    const reportPath = userId + '/' + documentId + '_premium_didactic.html';
+    // Salvar no storage
+    const reportPath = userId + '/' + documentId + '_didactic_report.html';
     
     await supabase.storage.from("medical-documents-reports").remove([reportPath]).catch(() => {});
     
@@ -404,11 +404,15 @@ serve(async (req) => {
       throw new Error('Erro ao salvar: ' + saveError.message);
     }
     
-    // Atualizar documento - APENAS o didactic_report_path, não sobrescrever report_path
+    // Atualizar documento
     await supabase
       .from('medical_documents')
       .update({
+        report_path: reportPath,
         didactic_report_path: reportPath,
+        analysis_status: 'ready',
+        processing_stage: 'finalizado',
+        progress_pct: 100,
         updated_at: new Date().toISOString()
       })
       .eq('id', documentId);

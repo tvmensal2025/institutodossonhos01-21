@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Médico Premium - ${patientName}</title>
+  <style>
+    :root {
+      --primary: #1E40AF;
+      --primary-light: #3B82F6;
+      --success: #059669;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --info: #0EA5E9;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F9FAFB;
+      --bg-tertiary: #F3F4F6;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      transition: background-color 0.3s ease;
+    }
+    
+    body.dark-mode {
+      --primary: #3B82F6;
+      --primary-light: #60A5FA;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --info: #38BDF8;
+      --text-primary: #F9FAFB;
+      --text-secondary: #D1D5DB;
+      --bg-primary: #1F2937;
+      --bg-secondary: #111827;
+      --bg-tertiary: #374151;
+      --border: #374151;
+      --border-light: #4B5563;
+    }
+    
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 20px; 
+    }
+    
+    .patient-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header-background {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+      z-index: 0;
+    }
+    
+    .patient-info { 
+      position: relative;
+      z-index: 1;
+      display: flex; 
+      align-items: center; 
+      gap: 24px; 
+    }
+    
+    .patient-avatar {
+      width: 88px; 
+      height: 88px; 
+      border-radius: 50%; 
+      background: white;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-size: 32px; 
+      box-shadow: var(--shadow); 
+      overflow: hidden;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    
+    .patient-avatar img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+    }
+    
+    .patient-details h1 { 
+      font-size: 32px; 
+      font-weight: 800; 
+      margin-bottom: 8px; 
+    }
+    
+    .patient-meta { 
+      display: flex; 
+      gap: 16px; 
+      flex-wrap: wrap; 
+      margin-top: 12px; 
+    }
+    
+    .meta-item {
+      background: rgba(255, 255, 255, 0.2); 
+      padding: 8px 16px;
+      border-radius: 20px; 
+      font-size: 14px; 
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+    
+    .doctor-intro {
+      background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+      border: 1px solid #7DD3FC;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    
+    body.dark-mode .doctor-intro {
+      background: linear-gradient(135deg, #075985 0%, #0369A1 100%);
+      border: 1px solid #0284C7;
+    }
+    
+    .doctor-avatar {
+      font-size: 48px;
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+    
+    body.dark-mode .doctor-avatar {
+      background: #F9FAFB;
+      color: #075985;
+    }
+    
+    .doctor-content h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    
+    .doctor-content p {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+    
+    .exam-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+      animation: fadeIn 0.6s ease-out forwards;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .exam-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .exam-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border-light);
+    }
+    
+    .exam-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .exam-status {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-ok {
+      background: #D1FAE5;
+      color: var(--success);
+    }
+    
+    body.dark-mode .status-ok {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+    }
+    
+    .status-warn {
+      background: #FEF3C7;
+      color: var(--warning);
+    }
+    
+    body.dark-mode .status-warn {
+      background: rgba(245, 158, 11, 0.2);
+      color: #FBBF24;
+    }
+    
+    .status-info {
+      background: #DBEAFE;
+      color: var(--info);
+    }
+    
+    body.dark-mode .status-info {
+      background: rgba(56, 189, 248, 0.2);
+      color: #7DD3FC;
+    }
+    
+    .exam-result {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .result-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    
+    .reference {
+      color: var(--text-secondary);
+      font-size: 16px;
+      background: var(--bg-tertiary);
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+    
+    .result-chart {
+      width: 100%;
+      margin: 16px 0;
+    }
+    
+    .chart-bar {
+      width: 100%;
+      height: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    
+    .chart-fill {
+      height: 100%;
+      border-radius: 6px;
+      width: 0;
+    }
+    
+    .chart-fill.status-ok {
+      background: var(--success);
+      animation: fillBar 1.5s ease-out forwards;
+    }
+    
+    .chart-fill.status-warn {
+      background: var(--warning);
+      animation: fillBar 1.5s ease-out forwards;
+    }
+    
+    .chart-fill.status-info {
+      background: var(--info);
+      animation: fillBar 1.5s ease-out forwards;
+    }
+    
+    @keyframes fillBar {
+      from { width: 0; }
+      to { width: var(--fill-percent); }
+    }
+    
+    .chart-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .explanation {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 16px;
+    }
+    
+    .explanation h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+    
+    .explanation p, .explanation ul {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+    
+    .explanation ul {
+      padding-left: 24px;
+    }
+    
+    .explanation li {
+      margin-bottom: 4px;
+    }
+    
+    .summary-section {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    
+    .summary-section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .summary-card {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .summary-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    
+    .summary-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .summary-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .summary-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .recommendations {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border: 1px solid #FBBF24;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    
+    body.dark-mode .recommendations {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.3) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+    }
+    
+    .recommendations h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #92400E;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    body.dark-mode .recommendations h2 {
+      color: #FBBF24;
+    }
+    
+    .recommendations ul {
+      padding-left: 24px;
+      list-style-type: none;
+    }
+    
+    .recommendations li {
+      position: relative;
+      padding-left: 36px;
+      margin-bottom: 16px;
+      font-size: 17px;
+      color: #92400E;
+    }
+    
+    body.dark-mode .recommendations li {
+      color: #FDE68A;
+    }
+    
+    .recommendations li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      background: #FBBF24;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .footer {
+      background: var(--bg-tertiary);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 40px;
+    }
+    
+    .footer strong {
+      color: var(--warning);
+    }
+    
+    /* COMPARTILHAMENTO */
+    
+    .share-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 100;
+    }
+    
+    .action-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      font-size: 16px;
+      transition: transform 0.2s;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .action-btn.pdf {
+      background: #DC2626;
+    }
+    
+    .action-btn.share {
+      background: #059669;
+    }
+    
+    .action-btn.copy {
+      background: #2563EB;
+    }
+    
+    .action-btn.whatsapp {
+      background: #25D366;
+    }
+    
+    .action-btn.theme {
+      background: #7C3AED;
+    }
+    
+    /* RESPONSIVIDADE */
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+      
+      .patient-header {
+        padding: 24px;
+      }
+      
+      .patient-info {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .patient-meta {
+        justify-content: center;
+      }
+      
+      .exam-card {
+        padding: 20px;
+      }
+      
+      .doctor-intro {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+      }
+      
+      .share-panel {
+        flex-direction: row;
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+    
+    /* IMPRESSÃO */
+    
+    @media print {
+      .share-panel {
+        display: none;
+      }
+      
+      body {
+        background: white;
+      }
+      
+      .container {
+        padding: 0;
+        max-width: none;
+      }
+      
+      .exam-card,
+      .summary-section,
+      .doctor-intro,
+      .recommendations {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      
+      .patient-header {
+        background: white !important;
+        color: black;
+        box-shadow: none;
+        break-after: avoid;
+      }
+      
+      .doctor-intro {
+        background: white !important;
+        break-after: avoid;
+      }
+      
+      .chart-fill {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      
+      .footer {
+        background: white;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="share-panel">
+    <button class="action-btn pdf" onclick="window.print();" title="Imprimir / Salvar PDF">
+      📄
+    </button>
+    <button class="action-btn share" onclick="shareReport();" title="Compartilhar">
+      📤
+    </button>
+    <button class="action-btn copy" onclick="copyLink();" title="Copiar Link">
+      📋
+    </button>
+    <button class="action-btn whatsapp" onclick="shareWhatsApp();" title="Compartilhar via WhatsApp">
+      💬
+    </button>
+    <button class="action-btn theme" onclick="toggleDarkMode();" title="Alterar Tema">
+      🌓
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="patient-header">
+      <div class="header-background"></div>
+      <div class="patient-info">
+        <div class="patient-avatar">
+          ${avatarUrl ? `<img src="${avatarUrl}" alt="${patientName}" />` : '👤'}
+        </div>
+        <div class="patient-details">
+          <h1>Relatório Médico Clínico</h1>
+          <p>Dr. Vital - IA Médica do Instituto dos Sonhos</p>
+          <p>Análise Clínica Integrativa e Preventiva</p>
+          <div class="patient-meta">
+            <div class="meta-item">${patientName}</div>
+            ${patientAge ? `<div class="meta-item">${patientAge} anos</div>` : ''}
+            <div class="meta-item">${examDate}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doctor-intro">
+      <div class="doctor-avatar">👨‍⚕️</div>
+      <div class="doctor-content">
+        <h2>Olá! Sou o Dr. Vital 👋</h2>
+        <p>Analisei seus exames com uma visão integrativa e preventiva. Vou explicar cada resultado de forma clara e mostrar como eles se conectam para compor um quadro completo da sua saúde.</p>
+        <p><strong>Principais achados:</strong> veja o resumo abaixo e os detalhes nas seções.</p>
+      </div>
+    </div>
+
+    ${exams.map((exam, index) => `
+      <div class="exam-card" style="animation-delay: ${index * 0.1}s">
+        <div class="exam-header">
+          <h3 class="exam-title">${exam.explanation.title}</h3>
+          <div class="exam-status ${exam.statusClass}">${exam.status}</div>
+        </div>
+        <div class="exam-result">
+          <div class="result-value">${exam.value}</div>
+          <div class="reference">Referência: ${exam.reference}</div>
+        </div>
+        <div class="result-chart">
+          <div class="chart-bar">
+            <div class="chart-fill ${exam.statusClass}" style="--fill-percent: ${exam.percentage}%"></div>
+          </div>
+          <span class="chart-label">${exam.percentage}% da referência máxima</span>
+        </div>
+        <div class="explanation">
+          <h4>📋 Como funciona?</h4>
+          <p>${exam.explanation.howItWorks}</p>
+          <h4>🎯 Para que serve</h4>
+          <ul>
+            ${exam.explanation.whatItIsFor.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+    `).join('')}
+
+    <div class="summary-section">
+      <h2>Resumo Geral da Saúde</h2>
+      <div class="summary-grid">
+        ${bmiData ? `
+          <div class="summary-card">
+            <div class="summary-icon">⚖️</div>
+            <div class="summary-title">IMC</div>
+            <div class="summary-value">${bmiData.value}</div>
+            <div class="summary-desc">${bmiData.category} - Risco ${bmiData.risk}</div>
+          </div>
+        ` : ''}
+        <div class="summary-card">
+          <div class="summary-icon">💓</div>
+          <div class="summary-title">Risco Cardiovascular</div>
+          <div class="summary-value">${calculateCardiovascularRisk(exams, patientAge)}</div>
+          <div class="summary-desc">Baseado nos exames atuais</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon">🧬</div>
+          <div class="summary-title">Idade Biológica</div>
+          <div class="summary-value">${calculateBiologicalAge(patientAge, exams)}</div>
+          <div class="summary-desc">Estimada pelos marcadores</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recommendations">
+      <h2>🎯 Recomendações Personalizadas</h2>
+      <ul>
+        ${generatePersonalizedRecommendations(exams, profile).map(rec => `<li>${rec}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="footer">
+      <p><strong>⚠️ Aviso Importante:</strong> Este documento é educativo e não substitui consulta médica. Não faz diagnóstico nem prescrição. Consulte sempre um profissional de saúde para interpretação adequada dos resultados.</p>
+      <p>Relatório gerado por Dr. Vital - IA Médica do Instituto dos Sonhos</p>
+      <p>Data: ${date} às ${time}</p>
+    </div>
+  </div>
+
+  <script>
+    // ANIMAÇÕES DOS GRÁFICOS
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar os gráficos com delay para dar tempo de renderização
+      setTimeout(() => {
+        const chartFills = document.querySelectorAll('.chart-fill');
+        chartFills.forEach(fill => {
+          const percent = fill.style.getPropertyValue('--fill-percent');
+          fill.style.width = percent;
+        });
+      }, 100);
+    });
+
+    // MODO ESCURO
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    // VERIFICAR PREFERÊNCIA DE TEMA
+    if (localStorage.getItem('darkMode') === 'true' || 
+        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && 
+         localStorage.getItem('darkMode') !== 'false')) {
+      document.body.classList.add('dark-mode');
+    }
+
+    // COMPARTILHAMENTO
+    function shareReport() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Meu Relatório Médico - Instituto dos Sonhos',
+          text: 'Veja meus resultados de exames analisados pelo Dr. Vital do Instituto dos Sonhos',
+          url: window.location.href,
+        })
+        .catch((error) => console.log('Erro ao compartilhar:', error));
+      } else {
+        alert('Compartilhamento não suportado neste navegador. Tente usar o botão "Copiar Link".');
+      }
+    }
+
+    function copyLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url)
+        .then(() => alert('Link copiado para a área de transferência!'))
+        .catch(err => console.error('Erro ao copiar: ', err));
+    }
+
+    function shareWhatsApp() {
+      const url = window.location.href;
+      const whatsappUrl = `https://api.whatsapp.com/send?text=Veja meus resultados de exames analisados pelo Dr. Vital do Instituto dos Sonhos: ${encodeURIComponent(url)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  </script>
+</body>
+</html>

@@ -834,30 +834,26 @@ const MedicalDocumentsSection: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {doc.report_path ? (
+                      {(doc.didactic_report_path || doc.report_path) ? (
                         <>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => openReportHtml(doc.report_path!, 'view')}
-                            title="Ver relatório (HTML)"
+                            onClick={() => openReportHtml(doc.didactic_report_path || doc.report_path!, 'view')}
+                            title="Ver relatório didático premium"
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => openReportHtml(doc.report_path!, 'print')}
+                            onClick={() => openReportHtml(doc.didactic_report_path || doc.report_path!, 'print')}
                             title="Imprimir relatório"
                           >
                             <Printer className="w-4 h-4" />
                           </Button>
                           
-                          <DidacticReportButton 
-                            documentId={doc.id}
-                            userId={doc.user_id}
-                            disabled={doc.analysis_status !== 'ready'}
-                          />
+                          {/* Relatório didático agora é gerado automaticamente */}
                           <Button
                             variant="outline"
                             size="sm"

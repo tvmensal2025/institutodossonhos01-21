@@ -627,14 +627,46 @@ serve(async (req) => {
       })
       .eq('id', actualDocumentId);
     
+    // 🎯 NOVA FUNCIONALIDADE: Gerar automaticamente o relatório didático
+    console.log('🎓 Gerando relatório didático automaticamente...');
+    let didacticReportGenerated = false;
+    
+    try {
+      // Chamar a função smart-medical-exam internamente
+      const didacticResponse = await fetch(`${supabaseUrl}/functions/v1/smart-medical-exam`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          documentId: actualDocumentId
+        })
+      });
+      
+      if (didacticResponse.ok) {
+        const didacticData = await didacticResponse.json();
+        console.log('✅ Relatório didático gerado automaticamente!');
+        didacticReportGenerated = true;
+      } else {
+        console.warn('⚠️ Falha ao gerar relatório didático, continuando...');
+      }
+    } catch (didacticError) {
+      console.warn('⚠️ Erro ao gerar relatório didático:', didacticError);
+    }
+
     // Resposta final de sucesso
     const response = {
       success: true,
-      message: 'Documento finalizado e análise iniciada com sucesso',
+      message: didacticReportGenerated 
+        ? 'Documento finalizado com relatório didático gerado automaticamente'
+        : 'Documento finalizado e análise iniciada com sucesso',
       data: {
         documentId: actualDocumentId,
         requestId,
         analysisResult,
+        didacticReportGenerated,
         timestamp: new Date().toISOString()
       }
     };
