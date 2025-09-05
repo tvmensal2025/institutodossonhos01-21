@@ -1767,28 +1767,230 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         }
       }
 
-      const rawText = aiResponse.choices?.[0]?.message?.content || '';
+      let rawText = aiResponse.choices?.[0]?.message?.content || '';
       console.log('🔍 Conteúdo completo do modelo', usedModel, ':', rawText.substring(0, 1000) + '...');
+
+      // VERIFICAÇÃO CRÍTICA: Se a resposta contém recusa, forçar extração simples
+      if (rawText.includes("I'm sorry") || 
+          rawText.includes("can't assist") || 
+          rawText.includes("cannot assist") ||
+          rawText.includes("unable to") ||
+          rawText.length < 200) {
+        
+        console.log('⚠️ GPT recusou ou deu resposta inadequada. Forçando extração direta...');
+        
+        // Tentativa 2: Prompt ULTRA SIMPLES e DIRETO
+        const simplePrompt = `LEIA A IMAGEM E RESPONDA APENAS COM OS DADOS:
+
+1. Nome do paciente na imagem: [extrair nome]
+2. Data do exame: [extrair data]
+3. Liste TODOS os exames com valores:
+   - [Nome do exame]: [valor] [unidade] (Ref: [referência])
+   
+EXTRAIA EXATAMENTE O QUE ESTÁ ESCRITO NA IMAGEM. NÃO INVENTE DADOS.`;
+
+        try {
+          const simpleResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${OPENAI_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o',
+              messages: [{
+                role: 'user',
+                content: [
+                  { type: 'text', text: simplePrompt },
+                  ...imagesLimited.map(img => ({
+                    type: 'image_url',
+                    image_url: {
+                      url: `data:${img.mime};base64,${img.data}`,
+                      detail: 'high'
+                    }
+                  }))
+                ]
+              }],
+              max_tokens: 2000,
+              temperature: 0
+            })
+          });
+          
+          if (simpleResponse.ok) {
+            const simpleData = await simpleResponse.json();
+            const simpleText = simpleData.choices?.[0]?.message?.content || '';
+            console.log('✅ Resposta simples obtida:', simpleText);
+            
+            // Processar resposta simples e converter para formato estruturado
+            const lines = simpleText.split('\n');
+            const exams = [];
+            let patientNameFromSimple = '';
+            let examDateFromSimple = '';
+            
+            for (const line of lines) {
+              if (line.includes('Nome do paciente:')) {
+                patientNameFromSimple = line.split(':')[1]?.trim() || '';
+              } else if (line.includes('Data do exame:')) {
+                examDateFromSimple = line.split(':')[1]?.trim() || '';
+              } else if (line.includes(':') && line.includes('(Ref:')) {
+                // Extrair dados do exame
+                const examMatch = line.match(/^(.+?):\s*(.+?)\s*\(Ref:\s*(.+?)\)/);
+                if (examMatch) {
+                  const [_, examName, valueWithUnit, reference] = examMatch;
+                  const valueMatch = valueWithUnit.match(/^([\d,.]+)\s*(.+)$/);
+                  if (valueMatch) {
+                    const [__, value, unit] = valueMatch;
+                    exams.push({
+                      name: examName.trim(),
+                      value: value.trim(),
+                      unit: unit.trim(),
+                      us_reference: reference.trim(),
+                      status: 'normal' // Será calculado depois
+                    });
+                  }
+                }
+              }
+            }
+            
+            // Se conseguimos extrair dados, usar eles
+            if (exams.length > 0 || patientNameFromSimple) {
+              extracted = {
+                patient_name: patientNameFromSimple || 'Paciente',
+                exam_date: examDateFromSimple || new Date().toLocaleDateString('pt-BR'),
+                sections: [{
+                  title: 'Exames Laboratoriais',
+                  icon: '🔬',
+                  metrics: exams
+                }],
+                summary: `Foram analisados ${exams.length} exames laboratoriais do paciente ${patientNameFromSimple || ''}. Os resultados estão detalhados abaixo.`
+              };
+              
+              rawText = simpleText; // Substituir resposta original
+            }
+          }
+        } catch (retryError) {
+          console.error('❌ Erro na segunda tentativa:', retryError);
+        }
+        
+        // Tentativa 3: Se ainda não temos dados, usar OCR direto
+        if (!extracted || !extracted.sections || extracted.sections.length === 0) {
+          console.log('⚠️ Tentando extração via OCR...');
+          
+          // Se temos texto OCR, tentar extrair dados dele
+          if (extractedText && extractedText.length > 0) {
+            const ocrLines = extractedText.split('\n');
+            const ocrExams = [];
+            let ocrPatientName = '';
+            let ocrExamDate = '';
+            
+            // Procurar nome do paciente no OCR
+            for (const line of ocrLines) {
+              const upperLine = line.toUpperCase();
+              if (upperLine.includes('PACIENTE:') || upperLine.includes('NOME:')) {
+                const parts = line.split(':');
+                if (parts.length > 1) {
+                  ocrPatientName = parts[1].trim();
+                  break;
+                }
+              }
+            }
+            
+            // Procurar data do exame
+            const dateRegex = /\d{1,2}\/\d{1,2}\/\d{2,4}/;
+            for (const line of ocrLines) {
+              const dateMatch = line.match(dateRegex);
+              if (dateMatch) {
+                ocrExamDate = dateMatch[0];
+                break;
+              }
+            }
+            
+            // Procurar valores de exames com múltiplos padrões
+            for (let i = 0; i < ocrLines.length; i++) {
+              const line = ocrLines[i];
+              
+              // Padrão 1: Nome do exame ... valor unidade
+              let match = line.match(/^(.+?)\s+(\d+[,.]?\d*)\s+([a-zA-Z/%]+)/);
+              
+              // Padrão 2: Nome: valor unidade
+              if (!match) {
+                match = line.match(/^(.+?):\s*(\d+[,.]?\d*)\s+([a-zA-Z/%]+)/);
+              }
+              
+              // Padrão 3: Nome do exame (tab ou espaços) valor
+              if (!match) {
+                match = line.match(/^(.+?)\s{2,}(\d+[,.]?\d*)\s*([a-zA-Z/%]*)/);
+              }
+              
+              // Padrão 4: Procurar por palavras-chave conhecidas
+              const knownExams = ['GLICOSE', 'COLESTEROL', 'HEMOGLOBINA', 'CREATININA', 'UREIA', 
+                                 'TGO', 'TGP', 'HDL', 'LDL', 'TRIGLICERIDES', 'HEMÁCIAS', 'LEUCÓCITOS',
+                                 'PLAQUETAS', 'TSH', 'T4', 'VITAMINA', 'FERRO', 'FERRITINA'];
+              
+              for (const examName of knownExams) {
+                if (line.toUpperCase().includes(examName)) {
+                  const valueMatch = line.match(/(\d+[,.]?\d*)\s*([a-zA-Z/%]+)?/);
+                  if (valueMatch) {
+                    match = ['', examName, valueMatch[1], valueMatch[2] || ''];
+                    break;
+                  }
+                }
+              }
+              
+              if (match && match[2]) {
+                const [_, examName, value, unit] = match;
+                // Validar que o nome do exame não é muito longo (evitar linhas de cabeçalho)
+                if (examName && examName.length < 50 && !examName.match(/^\d/)) {
+                  ocrExams.push({
+                    name: examName.trim(),
+                    value: value.replace(',', '.'),
+                    unit: unit || '',
+                    status: 'normal',
+                    us_reference: 'Ver referência no documento',
+                    how_it_works: 'Exame laboratorial importante para avaliação da saúde.'
+                  });
+                }
+              }
+            }
+            
+            if (ocrExams.length > 0 || ocrPatientName) {
+              extracted = {
+                patient_name: ocrPatientName || 'Paciente',
+                exam_date: ocrExamDate || new Date().toLocaleDateString('pt-BR'),
+                sections: [{
+                  title: 'Exames Extraídos via OCR',
+                  icon: '📋',
+                  metrics: ocrExams
+                }],
+                summary: `Análise automática de ${ocrExams.length} exames do paciente ${ocrPatientName}. Dados extraídos diretamente do documento.`
+              };
+              console.log('✅ Dados extraídos via OCR:', extracted);
+            }
+          }
+        }
+      }
 
       // Se não conseguiu resposta, criar uma mensagem informativa
       if (!rawText || rawText.trim().length === 0) {
         console.error('❌ Resposta vazia da OpenAI');
         analysis = 'Não foi possível extrair dados da imagem. Por favor, forneça os valores dos exames manualmente.';
       } else {
-        // Extrair JSON dos dados
-        const jsonStart = rawText.indexOf('{');
-        const jsonEnd = rawText.lastIndexOf('}');
-        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-          try {
-            extracted = JSON.parse(rawText.substring(jsonStart, jsonEnd + 1));
-            console.log('✅ JSON extraído com sucesso');
-          } catch (e) {
-            console.log('❌ Erro ao parsear JSON:', e);
+        // Extrair JSON dos dados apenas se não foi processado acima
+        if (!extracted || Object.keys(extracted).length === 0) {
+          const jsonStart = rawText.indexOf('{');
+          const jsonEnd = rawText.lastIndexOf('}');
+          if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+            try {
+              extracted = JSON.parse(rawText.substring(jsonStart, jsonEnd + 1));
+              console.log('✅ JSON extraído com sucesso');
+            } catch (e) {
+              console.log('❌ Erro ao parsear JSON:', e);
+            }
           }
         }
 
         // Análise textual (antes do JSON ou texto completo se não houver JSON)
-        analysis = jsonStart > 0 ? rawText.substring(0, jsonStart).trim() : rawText;
+        analysis = rawText.includes('{') ? rawText.substring(0, rawText.indexOf('{')).trim() : rawText;
         console.log('📝 Análise textual extraída:', analysis.substring(0, 500) + '...');
       }
 
