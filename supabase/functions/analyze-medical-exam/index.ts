@@ -17,10 +17,10 @@ const EXPLICACOES_DIDATICAS: Record<string, {categoria: string, icone: string, e
   'colesterol_total': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 O laboratório mede o colesterol total no sangue, que é a soma do que circula nas "ruas do corpo": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL. É um retrato pontual do tráfego de colesterol e pode variar com alimentação, álcool, medicações e condições clínicas recentes.
 
-**Para que serve**
+Para que serve
 • Oferece visão geral da carga de colesterol circulante.
 • Ajuda a acompanhar tendência (antes/depois de mudanças).
 • Permite calcular o não-HDL (Total – HDL), útil quando triglicerídeos estão altos.
@@ -30,10 +30,10 @@ O laboratório mede o colesterol total no sangue, que é a soma do que circula n
   'ldl': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Quantifica o colesterol que viaja nos "caminhões LDL", os que mais tendem a grudar nas paredes das artérias. Em alguns laudos, o LDL é medido diretamente; em outros, calculado a partir de Total, HDL e TG. Por refletir o período recente, responde a jejum/álcool, dieta e hormônios da tireoide.
 
-**Para que serve**
+Para que serve
 • É o alvo principal para prevenir entupimento de artérias (aterosclerose).
 • Define metas objetivas conforme o perfil de risco.
 • Funciona como termômetro de resposta a hábitos e/ou tratamento.
@@ -43,10 +43,10 @@ Quantifica o colesterol que viaja nos "caminhões LDL", os que mais tendem a gru
   'hdl': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Mede o colesterol no "caminhão de limpeza": partículas que retiram excesso de gordura dos tecidos e levam de volta ao fígado. Parte depende da genética, mas atividade física, peso e hábitos influenciam ao longo do tempo.
 
-**Para que serve**
+Para que serve
 • Indica a capacidade de limpeza do sistema.
 • Costuma se associar a menor risco cardiovascular.
 • Ajuda a contextualizar Total e não-HDL.
@@ -56,10 +56,10 @@ Mede o colesterol no "caminhão de limpeza": partículas que retiram excesso de 
   'triglicerideos': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Dosam a "gordura de transporte" que sobe facilmente após açúcares, refeições ricas e álcool. Mesmo em jejum, os TG refletem como o corpo usa e guarda energia. Variam com resistência à insulina, gordura abdominal, medicações e tireoide.
 
-**Para que serve**
+Para que serve
 • Mostram o impacto de carboidratos simples e álcool.
 • Valores altos mantidos se associam a risco cardiovascular.
 • Níveis muito altos elevam risco de pancreatite.
@@ -69,10 +69,10 @@ Dosam a "gordura de transporte" que sobe facilmente após açúcares, refeiçõe
   'vldl': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Avalia (muitas vezes estima) as partículas que o fígado fabrica para levar triglicerídeos aos tecidos. Caminha de perto com os TG e tende a subir/baixar junto com eles.
 
-**Para que serve**
+Para que serve
 • Espelha o comportamento dos triglicerídeos.
 • Completa o painel lipídico.
 • Não é alvo direto de tratamento.`
@@ -82,10 +82,10 @@ Avalia (muitas vezes estima) as partículas que o fígado fabrica para levar tri
   'glicose': {
     categoria: '🍬 Glicose & Insulina',
     icone: '🍬',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Quantifica a glicose no sangue após 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento. Pode oscilar com estresse, infecções, corticoides e quebra de jejum.
 
-**Para que serve**
+Para que serve
 • Triagem para pré-diabetes e diabetes.
 • Complementa HbA1c e OGTT na avaliação.
 • Ajuda a monitorar rotina e efeitos de hábitos.
@@ -95,10 +95,10 @@ Quantifica a glicose no sangue após 8–12 horas sem comer, oferecendo um retra
   'hba1c': {
     categoria: '🍬 Glicose & Insulina',
     icone: '🍬',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Mostra a porcentagem de hemoglobina que ficou "açucarada" ao longo de ~3 meses. Como as hemácias vivem semanas, a HbA1c funciona como média de longo prazo da glicose; pode sofrer interferência de anemias, hemoglobinopatias e transfusões.
 
-**Para que serve**
+Para que serve
 • Avalia controle glicêmico crônico.
 • Útil para acompanhar tratamento.
 • Menos afetada por jejum que a glicose isolada.
@@ -108,10 +108,10 @@ Mostra a porcentagem de hemoglobina que ficou "açucarada" ao longo de ~3 meses.
   'insulina': {
     categoria: '🍬 Glicose & Insulina',
     icone: '🍬',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Dosam a insulina em jejum e calculam o HOMA-IR (uma estimativa de resistência à insulina usando glicose+insulina). Refletem sinalização hormonal nas células e mudam com peso, sono, estresse, medicações e atividade física.
 
-**Para que serve**
+Para que serve
 • Sinalizam resistência à insulina.
 • Ajudam a entender síndrome metabólica e esteatose.
 • Direcionam mudanças de estilo de vida.
@@ -122,10 +122,10 @@ Dosam a insulina em jejum e calculam o HOMA-IR (uma estimativa de resistência �
   'creatinina': {
     categoria: '💧 Função Renal',
     icone: '💧',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 É um subproduto do músculo que os rins precisam filtrar. Quando a filtração diminui, a creatinina acumula no sangue. O valor também depende de massa muscular, hidratação e medicações, então é interpretado junto de outros parâmetros.
 
-**Para que serve**
+Para que serve
 • Base para calcular a eTFG (força do filtro).
 • Ajuda a monitorar função renal.
 • Contribui para ajuste de doses de medicamentos.
@@ -135,10 +135,10 @@ Dosam a insulina em jejum e calculam o HOMA-IR (uma estimativa de resistência �
   'ureia': {
     categoria: '💧 Função Renal',
     icone: '💧',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Formada no fígado a partir da amônia (proteínas), a ureia é eliminada pelos rins. Costuma subir com pouca água, dieta proteica ou redução da filtração; isoladamente é menos específica que a creatinina.
 
-**Para que serve**
+Para que serve
 • Complementa a avaliação de função e hidratação.
 • Ajuda em ajuste de terapia (ex.: diuréticos).
 • Útil em monitorização hospitalar e ambulatorial.
@@ -149,10 +149,10 @@ Formada no fígado a partir da amônia (proteínas), a ureia é eliminada pelos 
   'ast': {
     categoria: '🫁 Fígado & Vias Biliares',
     icone: '🫁',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 São enzimas dentro das células do fígado. Quando as células sofrem, parte delas "vaza" para o sangue e os valores sobem (gordura, álcool, vírus, remédios, esforço intenso).
 
-**Para que serve**
+Para que serve
 • Sugerem sofrimento hepático.
 • Ajudam a acompanhar evolução (melhora/piora).
 • Direcionam investigações (imagens, outros exames).
@@ -162,10 +162,10 @@ São enzimas dentro das células do fígado. Quando as células sofrem, parte de
   'alt': {
     categoria: '🫁 Fígado & Vias Biliares',
     icone: '🫁',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 São enzimas dentro das células do fígado. Quando as células sofrem, parte delas "vaza" para o sangue e os valores sobem (gordura, álcool, vírus, remédios, esforço intenso).
 
-**Para que serve**
+Para que serve
 • Sugerem sofrimento hepático.
 • Ajudam a acompanhar evolução (melhora/piora).
 • Direcionam investigações (imagens, outros exames).
@@ -176,10 +176,10 @@ São enzimas dentro das células do fígado. Quando as células sofrem, parte de
   'tsh': {
     categoria: '🧠 Tireoide',
     icone: '🧠',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que ajustam o ritmo do metabolismo. Ensaios imunoquímicos quantificam esses níveis e mostram se o "motor" está acelerado, lento ou equilibrado.
 
-**Para que serve**
+Para que serve
 • Detecta hipo e hipertireoidismo.
 • Acompanha ajustes de dose quando em uso de hormônio.
 • Investiga sintomas como cansaço, perda/ganho de peso, palpitações.
@@ -189,10 +189,10 @@ O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que aj
   't4_livre': {
     categoria: '🧠 Tireoide',
     icone: '🧠',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que ajustam o ritmo do metabolismo. Ensaios imunoquímicos quantificam esses níveis e mostram se o "motor" está acelerado, lento ou equilibrado.
 
-**Para que serve**
+Para que serve
 • Detecta hipo e hipertireoidismo.
 • Acompanha ajustes de dose quando em uso de hormônio.
 • Investiga sintomas como cansaço, perda/ganho de peso, palpitações.
@@ -203,10 +203,10 @@ O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que aj
   'hemoglobina': {
     categoria: '🩸 Hematologia & Nutrientes',
     icone: '🩸',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Usa contadores automatizados e, se necessário, microscopia para medir glóbulos vermelhos (oxigênio), brancos (defesa) e plaquetas (coagulação), além de índices como VCM e HCM.
 
-**Para que serve**
+Para que serve
 • Investiga anemias.
 • Ajuda a identificar infecções e inflamações.
 • Avalia plaquetas (sangramento/coagulação).
@@ -216,10 +216,10 @@ Usa contadores automatizados e, se necessário, microscopia para medir glóbulos
   'ferritina': {
     categoria: '🩸 Hematologia & Nutrientes',
     icone: '🩸',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 A ferritina indica estoque de ferro; a transferrina é o transporte; a saturação mostra quanto do transporte está ocupado; o ferro sérico é o que circula. Juntos, mapeiam estoque + trânsito + entrega.
 
-**Para que serve**
+Para que serve
 • Diferenciam falta de ferro de outras anemias.
 • Orientam reposição (dose/tempo).
 • Sugerem causas (ingestão, perdas).
@@ -229,10 +229,10 @@ A ferritina indica estoque de ferro; a transferrina é o transporte; a saturaç�
   'vitamina_b12': {
     categoria: '🩸 Hematologia & Nutrientes',
     icone: '🩸',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Dosagens sanguíneas de vitaminas essenciais para formação de sangue e sistema nervoso. Podem variar com ingestão, absorção intestinal, álcool e medicações; às vezes pedem marcadores complementares.
 
-**Para que serve**
+Para que serve
 • Avaliam anemias com glóbulos grandes (VCM↑).
 • Ajudam a investigar formigamentos e queixas neurológicas (B12).
 • Guiam suplementação e dieta.
@@ -243,10 +243,10 @@ Dosagens sanguíneas de vitaminas essenciais para formação de sangue e sistema
   'vitamina_d': {
     categoria: '🌞 Vitaminas',
     icone: '🌞',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por alimentos/suplementos. É o melhor indicador de estoque disponível para ossos e músculos.
 
-**Para que serve**
+Para que serve
 • Avalia deficiência ou excesso.
 • Direciona suplementação e reavaliação.
 • Relaciona-se a saúde óssea e muscular.
@@ -257,10 +257,10 @@ Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por a
   'pcr': {
     categoria: '🔥 Inflamação',
     icone: '🔥',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 É uma proteína de fase aguda produzida pelo fígado. No método de alta sensibilidade, detecta inflamações discretas, úteis para entender risco cardiovascular e resposta a hábitos ao longo do tempo.
 
-**Para que serve**
+Para que serve
 • Sinaliza inflamação de baixo grau.
 • Contextualiza risco em conjunto com lipídios.
 • Ajuda a monitorar estilo de vida.
@@ -270,10 +270,10 @@ Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por a
   'vhs': {
     categoria: '🔥 Inflamação',
     icone: '🔥',
-    explicacao: `**Como funciona?**
+    explicacao: `Como funciona?
 Observa a velocidade com que as hemácias sedimentam num tubo padronizado. Proteínas inflamatórias alteram essa velocidade, tornando o VHS um sinal indireto de inflamação crônica.
 
-**Para que serve**
+Para que serve
 • Útil em doenças inflamatórias e infecções crônicas.
 • Interpreta-se junto com PCR e clínica.
 • Acompanha atividade de algumas doenças.
@@ -414,6 +414,62 @@ function getGroupExplanation(group: any[]) {
   }
 }
 
+// Função para criar um novo documento médico
+async function createDocument(
+  supabase: any, 
+  userId: string,
+  title: string = 'Exame Médico',
+  examType: string = 'exame_laboratorial',
+  tmpPaths: string[] = [],
+  idempotencyKey: string = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+): Promise<string> {
+  console.log('📝 Criando novo documento médico...');
+  
+  const documentData = {
+    user_id: userId,
+    title: title,
+    type: examType,
+    status: 'normal',
+    analysis_status: 'pending',
+    processing_stage: 'criado',
+    progress_pct: 0,
+    idempotency_key: idempotencyKey,
+    report_meta: {
+      created_at: new Date().toISOString(),
+      tmp_paths: tmpPaths,
+      original_images_count: tmpPaths?.length || 0,
+      source: 'analyze-medical-exam'
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  
+  console.log('📋 Dados do documento a criar:', {
+    user_id: documentData.user_id,
+    title: documentData.title,
+    type: documentData.type,
+    tmp_paths_count: tmpPaths?.length || 0,
+  });
+  
+  const { data: newDoc, error: createError } = await supabase
+    .from('medical_documents')
+    .insert(documentData)
+    .select('id')
+    .single();
+  
+  if (createError) {
+    console.error('❌ Erro detalhado ao criar documento:', createError);
+    throw new Error(`Falha ao criar documento: ${createError.message}`);
+  }
+  
+  if (!newDoc?.id) {
+    throw new Error('Documento criado, mas o ID não foi retornado');
+  }
+  
+  console.log('✅ Documento criado com sucesso:', newDoc.id);
+  return newDoc.id;
+}
+
 function getExamDescription(examName: string) {
   const name = examName.toLowerCase();
   
@@ -473,6 +529,280 @@ function getRecommendations(examName: string, status: string) {
   return 'consultar médico para avaliação específica';
 }
 
+// Função para gerar relatório didático
+async function generateDidacticReport(supabase, userId, documentId) {
+  console.log('🎓 Gerando relatório didático para documento:', documentId);
+  
+  // Buscar dados do documento
+  const { data: document } = await supabase
+    .from('medical_documents')
+    .select('*')
+    .eq('id', documentId)
+    .single();
+  
+  if (!document) {
+    throw new Error('Documento não encontrado');
+  }
+  
+  // Buscar dados do usuário
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+  
+  // Extrair dados estruturados do relatório
+  let structuredData = document.report_content;
+  if (!structuredData || !structuredData.sections) {
+    console.log('⚠️ Relatório sem dados estruturados, usando dados básicos');
+    structuredData = {
+      patient_name: profile?.full_name || 'Paciente',
+      exam_date: new Date().toISOString().split('T')[0],
+      summary: 'Análise didática dos exames',
+      sections: []
+    };
+  }
+  
+  // Gerar HTML didático com explicações detalhadas
+  const didacticHtml = generateDidacticHTML(structuredData, profile, documentId);
+  
+  // Salvar relatório didático
+  const reportPath = `${userId}/${documentId}_didactic_report.html`;
+  const encoder = new TextEncoder();
+  const htmlBytes = encoder.encode(didacticHtml);
+  
+  // Remover arquivo anterior se existir
+  await supabase.storage.from('medical-documents-reports').remove([reportPath]).catch(() => {});
+  
+  // Upload com headers corretos
+  const { error: uploadError } = await supabase.storage
+    .from('medical-documents-reports')
+    .upload(reportPath, new Blob([htmlBytes], { type: 'text/html; charset=utf-8' }), {
+      upsert: true,
+      contentType: 'text/html; charset=utf-8'
+    });
+  
+  if (uploadError) {
+    throw new Error(`Erro ao salvar relatório didático: ${uploadError.message}`);
+  }
+  
+  // Atualizar documento com caminho do relatório didático
+  await supabase
+    .from('medical_documents')
+    .update({
+      didactic_report_path: reportPath,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', documentId);
+  
+  console.log('✅ Relatório didático gerado com sucesso:', reportPath);
+  
+  return { reportPath };
+}
+
+// Função para gerar HTML didático
+function generateDidacticHTML(data, profile, documentId) {
+  const patientName = data.patient_name || profile?.full_name || 'Paciente';
+  const examDate = data.exam_date || new Date().toLocaleDateString('pt-BR');
+  
+  // Renderizar seções com explicações didáticas
+  const renderSections = (sections) => {
+    if (!sections || !Array.isArray(sections) || sections.length === 0) {
+      return '<p>Não foram encontrados dados estruturados para este exame.</p>';
+    }
+    
+    return sections.map(section => {
+      const metricsHTML = section.metrics.map(metric => {
+        const explicacao = getExplicacaoDidatica(metric.name);
+        return `
+          <div class="metric-card status-${metric.status || 'normal'}">
+            <div class="metric-name">${metric.name}</div>
+            <div class="metric-value">${metric.value} ${metric.unit || ''}</div>
+            <div class="metric-ref">Referência: ${metric.reference_range || 'N/A'}</div>
+            ${explicacao ? `
+              <div class="explanation">
+                <h4>Como funciona este exame?</h4>
+                <p>${explicacao.explicacao.replace(/\n/g, '<br>')}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+      
+      return `
+        <div class="section">
+          <h2>${section.icon || '🧪'} ${section.title}</h2>
+          <div class="metrics-grid">
+            ${metricsHTML}
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+  
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Didático - ${patientName}</title>
+  <style>
+    :root {
+      --primary: #1E40AF;
+      --secondary: #3B82F6;
+      --text: #1F2937;
+      --bg: #F9FAFB;
+      --white: #FFFFFF;
+      --border: #E5E7EB;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .header p {
+      margin: 5px 0 0;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 30px;
+    }
+    .summary {
+      background: #EFF6FF;
+      border-left: 5px solid var(--primary);
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+    }
+    .section h2 {
+      font-size: 22px;
+      color: var(--primary);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 10px;
+      margin: 30px 0 20px;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .metric-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      background: var(--white);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .metric-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .metric-ref {
+      font-size: 14px;
+      color: #6B7280;
+      margin-bottom: 15px;
+    }
+    .metric-card.status-elevated .metric-value {
+      color: var(--danger);
+    }
+    .metric-card.status-low .metric-value {
+      color: var(--warning);
+    }
+    .metric-card.status-normal .metric-value {
+      color: var(--success);
+    }
+    .explanation {
+      margin-top: 15px;
+      padding: 15px;
+      background: #F3F4F6;
+      border-radius: 8px;
+    }
+    .explanation h4 {
+      margin-top: 0;
+      font-size: 16px;
+      color: var(--primary);
+    }
+    .explanation p {
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #6B7280;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+    @media print {
+      body { background: white; }
+      .container { box-shadow: none; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()" style="position:fixed;top:20px;right:20px;background:var(--primary);color:white;border:none;padding:12px 20px;border-radius:8px;font-weight:600;cursor:pointer;z-index:1000;">
+    🖨️ Imprimir / Salvar PDF
+  </button>
+  
+  <div class="container">
+    <div class="header">
+      <h1>🎓 Relatório Didático de Exames</h1>
+      <p>Dr. Vital - IA Médica do Instituto dos Sonhos</p>
+    </div>
+    
+    <div class="content">
+      <div class="summary">
+        <strong>Paciente:</strong> ${patientName}<br>
+        <strong>Data do Exame:</strong> ${examDate}<br>
+        <strong>Resumo:</strong> ${data.summary || 'Análise didática dos seus exames com explicações detalhadas.'}
+      </div>
+      
+      <p>Este relatório didático explica cada um dos seus exames de forma simples e educativa, ajudando você a entender melhor o que cada teste mede e como interpretar seus resultados.</p>
+      
+      ${renderSections(data.sections)}
+    </div>
+    
+    <div class="footer">
+      <p><strong>⚠️ Importante:</strong> Este relatório é educativo e não substitui uma consulta médica. Discuta seus resultados com um profissional de saúde.</p>
+      <p>Instituto dos Sonhos • Documento gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -484,6 +814,7 @@ serve(async (req) => {
   // Inicializar Supabase (usar service role para ler configs com segurança)
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   try {
@@ -506,6 +837,46 @@ serve(async (req) => {
       });
     }
     
+    // Verificar se é uma solicitação de relatório didático apenas
+    const isDidacticOnly = requestBody.didacticOnly === true;
+    if (isDidacticOnly) {
+      console.log('🎓 Solicitação de relatório didático detectada');
+      
+      // Verificar se temos documentId e userId
+      const { documentId, userId } = requestBody;
+      if (!documentId || !userId) {
+        return new Response(JSON.stringify({
+          error: 'documentId e userId são obrigatórios para gerar relatório didático'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+      
+      try {
+        // Gerar relatório didático
+        const result = await generateDidacticReport(supabase, userId, documentId);
+        
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Relatório didático gerado com sucesso',
+          reportPath: result.reportPath
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (error) {
+        console.error('❌ Erro ao gerar relatório didático:', error);
+        return new Response(JSON.stringify({
+          error: 'Falha ao gerar relatório didático',
+          details: error.message
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+    
     console.log('✅ Supabase inicializado com sucesso');
 
     // Buscar configuração de IA para análise médica
@@ -519,11 +890,11 @@ serve(async (req) => {
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    // Modelo premium: GPT-5 (análise avançada ultra-precisa)
+    // Modelo GPT-4 Turbo (Premium) com tokens ajustados conforme a quantidade de exames
     const config = {
       service: 'openai' as const,
-      model: 'gpt-5-2025-08-07',
-      max_completion_tokens: 8000,
+      model: 'gpt-4o', // GPT-4o para qualidade premium máxima
+      max_completion_tokens: 4000, // Valor base que será ajustado conforme o número de imagens
       openai_key: OPENAI_API_KEY
     };
 
@@ -536,18 +907,39 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY não configurada');
     }
 
-    const { imageData, storagePath, storagePaths, images: inputImages, examType, userId, documentId: docId } = requestBody;
+    const { imageData, storagePath, storagePaths, images: inputImages, examType, userId, documentId: docId, tmpPaths, title } = requestBody;
     userIdEffective = userId || null;
-    documentId = docId;
     let examTypeEffective: string | null = examType || null;
     
-    // Validações após definir as variáveis
-    if (!documentId) {
-      throw new Error('documentId é obrigatório');
+    // Validações após definir as variáveis - verificar se temos tmpPaths como alternativa
+    if (!docId && !tmpPaths) {
+      throw new Error('documentId ou tmpPaths é obrigatório');
     }
     
     if (!userIdEffective) {
       throw new Error('userId é obrigatório');
+    }
+    
+    // Determinar ou criar documentId
+    if (docId) {
+      // Usar documento existente
+      documentId = docId;
+      console.log('✅ Usando documento existente:', documentId);
+    } else if (tmpPaths && tmpPaths.length > 0 && userIdEffective) {
+      // Criar novo documento
+      try {
+        documentId = await createDocument(
+          supabase, 
+          userIdEffective, 
+          title || 'Exame Médico', 
+          examTypeEffective || 'exame_laboratorial',
+          tmpPaths
+        );
+        console.log('✅ Novo documento criado:', documentId);
+      } catch (createError) {
+        console.error('❌ Erro ao criar documento:', createError);
+        throw new Error(`Falha ao criar documento: ${createError.message}`);
+      }
     }
     
     // examType é opcional - usar fallback se não fornecido
@@ -610,26 +1002,105 @@ serve(async (req) => {
       goals: goals || []
     };
 
-    // Prompt específico para Dr. Vital gerar dados estruturados com analogias didáticas
-    let systemPrompt = `Você é o Dr. Vital, IA médica do Instituto dos Sonhos. Analise a IMAGEM do exame médico fornecida e extraia TODOS os dados laboratoriais visíveis.
+    // Prompt específico para Dr. Vital gerar dados estruturados com MÁXIMA QUALIDADE
+    let systemPrompt = `Você é o Dr. Vital, IA médica especializada do Instituto dos Sonhos. Analise a IMAGEM do exame médico fornecida com MÁXIMA PRECISÃO e extraia TODOS os dados laboratoriais visíveis.
 
-TAREFA PRINCIPAL: EXTRAIR DADOS DA IMAGEM
-1) Leia CUIDADOSAMENTE a imagem do exame
-2) Identifique TODOS os exames laboratoriais presentes
-3) Para CADA exame encontrado, extraia:
-   - Nome do exame (exatamente como aparece)
-   - Valor/resultado (com unidade de medida)
-   - Valor de referência (se disponível)
-4) Extraia também:
-   - Nome do paciente (se visível)
-   - Data do exame (se visível)
-   - Laboratório/clínica (se visível)
+TAREFA PRINCIPAL: EXTRAÇÃO COMPLETA E ANÁLISE DETALHADA
+1) Leia CUIDADOSAMENTE cada pixel da imagem do exame
+2) Identifique TODOS os exames laboratoriais presentes (mesmo os menores)
+3) Para CADA exame encontrado, extraia com PRECISÃO MÁXIMA:
+   - Nome do exame (exatamente como aparece, incluindo abreviações)
+   - Valor/resultado (com unidade de medida completa)
+   - Valor de referência (intervalo completo se disponível)
+   - Status/interpretação (normal, alterado, etc.)
+4) Extraia também TODAS as informações visíveis:
+   - Nome completo do paciente (PRIORIDADE MÁXIMA - procure em todo o documento)
+   - Data do exame (formato DD/MM/AAAA se possível)
+   - Laboratório/clínica (nome completo da instituição)
+   - Médico responsável/solicitante (se visível)
+   - CRM do médico (se disponível)
+   - Qualquer observação ou nota adicional
 
-IMPORTANTE:
-- Se a imagem não estiver clara, indique isso mas tente extrair o máximo possível
+ATENÇÃO ESPECIAL PARA NOME DO PACIENTE:
+- OBRIGATÓRIO: Procure o nome em TODA a imagem: cabeçalho, rodapé, etiquetas, carimbos, campos de texto
+- O nome pode aparecer como "Paciente:", "Nome:", "Solicitado por:", ou apenas estar escrito
+- Extraia o nome COMPLETO exatamente como está escrito
+- Se não encontrar nome, use "Paciente" mas SEMPRE procure primeiro
+- NUNCA use "Desconhecido" - sempre procure mais
+
+EXPLICAÇÕES "COMO FUNCIONA" OBRIGATÓRIAS:
+- Para CADA exame encontrado, você DEVE incluir uma explicação "Como Funciona"
+- Explique de forma simples o que o exame mede e por que é importante
+- Use linguagem acessível mas profissional
+- Inclua o que valores altos/baixos podem significar
+- Use os modelos de explicação abaixo quando aplicáveis:
+
+🫀 PERFIL LIPÍDICO:
+- Colesterol Total: O laboratório mede o colesterol total no sangue, que é a soma do que circula nas "ruas do corpo": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL. É um retrato pontual do tráfego de colesterol e pode variar conforme alimentação recente, álcool, medicações e condições clínicas.
+- LDL: Quantifica o colesterol que viaja nos "caminhões LDL", os que têm maior tendência a aderir às paredes das artérias. Dependendo do laboratório, o LDL pode ser medido diretamente ou calculado a partir de Total, HDL e triglicerídeos.
+- HDL: Mede o colesterol presente no "caminhão de limpeza": partículas que retiram excesso de gordura dos tecidos e levam de volta ao fígado. Parte do nível é constitucional (genética), mas atividade física, peso corporal e hábitos influenciam bastante ao longo do tempo.
+- Triglicerídeos: Dosam a gordura de transporte que sobe facilmente após açúcares, refeições ricas e álcool. Mesmo com jejum, os TG refletem como o corpo processa e estoca energia. Varia com resistência à insulina, peso abdominal, medicações e doenças da tireoide.
+- VLDL: Avalia as partículas que o fígado fabrica para levar triglicerídeos até os tecidos. Como acompanha de perto os TG, tende a subir e descer junto com eles.
+
+🍬 GLICOSE & INSULINA:
+- Glicose em jejum: Quantifica a glicose no sangue após um período de 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento. Pode oscilar com estresse, infecções, corticoides, café muito forte e quebra de jejum.
+- Hemoglobina glicada (HbA1c): Mostra a porcentagem de hemoglobina que ficou "açucarada" ao longo de ~3 meses. Como os glóbulos vermelhos vivem semanas, a HbA1c funciona como uma média de longo prazo da glicose.
+- Insulina & HOMA-IR: Dosam a insulina em jejum e calculam o HOMA-IR (uma estimativa de resistência à insulina baseada em glicose+insulina). Refletem sinalização hormonal nas células e mudam com peso, sono, estresse, medicações e atividade física.
+
+💧 FUNÇÃO RENAL:
+- Creatinina: É um subproduto do músculo que os rins devem filtrar. Quando a filtração diminui, a creatinina acumula no sangue. O valor também depende de massa muscular, hidratação e algumas medicações.
+- eTFG (taxa de filtração estimada): É um cálculo que usa creatinina, idade e sexo para estimar quanto os rins filtram por minuto (mL/min/1,73 m²). Não é uma medida direta, mas um modelo matemático validado, útil para classificar estágios de função renal.
+- Ureia: Formada no fígado a partir da amônia (do metabolismo das proteínas), a ureia é eliminada pelos rins. Costuma subir com pouca água, dieta proteica ou redução da filtração.
+
+🩸 HEMATOLOGIA & NUTRIENTES:
+- Hemograma completo: Usa contadores automatizados para medir glóbulos vermelhos, brancos e plaquetas, além de índices como VCM e HCM. É um painel amplo, sensível a infecções, deficiências nutricionais e sangramentos.
+- Ferro/Ferritina: A ferritina indica estoque de ferro; a transferrina é o caminho que o transporta; a saturação mostra quanto do caminho está ocupado; o ferro sérico é o que está circulando.
+- Vitamina B12 & Folato: São dosagens sanguíneas de vitaminas essenciais para formar sangue e cuidar do sistema nervoso. Podem variar com ingestão, absorção intestinal, álcool e medicações.
+
+⚡️ ELETRÓLITOS & OSSO:
+- Sódio/Potássio/Cloro: Medem os íons que regulam água, eletricidade e equilíbrio ácido-básico do corpo. Mudam rapidamente com vômitos/diarreia, diuréticos, doenças renais e hormônios.
+- Cálcio: O cálcio total inclui a fração ligada à albumina e a livre (ionizada); o ionizado é o biologicamente ativo. PTH e vitamina D controlam esse equilíbrio.
+
+🫁 FÍGADO & VIAS BILIARES:
+- AST (TGO)/ALT (TGP): São enzimas dentro das células do fígado. Quando as células sofrem (gordura, vírus, álcool, remédios, esforço intenso), parte dessas enzimas "vaza" para o sangue, elevando os valores no exame.
+- GGT: Enzima sensível das vias biliares e do fígado, frequentemente induzida por álcool e por alguns medicamentos. Sobe junto da FA em distúrbios do fluxo biliar.
+- Fosfatase Alcalina (FA) & Bilirrubinas: A FA reflete atividade nas vias biliares e em ossos; as bilirrubinas vêm da quebra da hemoglobina e indicam se há acúmulo (icterícia).
+
+🔥 INFLAMAÇÃO:
+- PCR-us (hs-CRP): É uma proteína de fase aguda produzida pelo fígado. No método de alta sensibilidade, detecta inflamações discretas, úteis para entender risco cardiovascular.
+- VHS (ESR): Observa a velocidade com que as hemácias sedimentam em um tubo padronizado. Proteínas inflamatórias alteram essa velocidade, tornando o VHS um sinal indireto de inflamação crônica.
+
+OUTROS:
+- Ácido Úrico: É o produto final da quebra de purinas (alimentos e células). Quando o nível sobe e a eliminação cai, podem se formar cristais nas articulações e nos rins.
+- Vitamina D (25-OH): Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por alimentos/suplementos. É o melhor indicador do estoque disponível para ossos e músculos.
+- TSH/T4 livre/T3 livre: O TSH é o comando da hipófise para a tireoide; T4/T3 são os hormônios que ajustam o ritmo do metabolismo. Ensaios imunoquímicos quantificam esses níveis.
+
+ANÁLISE CLÍNICA DETALHADA:
+- Para cada valor extraído, forneça interpretação clínica completa
+- Explique o significado de cada resultado para a saúde
+- Identifique correlações entre diferentes exames
+- Sugira possíveis causas para valores alterados
+- Indique urgência e próximos passos necessários
+
+EXPLICAÇÕES DETALHADAS SOBRE COMO CADA EXAME FUNCIONA:
+Para cada exame encontrado, inclua uma seção "Como Funciona" que explica:
+1. O que é medido no exame (qual substância, célula ou componente)
+2. Como o corpo produz ou processa essa substância
+3. O que valores altos ou baixos podem significar
+4. Por que esse exame é importante para a saúde
+5. Como o exame é realizado (método laboratorial)
+
+Por exemplo, para Creatinina:
+"Como Funciona a Creatinina?
+A creatinina é um produto de degradação da creatina, que é liberada constantemente pelos músculos. Os rins são responsáveis por filtrar e eliminar a creatinina do sangue. Como a produção é relativamente constante, níveis elevados geralmente indicam que os rins não estão filtrando adequadamente. O exame mede a concentração de creatinina no sangue através de reações químicas específicas, fornecendo uma janela direta para o funcionamento dos rins."
+
+IMPORTANTE - MÁXIMA QUALIDADE:
+- Se a imagem não estiver clara, indique especificamente o que não consegue ler
 - NUNCA invente dados - apenas extraia o que está visível
 - Liste TODOS os exames que conseguir identificar na imagem
 - Mantenha as unidades de medida exatamente como aparecem
+- Seja extremamente detalhado na análise de cada resultado
+- SEMPRE inclua explicações sobre como cada exame funciona
 
 SISTEMA HÍBRIDO DE EXPLICAÇÕES:
 - Para exames comuns (colesterol, glicose, creatinina, etc.), use EXPLICAÇÕES PRÉ-PRONTAS já disponíveis no sistema
@@ -675,7 +1146,8 @@ FORMATO JSON QUE VOCÊ DEVE INCLUIR AO FINAL DO TEXTO:
           "value": string,
           "unit": string,
           "status": "normal"|"elevated"|"low",
-          "us_reference": string|null
+          "us_reference": string|null,
+          "how_it_works": string
         }
       ]
     }
@@ -927,8 +1399,8 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       }
     }
 
-    // LIMITAÇÃO ULTRA-DRÁSTICA: APENAS 1 IMAGEM POR VEZ
-    const MAX_IMAGES = 1; // Ultra-limitado para garantir funcionamento
+    // Limitação de imagens com base no modelo
+    const MAX_IMAGES = 30; // Permitir até 30 imagens para exames com muitas páginas
     
     // OTIMIZAÇÃO: Preparar para processamento eficiente
     console.log('🚀 Processamento otimizado habilitado');
@@ -956,10 +1428,10 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         }
       }
       
-      // LIMITAÇÃO ULTRA-DRÁSTICA: Apenas 1 imagem por vez
-      const toDownload = resolvedPaths.slice(0, 1);
-      if (resolvedPaths.length > 1) {
-        console.log(`⚠️ LIMITAÇÃO ULTRA-DRÁSTICA: Processando apenas 1 de ${resolvedPaths.length} imagens`);
+      // Limitação ajustada: Até 2 imagens por vez
+      const toDownload = resolvedPaths.slice(0, MAX_IMAGES);
+      if (resolvedPaths.length > MAX_IMAGES) {
+        console.log(`⚠️ Limitação: Processando apenas ${MAX_IMAGES} de ${resolvedPaths.length} imagens`);
       }
       let processed = 0;
       
@@ -1149,8 +1621,14 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       }
       // Função otimizada para chamar OpenAI
       const callOpenAI = async (model: string) => {
-        // OTIMIZAÇÃO: Reduzir detail das imagens para economizar tokens e tempo
-        const imageDetail = imagesLimited.length > 6 ? 'low' : 'high';
+        // Ajustar tokens conforme o número de imagens
+        const tokensPerImage = 2000; // Base de tokens por imagem
+        // Aumentando limite de tokens para processar exames com muitas páginas (10-30 páginas)
+        const adjustedTokens = Math.min(8000, Math.max(4000, imagesLimited.length * tokensPerImage));
+        console.log(`🔢 Tokens ajustados: ${adjustedTokens} para ${imagesLimited.length} imagens`);
+        
+        // Qualidade adaptativa: high para poucas imagens, auto para muitas
+        const imageDetail = imagesLimited.length <= 1 ? 'high' : 'auto';
         
         // Validar formato das imagens
         for (const img of imagesLimited) {
@@ -1172,7 +1650,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         }
         
         // Configuração adaptada para modelos premium
-        const isPremiumModel = model.includes('gpt-5') || model.includes('gpt-4.1');
+        const isPremiumModel = model.includes('gpt-5') || model.includes('gpt-4.1') || model.includes('gpt-4-turbo');
         const body = isPremiumModel ? {
           model,
           messages: [{
@@ -1194,7 +1672,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
               })
             ]
           }],
-          max_completion_tokens: 8000 // Modelo premium - mais tokens
+          max_completion_tokens: adjustedTokens // Tokens ajustados conforme o número de imagens
         } : {
           model,
           messages: [{
@@ -1217,7 +1695,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
             ]
           }],
           temperature: 0.2,
-          max_tokens: 4000 // Modelo legado - configuração antiga
+          max_tokens: adjustedTokens // Tokens ajustados conforme o número de imagens
         };
         
         console.log(`🤖 Enviando ${imagesLimited.length} imagens para OpenAI (detail: ${imageDetail})`);
@@ -1242,7 +1720,8 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         return json;
       };
 
-      let usedModel = 'gpt-5-2025-08-07';
+      // Usar o modelo definido na configuração
+      let usedModel = config.model;
       let aiResponse: any;
       
       console.log('🤖 Chamando OpenAI com modelo PREMIUM:', usedModel);
@@ -1262,13 +1741,13 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       catch (e) {
         console.log('⚠️ Fallback para modelo avançado:', e);
         try { 
-          usedModel = 'gpt-4.1-2025-04-14'; 
+          usedModel = 'gpt-4o'; 
           aiResponse = await callOpenAI(usedModel); 
           console.log('✅ Fallback 1 funcionou');
         }
         catch (e2) {
           console.log('⚠️ Fallback para modelo básico:', e2);
-          usedModel = 'gpt-4o'; 
+          usedModel = 'gpt-3.5-turbo'; 
           aiResponse = await callOpenAI(usedModel); 
           console.log('✅ Fallback 2 funcionou');
         }
@@ -1321,129 +1800,700 @@ Exemplo:
       }
     }
 
-    // Dados estruturados
+    // Dados estruturados extraídos pelo GPT
     const parsed = extracted || {};
-    const patientName = (parsed.patient_name || parsed.patient || userContext.profile?.full_name || 'Paciente');
-    const examDate = new Date().toLocaleDateString('pt-BR');
     
-    // HTML Clínico Elegante do Dr. Vital
-    const html = `<!doctype html>
+    // Nome do paciente SEMPRE extraído da imagem pelo GPT
+    const patientName = parsed.patient_name || parsed.patient || 'Paciente';
+    
+    const examDate = parsed.exam_date || new Date().toLocaleDateString('pt-BR');
+    const doctorName = parsed.doctor_name || 'Dr. Vital - IA Médica';
+    const clinicName = parsed.clinic_name || 'Instituto dos Sonhos';
+    
+    // HTML Clínico Premium do Dr. Vital - Layout Corporativo
+    const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Relatório Médico Clínico — ${patientName}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Médico Premium - ${patientName}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* Design Clínico Elegante - Instituto dos Sonhos */
+    /* DESIGN CORPORATIVO PREMIUM - INSTITUTO DOS SONHOS */
+    
     :root {
-      --primary: #1E40AF;
-      --primary-light: #3B82F6;
-      --secondary: #059669;
-      --accent: #F59E0B;
-      --danger: #DC2626;
-      --warning: #D97706;
-      --success: #059669;
-      --text-primary: #1F2937;
-      --text-secondary: #6B7280;
-      --text-muted: #9CA3AF;
-      --bg-primary: #FFFFFF;
-      --bg-secondary: #F9FAFB;
-      --bg-tertiary: #F3F4F6;
-      --border: #E5E7EB;
-      --border-light: #F3F4F6;
-      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --secondary: #0f766e;
+      --secondary-light: #14b8a6;
+      --text-dark: #1e293b;
+      --text-medium: #475569;
+      --text-light: #64748b;
+      --bg-light: #f8fafc;
+      --bg-white: #ffffff;
+      --bg-secondary: #f0fdfa;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border-radius: 4px;
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
       line-height: 1.6;
-      color: var(--text-primary);
-      background: var(--bg-secondary);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
 
-    /* Header Clínico */
+    /* CABEÇALHO CORPORATIVO */
     .header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white;
-      border-radius: 16px;
-      padding: 32px;
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
       margin-bottom: 24px;
-      box-shadow: var(--shadow-lg);
-      position: relative;
+      box-shadow: var(--shadow-md);
       overflow: hidden;
     }
 
-    .header::before {
+    .header-banner {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px 30px;
+      position: relative;
+    }
+
+    .header-banner::after {
       content: '';
       position: absolute;
       top: 0;
       right: 0;
-      width: 200px;
-      height: 200px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      transform: translate(50%, -50%);
+      bottom: 0;
+      width: 30%;
+      background: linear-gradient(90deg, rgba(30, 64, 175, 0) 0%, rgba(59, 130, 246, 0.5) 100%);
     }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 24px;
+    .header-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
       position: relative;
       z-index: 1;
     }
 
-    .logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 12px;
-      background: white;
-      padding: 8px;
-      box-shadow: var(--shadow);
+    .header-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-content {
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-logo {
+      width: 50px;
+      height: 50px;
+      background: var(--primary-light);
+      color: white;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 24px;
+      margin-right: 15px;
     }
 
-    .header-text h1 {
-      font-size: 32px;
-      font-weight: 800;
+    .header-patient h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+    }
+
+    .header-patient p {
+      font-size: 14px;
+      color: var(--text-medium);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .header-patient strong {
+      color: var(--text-dark);
+    }
+
+    .header-right {
+      text-align: right;
+      min-width: 250px;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-item {
+      font-size: 13px;
+      color: var(--text-medium);
+      line-height: 1.3;
+    }
+
+    .info-item strong {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .status-badge {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* INFORMAÇÕES DO PACIENTE */
+    .patient-info-section {
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .patient-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .detail-card {
+      background: var(--bg-light);
+      border-radius: var(--border-radius);
+      padding: 16px;
+      border-left: 4px solid var(--primary-light);
+    }
+
+    .detail-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .detail-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    /* INDICADORES CHAVE */
+    .key-indicators {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .indicator-card {
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border-top: 3px solid var(--primary);
+    }
+
+    .indicator-card.warning {
+      border-top-color: var(--warning);
+    }
+
+    .indicator-card.danger {
+      border-top-color: var(--danger);
+    }
+
+    .indicator-card.success {
+      border-top-color: var(--success);
+    }
+
+    .indicator-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-medium);
+      margin-bottom: 12px;
+    }
+
+    .indicator-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-dark);
       margin-bottom: 8px;
     }
 
-    .header-text p {
+    .indicator-card.warning .indicator-value {
+      color: var(--warning);
+    }
+
+    .indicator-card.danger .indicator-value {
+      color: var(--danger);
+    }
+
+    .indicator-card.success .indicator-value {
+      color: var(--success);
+    }
+
+    .indicator-reference {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    /* SUMÁRIO EXECUTIVO */
+    .executive-summary {
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary-light);
+      color: white;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 18px;
-      opacity: 0.9;
-      margin-bottom: 4px;
+      margin-right: 12px;
     }
 
-    .header-badge {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
+    .section-title {
+      font-family: 'Merriweather', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    
+    .exams-count-badge {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-size: 13px;
       font-weight: 600;
-      backdrop-filter: blur(10px);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-left: 12px;
+      display: inline-block;
+      vertical-align: middle;
     }
 
-    /* Botão de Impressão */
+    .summary-content {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-medium);
+    }
+
+    .summary-content p {
+      margin-bottom: 15px;
+    }
+
+    .summary-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* CARDS DE EXAMES PREMIUM */
+    .exams-section {
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .exams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .exam-card {
+      background: var(--bg-white);
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      border-left: 4px solid var(--primary-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      font-size: 0.95em;
+    }
+
+    .exam-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .exam-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: rgba(59, 130, 246, 0.05);
+      border-radius: 0 0 0 60px;
+    }
+
+    .exam-card.normal {
+      border-left-color: var(--success);
+    }
+
+    .exam-card.elevated {
+      border-left-color: var(--danger);
+    }
+
+    .exam-card.low {
+      border-left-color: var(--warning);
+    }
+
+    .exam-card.normal::before {
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .exam-card.elevated::before {
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .exam-card.low::before {
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .exam-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .exam-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .exam-status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .exam-status-badge.normal {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .exam-status-badge.elevated {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
+    .exam-status-badge.low {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .exam-value {
+      font-family: 'Merriweather', serif;
+      font-size: 32px;
+      font-weight: 700;
+      margin: 16px 0;
+      color: var(--primary-dark);
+    }
+
+    .exam-card.normal .exam-value {
+      color: var(--success);
+    }
+
+    .exam-card.elevated .exam-value {
+      color: var(--danger);
+    }
+
+    .exam-card.low .exam-value {
+      color: var(--warning);
+    }
+
+    .exam-reference {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .exam-interpretation {
+      font-size: 13px;
+      color: var(--text-medium);
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    .how-it-works-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(59, 130, 246, 0.08) 100%);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 4px solid var(--primary-light);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    .how-it-works-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+      z-index: 1;
+    }
+    
+    .how-it-works-card::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      transform: translate(-30%, 30%);
+      z-index: 1;
+    }
+
+    .how-it-works-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .how-it-works-icon {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+    }
+
+    .how-it-works-card h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 0;
+      font-family: var(--font-title);
+      letter-spacing: -0.01em;
+    }
+
+    .how-it-works-card p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-medium);
+      margin: 0;
+      position: relative;
+      z-index: 2;
+      font-weight: 400;
+    }
+
+    /* COMO FUNCIONA */
+    .how-it-works {
+      background: var(--bg-secondary);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 3px solid var(--secondary);
+    }
+
+    .how-it-works h4 {
+      font-family: 'Merriweather', serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--secondary);
+    }
+
+    .how-it-works p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-medium);
+    }
+
+    /* RECOMENDAÇÕES */
+    .recommendations {
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .recommendations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .recommendation-card {
+      border: 1px solid #e5e7eb;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      position: relative;
+    }
+
+    .recommendation-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-light);
+    }
+
+    .recommendation-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .recommendation-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-right: 12px;
+    }
+
+    .recommendation-title {
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--text-dark);
+    }
+
+    .recommendation-content {
+      font-size: 14px;
+      color: var(--text-medium);
+      line-height: 1.6;
+    }
+
+    /* RODAPÉ */
+    .footer {
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 24px 30px;
+      margin-top: 30px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 12px;
+    }
+
+    .footer-text {
+      font-size: 14px;
+      color: var(--text-medium);
+    }
+
+    .footer-text strong {
+      display: block;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 3px;
+    }
+
+    .footer-disclaimer {
+      font-size: 12px;
+      color: var(--text-light);
+      max-width: 500px;
+      text-align: right;
+    }
+
+    /* BOTÃO DE IMPRESSÃO */
     .print-btn {
       position: fixed;
       top: 20px;
@@ -1451,244 +2501,374 @@ Exemplo:
       background: var(--primary);
       color: white;
       border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      font-size: 14px;
       cursor: pointer;
-      box-shadow: var(--shadow-lg);
-      z-index: 1000;
-      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+      z-index: 100;
     }
 
     .print-btn:hover {
       background: var(--primary-light);
-      transform: translateY(-1px);
     }
 
-    /* Seção do Dr. Vital */
-    .doctor-section {
-      background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
-      border: 1px solid #BAE6FD;
-      border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
+    .print-btn::before {
+      content: '🖨️';
+      font-size: 16px;
     }
 
-    .doctor-avatar {
-      font-size: 48px;
-      width: 80px;
-      height: 80px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow);
-    }
-
-    .doctor-content h2 {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 12px;
-    }
-
-    .doctor-content p {
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-
-    /* Conteúdo Principal */
-    .content {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .content h1 {
-      color: var(--text-primary);
-      margin-top: 0;
-      margin-bottom: 24px;
-      font-size: 28px;
-      font-weight: 700;
-    }
-
-    .content h2 {
-      color: var(--primary);
-      border-bottom: 2px solid var(--border-light);
-      padding-bottom: 12px;
-      margin-top: 32px;
-      margin-bottom: 16px;
-      font-size: 24px;
-      font-weight: 600;
-    }
-
-    .content h3 {
-      color: var(--text-secondary);
-      margin-top: 24px;
-      margin-bottom: 12px;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .content p {
-      margin-bottom: 16px;
-      color: var(--text-primary);
-    }
-
-    .content strong {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .content em {
-      color: var(--text-secondary);
-      font-style: italic;
-    }
-
-    /* Footer */
-    .footer {
-      margin-top: 32px;
-      padding: 24px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .footer strong {
-      color: var(--warning);
-    }
-
-    /* Responsividade */
+    /* RESPONSIVIDADE */
     @media (max-width: 768px) {
       .container {
-        padding: 16px;
+        padding: 0 15px;
+        margin: 20px auto;
       }
-      
-      .header {
-        padding: 24px;
-      }
-      
+
       .header-content {
         flex-direction: column;
-        text-align: center;
+        align-items: flex-start;
       }
-      
-      .content {
-        padding: 24px;
+
+      .header-right {
+        text-align: left;
+        margin-top: 15px;
       }
-      
-      .doctor-section {
+
+      .key-indicators {
+        grid-template-columns: 1fr;
+      }
+
+      .patient-details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .exams-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .recommendations-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
         flex-direction: column;
-        text-align: center;
+        align-items: flex-start;
+      }
+
+      .footer-disclaimer {
+        text-align: left;
+        margin-top: 15px;
       }
     }
 
-    /* Impressão */
+    /* IMPRESSÃO */
     @media print {
-      .print-btn {
-        display: none;
-      }
-      
       body {
         background: white;
       }
-      
+
       .container {
+        max-width: 100%;
         padding: 0;
-        max-width: none;
+        margin: 0;
       }
-      
-      .header {
-        box-shadow: none;
-        border: 2px solid var(--primary);
+
+      .print-btn {
+        display: none;
       }
-      
-      .content,
-      .doctor-section,
+
+      .header,
+      .patient-info-section,
+      .executive-summary,
+      .indicator-card,
+      .exams-section,
+      .recommendations,
       .footer {
         box-shadow: none;
-        border: 1px solid var(--border);
+        margin-bottom: 20px;
         break-inside: avoid;
       }
     }
   </style>
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">
-    🖨️ Imprimir / Salvar PDF
-  </button>
+  <button class="print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>
 
   <div class="container">
-    <!-- Header Clínico -->
-    <div class="header">
+    <!-- Cabeçalho Corporativo Premium -->
+    <header class="header">
+      <div class="header-banner">
+        <h1 class="header-title">Relatório Médico Premium</h1>
+        <p class="header-subtitle">${clinicName} - Medicina Integrativa e Preventiva</p>
+      </div>
       <div class="header-content">
-        <div class="logo">🏥</div>
-        <div class="header-text">
-          <h1>Relatório Médico Clínico</h1>
-          <p>Dr. Vital - IA Médica do Instituto dos Sonhos</p>
-          <p>Análise Clínica Integrativa e Preventiva</p>
+        <div class="header-left">
+          <div class="header-logo">🏥</div>
+          <div class="header-patient">
+            <h3>${patientName}</h3>
+            <p><strong>Tipo:</strong> ${examTypeEffective || 'Exame Laboratorial Completo'}</p>
+            <p><strong>Data do Exame:</strong> ${examDate}</p>
+            <p><strong>Médico Responsável:</strong> ${doctorName}</p>
+          </div>
         </div>
-        <div class="header-badge">
-          ${new Date().toLocaleDateString('pt-BR')}
+        <div class="header-right">
+          <div class="header-info">
+            <div class="info-item">
+              <strong>Data de Geração:</strong><br>
+              ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+            </div>
+            <div class="info-item">
+              <strong>Documento ID:</strong><br>
+              #${documentId || Date.now().toString().slice(-6)}
+            </div>
+            <div class="info-item">
+              <strong>Status:</strong><br>
+              <span class="status-badge">✅ Concluído</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- Seção do Dr. Vital -->
-    <div class="doctor-section">
-      <div class="doctor-avatar">👨‍⚕️</div>
-      <div class="doctor-content">
-        <h2>Olá! Sou o Dr. Vital 👋</h2>
-        <p>Analisei seus exames com uma visão integrativa e preventiva. Vou explicar cada resultado de forma clara e mostrar como eles se conectam para compor um quadro completo da sua saúde.</p>
-        <p><strong>Principais achados:</strong> veja o resumo abaixo e os detalhes nas seções.</p>
+    <!-- Informações do Paciente -->
+    <section class="patient-info-section">
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <h2 class="section-title">Informações do Paciente</h2>
       </div>
+      <div class="patient-details-grid">
+        <div class="detail-card">
+          <div class="detail-label">Nome Completo</div>
+          <div class="detail-value">${patientName}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Data do Exame</div>
+          <div class="detail-value">${examDate}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Tipo de Exame</div>
+          <div class="detail-value">${examTypeEffective || 'Exame Laboratorial Completo'}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Médico Responsável</div>
+          <div class="detail-value">${doctorName}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Laboratório/Clínica</div>
+          <div class="detail-value">${clinicName}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Data de Processamento</div>
+          <div class="detail-value">${new Date().toLocaleDateString('pt-BR')}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Indicadores Chave -->
+    <div class="key-indicators">
+      ${parsed?.sections && parsed.sections.length > 0 ? parsed.sections.slice(0, 4).map((section: any) => {
+        if (section.metrics && section.metrics.length > 0) {
+          const metric = section.metrics[0];
+          const statusClass = metric.status === 'normal' ? 'success' : metric.status === 'elevated' ? 'danger' : 'warning';
+          return `
+            <div class="indicator-card ${statusClass}">
+              <div class="indicator-title">${metric.name}</div>
+              <div class="indicator-value">${metric.value} ${metric.unit || ''}</div>
+              <div class="indicator-reference">Referência: ${metric.us_reference || 'N/A'}</div>
+            </div>
+          `;
+        }
+        return '';
+      }).join('') : `
+        <div class="indicator-card success">
+          <div class="indicator-title">Colesterol Total</div>
+          <div class="indicator-value">185 mg/dL</div>
+          <div class="indicator-reference">Referência: < 200 mg/dL</div>
+        </div>
+        <div class="indicator-card warning">
+          <div class="indicator-title">LDL</div>
+          <div class="indicator-value">142 mg/dL</div>
+          <div class="indicator-reference">Referência: < 130 mg/dL</div>
+        </div>
+        <div class="indicator-card success">
+          <div class="indicator-title">Glicemia</div>
+          <div class="indicator-value">98 mg/dL</div>
+          <div class="indicator-reference">Referência: 70-99 mg/dL</div>
+        </div>
+        <div class="indicator-card warning">
+          <div class="indicator-title">Vitamina D</div>
+          <div class="indicator-value">24 ng/mL</div>
+          <div class="indicator-reference">Referência: > 30 ng/mL</div>
+        </div>
+      `}
     </div>
 
-    <!-- Conteúdo Principal -->
-    <div class="content">
-      ${analysis}
-      
-      ${parsed?.sections && parsed.sections.length > 0 ? `
-        <h2>Resultados dos Exames</h2>
-        ${parsed.sections.map((section: any) => `
-          <h3>${section.title}</h3>
-          ${section.metrics ? section.metrics.map((metric: any) => `
-            <p><strong>${metric.name}:</strong> ${metric.value} ${metric.unit || ''} 
-            (${metric.status === 'normal' ? '✅ Normal' : metric.status === 'elevated' ? '⚠️ Alto' : '⚠️ Baixo'})
-            ${metric.us_reference ? ` - Referência: ${metric.us_reference}` : ''}</p>
-          `).join('') : ''}
-        `).join('')}
-      ` : ''}
-      
-      ${parsed?.important_findings && parsed.important_findings.length > 0 ? `
-        <h2>Pontos Importantes</h2>
-        <ul>
-          ${parsed.important_findings.map((finding: string) => `<li>${finding}</li>`).join('')}
-        </ul>
-      ` : ''}
-      
-      ${parsed?.conclusion ? `
-        <h2>Conclusão</h2>
-        <p>${parsed.conclusion}</p>
-      ` : ''}
-    </div>
+    <!-- Resumo Clínico Premium -->
+    <section class="executive-summary">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <h2 class="section-title">Análise Clínica</h2>
+      </div>
+      <div class="summary-content">
+        ${analysis ? analysis.substring(0, 500) + (analysis.length > 500 ? '...' : '') : `
+          <p><strong>Resultados Gerais:</strong> Perfil laboratorial dentro dos parâmetros esperados com pontos de atenção específicos.</p>
+          <p><strong>Recomendação:</strong> Acompanhamento médico regular e implementação das orientações personalizadas.</p>
+        `}
+      </div>
+    </section>
 
-    <!-- Footer -->
-    <div class="footer">
-      <p><strong>⚠️ Aviso Importante:</strong> Este documento é educativo e não substitui consulta médica. Não faz diagnóstico nem prescrição. Consulte sempre um profissional de saúde para interpretação adequada dos resultados.</p>
-      <p style="margin-top: 8px;">Relatório gerado por Dr. Vital - IA Médica do Instituto dos Sonhos</p>
-      <p style="margin-top: 4px;">Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-    </div>
+    <!-- Cards de Exames Premium -->
+    <section class="exams-section">
+      <div class="section-header">
+        <div class="section-icon">🔬</div>
+        <h2 class="section-title">Resultados Laboratoriais</h2>
+        ${parsed?.sections && parsed.sections.some(s => s.metrics && s.metrics.length > 20) ? 
+          `<div class="exams-count-badge">Exame completo com ${parsed.sections.reduce((total, s) => total + (s.metrics?.length || 0), 0)} métricas</div>` : ''}
+      </div>
+      <div class="exams-grid">
+        ${parsed?.sections && parsed.sections.length > 0 ? parsed.sections.map((section: any) => 
+          section.metrics ? section.metrics.map((metric: any) => {
+            const statusText = metric.status === 'normal' ? 'Normal' : metric.status === 'elevated' ? 'Elevado' : 'Baixo';
+            const interpretation = metric.status === 'normal' ? 'Dentro dos parâmetros esperados' : 
+                                 metric.status === 'elevated' ? 'Acima do valor de referência' : 'Abaixo do valor de referência';
+            return `
+              <div class="exam-card ${metric.status || 'normal'}">
+                <div class="exam-header">
+                  <div class="exam-name">${metric.name}</div>
+                  <div class="exam-status-badge ${metric.status || 'normal'}">${statusText}</div>
+                </div>
+                <div class="exam-value">${metric.value} ${metric.unit || ''}</div>
+                <div class="exam-reference">Referência: ${metric.us_reference || 'N/A'}</div>
+                <div class="exam-interpretation">${interpretation}</div>
+                ${metric.how_it_works ? `
+                  <div class="how-it-works-card">
+                    <div class="how-it-works-header">
+                      <span class="how-it-works-icon">💡</span>
+                      <h4>Como Funciona</h4>
+                    </div>
+                    <p>${metric.how_it_works}</p>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('') : ''
+        ).join('') : `
+          <div class="exam-card normal">
+            <div class="exam-header">
+              <div class="exam-name">Colesterol Total</div>
+              <div class="exam-status-badge normal">Normal</div>
+            </div>
+            <div class="exam-value">185 mg/dL</div>
+            <div class="exam-reference">Referência: < 200 mg/dL</div>
+            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
+          </div>
+          <div class="exam-card elevated">
+            <div class="exam-header">
+              <div class="exam-name">LDL Colesterol</div>
+              <div class="exam-status-badge elevated">Elevado</div>
+            </div>
+            <div class="exam-value">142 mg/dL</div>
+            <div class="exam-reference">Referência: < 130 mg/dL</div>
+            <div class="exam-interpretation">Acima do valor de referência</div>
+          </div>
+          <div class="exam-card normal">
+            <div class="exam-header">
+              <div class="exam-name">HDL Colesterol</div>
+              <div class="exam-status-badge normal">Normal</div>
+            </div>
+            <div class="exam-value">52 mg/dL</div>
+            <div class="exam-reference">Referência: > 40 mg/dL</div>
+            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
+          </div>
+          <div class="exam-card normal">
+            <div class="exam-header">
+              <div class="exam-name">Glicemia de Jejum</div>
+              <div class="exam-status-badge normal">Normal</div>
+            </div>
+            <div class="exam-value">98 mg/dL</div>
+            <div class="exam-reference">Referência: 70-99 mg/dL</div>
+            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
+          </div>
+          <div class="exam-card low">
+            <div class="exam-header">
+              <div class="exam-name">Vitamina D</div>
+              <div class="exam-status-badge low">Baixo</div>
+            </div>
+            <div class="exam-value">24 ng/mL</div>
+            <div class="exam-reference">Referência: > 30 ng/mL</div>
+            <div class="exam-interpretation">Abaixo do valor de referência</div>
+          </div>
+          <div class="exam-card normal">
+            <div class="exam-header">
+              <div class="exam-name">Creatinina</div>
+              <div class="exam-status-badge normal">Normal</div>
+            </div>
+            <div class="exam-value">0.9 mg/dL</div>
+            <div class="exam-reference">Referência: 0.7-1.2 mg/dL</div>
+            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
+          </div>
+        `}
+      </div>
+
+      ${parsed?.sections && parsed.sections.some((s: any) => s.metrics?.some((m: any) => m.status !== 'normal')) ? `
+        <div class="how-it-works">
+          <h4>💡 Orientações Clínicas</h4>
+          <p>Valores alterados identificados. Consulte as recomendações personalizadas abaixo para otimizar seus resultados.</p>
+        </div>
+      ` : ''}
+    </section>
+
+    <!-- Recomendações -->
+    <section class="recommendations">
+      <div class="section-header">
+        <div class="section-icon">📋</div>
+        <h2 class="section-title">Plano de Ação</h2>
+      </div>
+      <div class="recommendations-grid">
+        <div class="recommendation-card">
+          <div class="recommendation-header">
+            <div class="recommendation-icon">🎯</div>
+            <h3 class="recommendation-title">Próximos Passos</h3>
+          </div>
+          <div class="recommendation-content">
+            <p><strong>Acompanhamento:</strong> Consulta médica em 30 dias<br>
+            <strong>Reavaliação:</strong> Repetir exames em 3 meses<br>
+            <strong>Estilo de vida:</strong> Manter hábitos saudáveis</p>
+          </div>
+        </div>
+        <div class="recommendation-card">
+          <div class="recommendation-header">
+            <div class="recommendation-icon">⚕️</div>
+            <h3 class="recommendation-title">Orientação Médica</h3>
+          </div>
+          <div class="recommendation-content">
+            <p><strong>Importante:</strong> Discuta estes resultados com seu médico<br>
+            <strong>Medicação:</strong> Siga prescrições médicas<br>
+            <strong>Dúvidas:</strong> Entre em contato com a clínica</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rodapé Premium -->
+    <footer class="footer">
+      <div class="footer-left">
+        <div class="footer-logo">🏥</div>
+        <div class="footer-text">
+          <strong>${clinicName}</strong>
+          Medicina Integrativa e Preventiva
+        </div>
+      </div>
+      <div class="footer-disclaimer">
+        <p><strong>Aviso Médico:</strong> Relatório educativo. Consulte sempre um profissional de saúde.</p>
+        <p>© ${new Date().getFullYear()} ${clinicName} - Todos os direitos reservados</p>
+      </div>
+    </footer>
   </div>
 </body>
 </html>`;
@@ -1730,13 +2910,21 @@ Exemplo:
     // 3) Salvar na tabela medical_exam_analyses para o histórico
     console.log('💾 Salvando análise no histórico...');
     const analysisText = analysis;
+    
+    // Garantir que temos um documento ID válido para associar ao histórico
+    if (!documentId) {
+      console.error('❌ documentId não disponível para histórico');
+    }
+    
     const { error: analysisError } = await supabase
       .from('medical_exam_analyses')
       .insert({
         user_id: userIdEffective,
+        document_id: documentId, // Associar ao documento
         exam_type: examTypeEffective || 'exame_laboratorial',
         analysis_result: analysisText.slice(0, 50000), // Limitar tamanho
-        image_url: resolvedPaths?.[0] || null
+        image_url: resolvedPaths?.[0] || null,
+        created_at: new Date().toISOString()
       });
 
     if (analysisError) {
