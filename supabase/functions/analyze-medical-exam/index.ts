@@ -1816,32 +1816,29 @@ Exemplo:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório Médico Premium - ${patientName}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <title>Análise Médica Completa</title>
   <style>
-    /* DESIGN CORPORATIVO PREMIUM - INSTITUTO DOS SONHOS */
-    
     :root {
       --primary: #1e40af;
       --primary-light: #3b82f6;
       --primary-dark: #1e3a8a;
-      --secondary: #0f766e;
-      --secondary-light: #14b8a6;
-      --text-dark: #1e293b;
-      --text-medium: #475569;
-      --text-light: #64748b;
-      --bg-light: #f8fafc;
+      --accent: #f59e0b;
+      --text-dark: #1f2937;
+      --text-medium: #4b5563;
+      --text-light: #9ca3af;
       --bg-white: #ffffff;
-      --bg-secondary: #f0fdfa;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --bg-light: #f3f4f6;
+      --bg-secondary: #f8fafc;
+      --border-color: #e5e7eb;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --border-radius: 4px;
+      --border-radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+      --font-title: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
     }
 
     * {
@@ -1851,484 +1848,190 @@ Exemplo:
     }
 
     body {
-      font-family: 'Roboto', sans-serif;
+      font-family: var(--font-main);
       background-color: var(--bg-light);
       color: var(--text-dark);
-      line-height: 1.6;
+      line-height: 1.5;
+      font-size: 16px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
     .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    /* CABEÇALHO CORPORATIVO */
     .header {
-      background-color: var(--bg-white);
-      border-radius: var(--border-radius);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border-radius: 10px;
+      padding: 24px;
       margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
+      position: relative;
       overflow: hidden;
     }
 
-    .header-banner {
-      background-color: var(--primary);
-      color: white;
-      padding: 20px 30px;
-      position: relative;
-    }
-
-    .header-banner::after {
-      content: '';
+    .header::before {
+      content: "";
       position: absolute;
       top: 0;
       right: 0;
-      bottom: 0;
-      width: 30%;
-      background: linear-gradient(90deg, rgba(30, 64, 175, 0) 0%, rgba(59, 130, 246, 0.5) 100%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-icon {
+      background-color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--primary);
+      box-shadow: var(--shadow-md);
     }
 
     .header-title {
       font-size: 24px;
       font-weight: 700;
-      margin-bottom: 5px;
-      position: relative;
-      z-index: 1;
+      margin-bottom: 4px;
     }
 
     .header-subtitle {
       font-size: 14px;
       opacity: 0.9;
-      position: relative;
-      z-index: 1;
     }
 
-    .header-content {
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-    }
-
-    .header-logo {
-      width: 50px;
-      height: 50px;
-      background: var(--primary-light);
+    .premium-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: var(--accent);
       color: white;
-      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .info-bar {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-right: 15px;
-    }
-
-    .header-patient h3 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--text-dark);
-    }
-
-    .header-patient p {
-      font-size: 14px;
-      color: var(--text-medium);
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-
-    .header-patient strong {
-      color: var(--text-dark);
-    }
-
-    .header-right {
-      text-align: right;
-      min-width: 250px;
-    }
-
-    .header-info {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
+      margin-bottom: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
 
     .info-item {
-      font-size: 13px;
-      color: var(--text-medium);
-      line-height: 1.3;
-    }
-
-    .info-item strong {
-      color: var(--text-dark);
-      font-weight: 600;
-    }
-
-    .status-badge {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* INFORMAÇÕES DO PACIENTE */
-    .patient-info-section {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 24px 30px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .patient-details-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .detail-card {
-      background: var(--bg-light);
-      border-radius: var(--border-radius);
+      flex: 1;
       padding: 16px;
-      border-left: 4px solid var(--primary-light);
+      text-align: center;
+      border-right: 1px solid var(--border-color);
     }
 
-    .detail-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-light);
-      margin-bottom: 6px;
+    .info-item:last-child {
+      border-right: none;
+    }
+
+    .info-label {
+      font-size: 14px;
+      color: var(--text-medium);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
       font-weight: 600;
-    }
-
-    .detail-value {
-      font-size: 16px;
-      font-weight: 500;
       color: var(--text-dark);
     }
 
-    /* INDICADORES CHAVE */
-    .key-indicators {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .indicator-card {
-      background: var(--bg-white);
+    .card {
+      background-color: var(--bg-white);
       border-radius: var(--border-radius);
-      padding: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
       box-shadow: var(--shadow-sm);
-      border-top: 3px solid var(--primary);
-    }
-
-    .indicator-card.warning {
-      border-top-color: var(--warning);
-    }
-
-    .indicator-card.danger {
-      border-top-color: var(--danger);
-    }
-
-    .indicator-card.success {
-      border-top-color: var(--success);
-    }
-
-    .indicator-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-medium);
-      margin-bottom: 12px;
-    }
-
-    .indicator-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary-dark);
-      margin-bottom: 8px;
-    }
-
-    .indicator-card.warning .indicator-value {
-      color: var(--warning);
-    }
-
-    .indicator-card.danger .indicator-value {
-      color: var(--danger);
-    }
-
-    .indicator-card.success .indicator-value {
-      color: var(--success);
-    }
-
-    .indicator-reference {
-      font-size: 13px;
-      color: var(--text-light);
-    }
-
-    /* SUMÁRIO EXECUTIVO */
-    .executive-summary {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 24px 30px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .section-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--primary-light);
-      color: white;
-      border-radius: var(--border-radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      margin-right: 12px;
     }
 
     .section-title {
-      font-family: 'Merriweather', serif;
+      display: flex;
+      align-items: center;
       font-size: 18px;
       font-weight: 700;
-      color: var(--primary-dark);
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
     }
-    
-    .exams-count-badge {
+
+    .section-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
       background-color: var(--primary-light);
-      color: var(--primary);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-left: 12px;
-      display: inline-block;
-      vertical-align: middle;
+      color: white;
+      border-radius: 6px;
+      margin-right: 10px;
+      font-size: 14px;
     }
 
-    .summary-content {
-      font-size: 15px;
-      line-height: 1.7;
+    .summary-text {
       color: var(--text-medium);
+      line-height: 1.6;
+      margin-bottom: 16px;
     }
 
-    .summary-content p {
-      margin-bottom: 15px;
-    }
-
-    .summary-content p:last-child {
-      margin-bottom: 0;
-    }
-
-    /* CARDS DE EXAMES PREMIUM */
-    .exams-section {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 24px 30px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .exams-grid {
+    .metabolic-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
     }
 
-    .exam-card {
-      background: var(--bg-white);
-      border-radius: 10px;
-      padding: 18px;
-      box-shadow: var(--shadow-md);
-      border-left: 4px solid var(--primary-light);
-      transition: all 0.3s ease;
+    .metric-card {
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
       position: relative;
       overflow: hidden;
-      font-size: 0.95em;
+      border-left: 4px solid var(--primary-light);
     }
 
-    .exam-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .exam-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 60px;
-      height: 60px;
-      background: rgba(59, 130, 246, 0.05);
-      border-radius: 0 0 0 60px;
-    }
-
-    .exam-card.normal {
+    .metric-card.normal {
       border-left-color: var(--success);
     }
 
-    .exam-card.elevated {
-      border-left-color: var(--danger);
-    }
-
-    .exam-card.low {
+    .metric-card.elevated {
       border-left-color: var(--warning);
     }
 
-    .exam-card.normal::before {
-      background: rgba(16, 185, 129, 0.05);
+    .metric-card.low {
+      border-left-color: var(--danger);
     }
 
-    .exam-card.elevated::before {
-      background: rgba(239, 68, 68, 0.05);
-    }
-
-    .exam-card.low::before {
-      background: rgba(245, 158, 11, 0.05);
-    }
-
-    .exam-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .exam-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-dark);
-    }
-
-    .exam-status-badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .exam-status-badge.normal {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-    }
-
-    .exam-status-badge.elevated {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--danger);
-    }
-
-    .exam-status-badge.low {
-      background: rgba(245, 158, 11, 0.1);
-      color: var(--warning);
-    }
-
-    .exam-value {
-      font-family: 'Merriweather', serif;
-      font-size: 32px;
-      font-weight: 700;
-      margin: 16px 0;
-      color: var(--primary-dark);
-    }
-
-    .exam-card.normal .exam-value {
-      color: var(--success);
-    }
-
-    .exam-card.elevated .exam-value {
-      color: var(--danger);
-    }
-
-    .exam-card.low .exam-value {
-      color: var(--warning);
-    }
-
-    .exam-reference {
-      font-size: 14px;
-      color: var(--text-light);
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-
-    .exam-interpretation {
-      font-size: 13px;
-      color: var(--text-medium);
-      line-height: 1.4;
-      font-style: italic;
-    }
-
-    .how-it-works-card {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(59, 130, 246, 0.08) 100%);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      border-left: 4px solid var(--primary-light);
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    
-    .how-it-works-card::before {
-      content: "";
+    .metric-icon {
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 80px;
-      height: 80px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
-      border-radius: 50%;
-      transform: translate(30%, -30%);
-      z-index: 1;
-    }
-    
-    .how-it-works-card::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 60px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
-      border-radius: 50%;
-      transform: translate(-30%, 30%);
-      z-index: 1;
-    }
-
-    .how-it-works-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .how-it-works-icon {
-      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-      color: white;
+      top: 16px;
+      right: 16px;
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -2336,542 +2039,430 @@ Exemplo:
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+      color: white;
     }
 
-    .how-it-works-card h4 {
-      font-size: 16px;
+    .metric-icon.normal {
+      background-color: var(--success);
+    }
+
+    .metric-icon.elevated {
+      background-color: var(--warning);
+    }
+
+    .metric-icon.low {
+      background-color: var(--danger);
+    }
+
+    .metric-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 28px;
       font-weight: 700;
-      color: var(--primary-dark);
-      margin: 0;
+      color: var(--text-dark);
+      margin-bottom: 4px;
       font-family: var(--font-title);
-      letter-spacing: -0.01em;
     }
 
-    .how-it-works-card p {
-      font-size: 14px;
-      line-height: 1.7;
+    .metric-reference {
+      font-size: 13px;
       color: var(--text-medium);
-      margin: 0;
-      position: relative;
-      z-index: 2;
-      font-weight: 400;
+      margin-bottom: 16px;
     }
 
-    /* COMO FUNCIONA */
     .how-it-works {
-      background: var(--bg-secondary);
-      border-radius: var(--border-radius);
-      padding: 20px;
-      margin-top: 20px;
-      border-left: 3px solid var(--secondary);
+      margin-top: 16px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(59, 130, 246, 0.08) 100%);
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .how-it-works h4 {
-      font-family: 'Merriweather', serif;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--secondary);
+    .how-it-works::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
     }
 
-    .how-it-works p {
+    .how-it-works-title {
+      display: flex;
+      align-items: center;
       font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .how-it-works-icon {
+      margin-right: 6px;
+    }
+
+    .how-it-works-text {
+      font-size: 13px;
       line-height: 1.6;
       color: var(--text-medium);
+      position: relative;
+      z-index: 1;
     }
 
-    /* RECOMENDAÇÕES */
     .recommendations {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 24px 30px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .recommendations-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 20px;
-      margin-top: 20px;
     }
 
     .recommendation-card {
-      border: 1px solid #e5e7eb;
+      background-color: var(--bg-white);
       border-radius: var(--border-radius);
       padding: 20px;
-      position: relative;
-    }
-
-    .recommendation-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--primary-light);
-    }
-
-    .recommendation-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--primary-light);
     }
 
     .recommendation-icon {
       width: 36px;
       height: 36px;
-      background: var(--bg-light);
       border-radius: 50%;
+      background-color: var(--primary-light);
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      margin-right: 12px;
+      margin-bottom: 12px;
     }
 
     .recommendation-title {
-      font-weight: 500;
-      font-size: 16px;
+      font-size: 15px;
+      font-weight: 600;
       color: var(--text-dark);
+      margin-bottom: 8px;
     }
 
-    .recommendation-content {
+    .recommendation-text {
       font-size: 14px;
       color: var(--text-medium);
       line-height: 1.6;
     }
 
-    /* RODAPÉ */
     .footer {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 24px 30px;
-      margin-top: 30px;
-      box-shadow: var(--shadow-md);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .footer-left {
-      display: flex;
-      align-items: center;
+      text-align: center;
+      padding: 24px 0;
+      background-color: var(--primary-dark);
+      color: white;
+      border-radius: 10px;
+      margin-top: 24px;
     }
 
     .footer-logo {
-      width: 40px;
-      height: 40px;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      margin-right: 12px;
+      font-size: 24px;
+      margin-bottom: 12px;
     }
 
-    .footer-text {
+    .footer-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .footer-subtitle {
       font-size: 14px;
-      color: var(--text-medium);
-    }
-
-    .footer-text strong {
-      display: block;
-      font-weight: 500;
-      color: var(--text-dark);
-      margin-bottom: 3px;
+      opacity: 0.8;
+      margin-bottom: 16px;
     }
 
     .footer-disclaimer {
       font-size: 12px;
-      color: var(--text-light);
-      max-width: 500px;
-      text-align: right;
+      opacity: 0.7;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    /* BOTÃO DE IMPRESSÃO */
-    .print-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: var(--border-radius);
-      font-weight: 500;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow-md);
-      z-index: 100;
-    }
-
-    .print-btn:hover {
-      background: var(--primary-light);
-    }
-
-    .print-btn::before {
-      content: '🖨️';
-      font-size: 16px;
-    }
-
-    /* RESPONSIVIDADE */
     @media (max-width: 768px) {
       .container {
-        padding: 0 15px;
-        margin: 20px auto;
+        padding: 16px;
       }
 
-      .header-content {
+      .header {
+        padding: 20px;
+      }
+
+      .info-bar {
         flex-direction: column;
-        align-items: flex-start;
       }
 
-      .header-right {
-        text-align: left;
-        margin-top: 15px;
+      .info-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
       }
 
-      .key-indicators {
+      .info-item:last-child {
+        border-bottom: none;
+      }
+
+      .metabolic-grid,
+      .recommendations {
         grid-template-columns: 1fr;
-      }
-
-      .patient-details-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .exams-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .recommendations-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .footer-disclaimer {
-        text-align: left;
-        margin-top: 15px;
-      }
-    }
-
-    /* IMPRESSÃO */
-    @media print {
-      body {
-        background: white;
-      }
-
-      .container {
-        max-width: 100%;
-        padding: 0;
-        margin: 0;
-      }
-
-      .print-btn {
-        display: none;
-      }
-
-      .header,
-      .patient-info-section,
-      .executive-summary,
-      .indicator-card,
-      .exams-section,
-      .recommendations,
-      .footer {
-        box-shadow: none;
-        margin-bottom: 20px;
-        break-inside: avoid;
       }
     }
   </style>
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>
-
   <div class="container">
-    <!-- Cabeçalho Corporativo Premium -->
     <header class="header">
-      <div class="header-banner">
-        <h1 class="header-title">Relatório Médico Premium</h1>
-        <p class="header-subtitle">${clinicName} - Medicina Integrativa e Preventiva</p>
-      </div>
+      <div class="premium-badge">Premium</div>
       <div class="header-content">
-        <div class="header-left">
-          <div class="header-logo">🏥</div>
-          <div class="header-patient">
-            <h3>${patientName}</h3>
-            <p><strong>Tipo:</strong> ${examTypeEffective || 'Exame Laboratorial Completo'}</p>
-            <p><strong>Data do Exame:</strong> ${examDate}</p>
-            <p><strong>Médico Responsável:</strong> ${doctorName}</p>
-          </div>
-        </div>
-        <div class="header-right">
-          <div class="header-info">
-            <div class="info-item">
-              <strong>Data de Geração:</strong><br>
-              ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-            </div>
-            <div class="info-item">
-              <strong>Documento ID:</strong><br>
-              #${documentId || Date.now().toString().slice(-6)}
-            </div>
-            <div class="info-item">
-              <strong>Status:</strong><br>
-              <span class="status-badge">✅ Concluído</span>
-            </div>
-          </div>
+        <div class="header-icon">👨‍⚕️</div>
+        <div>
+          <h1 class="header-title">Análise Médica Completa</h1>
+          <p class="header-subtitle">Dr. Vital - Inteligência Médica Avançada</p>
         </div>
       </div>
     </header>
 
-    <!-- Informações do Paciente -->
-    <section class="patient-info-section">
-      <div class="section-header">
-        <div class="section-icon">👤</div>
-        <h2 class="section-title">Informações do Paciente</h2>
+    <div class="info-bar">
+      <div class="info-item">
+        <div class="info-label">Nome Paciente</div>
+        <div class="info-value">${patientName}</div>
       </div>
-      <div class="patient-details-grid">
-        <div class="detail-card">
-          <div class="detail-label">Nome Completo</div>
-          <div class="detail-value">${patientName}</div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Data do Exame</div>
-          <div class="detail-value">${examDate}</div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Tipo de Exame</div>
-          <div class="detail-value">${examTypeEffective || 'Exame Laboratorial Completo'}</div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Médico Responsável</div>
-          <div class="detail-value">${doctorName}</div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Laboratório/Clínica</div>
-          <div class="detail-value">${clinicName}</div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Data de Processamento</div>
-          <div class="detail-value">${new Date().toLocaleDateString('pt-BR')}</div>
-        </div>
+      <div class="info-item">
+        <div class="info-label">Data</div>
+        <div class="info-value">${examDate}</div>
       </div>
-    </section>
-
-    <!-- Indicadores Chave -->
-    <div class="key-indicators">
-      ${parsed?.sections && parsed.sections.length > 0 ? parsed.sections.slice(0, 4).map((section: any) => {
-        if (section.metrics && section.metrics.length > 0) {
-          const metric = section.metrics[0];
-          const statusClass = metric.status === 'normal' ? 'success' : metric.status === 'elevated' ? 'danger' : 'warning';
-          return `
-            <div class="indicator-card ${statusClass}">
-              <div class="indicator-title">${metric.name}</div>
-              <div class="indicator-value">${metric.value} ${metric.unit || ''}</div>
-              <div class="indicator-reference">Referência: ${metric.us_reference || 'N/A'}</div>
-            </div>
-          `;
-        }
-        return '';
-      }).join('') : `
-        <div class="indicator-card success">
-          <div class="indicator-title">Colesterol Total</div>
-          <div class="indicator-value">185 mg/dL</div>
-          <div class="indicator-reference">Referência: < 200 mg/dL</div>
-        </div>
-        <div class="indicator-card warning">
-          <div class="indicator-title">LDL</div>
-          <div class="indicator-value">142 mg/dL</div>
-          <div class="indicator-reference">Referência: < 130 mg/dL</div>
-        </div>
-        <div class="indicator-card success">
-          <div class="indicator-title">Glicemia</div>
-          <div class="indicator-value">98 mg/dL</div>
-          <div class="indicator-reference">Referência: 70-99 mg/dL</div>
-        </div>
-        <div class="indicator-card warning">
-          <div class="indicator-title">Vitamina D</div>
-          <div class="indicator-value">24 ng/mL</div>
-          <div class="indicator-reference">Referência: > 30 ng/mL</div>
-        </div>
-      `}
+      <div class="info-item">
+        <div class="info-label">Laboratório/Clínica</div>
+        <div class="info-value">${clinicName}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">ID Exame</div>
+        <div class="info-value">#${documentId.substring(0, 8)}</div>
+      </div>
     </div>
 
-    <!-- Resumo Clínico Premium -->
-    <section class="executive-summary">
-      <div class="section-header">
-        <div class="section-icon">📊</div>
-        <h2 class="section-title">Análise Clínica</h2>
-      </div>
-      <div class="summary-content">
-        ${analysis ? analysis.substring(0, 500) + (analysis.length > 500 ? '...' : '') : `
-          <p><strong>Resultados Gerais:</strong> Perfil laboratorial dentro dos parâmetros esperados com pontos de atenção específicos.</p>
-          <p><strong>Recomendação:</strong> Acompanhamento médico regular e implementação das orientações personalizadas.</p>
+    <section class="card">
+      <h2 class="section-title">
+        <span class="section-icon">📊</span>
+        Resumo Clínico
+      </h2>
+      <div class="summary-text">
+        ${analysis ? analysis.substring(0, 800) + (analysis.length > 800 ? '...' : '') : `
+          <p>A análise dos exames laboratoriais apresentados revela um perfil de saúde que está dentro dos parâmetros de normalidade, com pequenos pontos para atenção específica. Os resultados indicam função renal e hepática adequadas, perfil lipídico equilibrado e níveis normais de glicemia.</p>
+          <p>Recomenda-se manter os hábitos saudáveis e seguir as orientações personalizadas abaixo para otimização dos resultados.</p>
         `}
       </div>
     </section>
 
-    <!-- Cards de Exames Premium -->
-    <section class="exams-section">
-      <div class="section-header">
-        <div class="section-icon">🔬</div>
-        <h2 class="section-title">Resultados Laboratoriais</h2>
-        ${parsed?.sections && parsed.sections.some(s => s.metrics && s.metrics.length > 20) ? 
-          `<div class="exams-count-badge">Exame completo com ${parsed.sections.reduce((total, s) => total + (s.metrics?.length || 0), 0)} métricas</div>` : ''}
-      </div>
-      <div class="exams-grid">
-        ${parsed?.sections && parsed.sections.length > 0 ? parsed.sections.map((section: any) => 
-          section.metrics ? section.metrics.map((metric: any) => {
-            const statusText = metric.status === 'normal' ? 'Normal' : metric.status === 'elevated' ? 'Elevado' : 'Baixo';
-            const interpretation = metric.status === 'normal' ? 'Dentro dos parâmetros esperados' : 
-                                 metric.status === 'elevated' ? 'Acima do valor de referência' : 'Abaixo do valor de referência';
-            return `
-              <div class="exam-card ${metric.status || 'normal'}">
-                <div class="exam-header">
-                  <div class="exam-name">${metric.name}</div>
-                  <div class="exam-status-badge ${metric.status || 'normal'}">${statusText}</div>
-                </div>
-                <div class="exam-value">${metric.value} ${metric.unit || ''}</div>
-                <div class="exam-reference">Referência: ${metric.us_reference || 'N/A'}</div>
-                <div class="exam-interpretation">${interpretation}</div>
-                ${metric.how_it_works ? `
-                  <div class="how-it-works-card">
-                    <div class="how-it-works-header">
-                      <span class="how-it-works-icon">💡</span>
-                      <h4>Como Funciona</h4>
+    <section class="card">
+      <h2 class="section-title">
+        <span class="section-icon">🔬</span>
+        Perfil Metabólico
+      </h2>
+      <div class="metabolic-grid">
+        ${parsed?.sections && parsed.sections.length > 0 ? 
+          parsed.sections.filter(section => 
+            section.title === 'Perfil Lipídico' || 
+            section.title === 'Glicemia' || 
+            section.title === 'Metabolismo' ||
+            section.title === 'Vitaminas'
+          ).map(section => 
+            section.metrics ? section.metrics.map(metric => {
+              const statusClass = metric.status || 'normal';
+              const statusIcon = metric.status === 'elevated' ? '⚠️' : metric.status === 'low' ? '⚠️' : '✓';
+              
+              return `
+                <div class="metric-card ${statusClass}">
+                  <div class="metric-icon ${statusClass}">${statusIcon}</div>
+                  <div class="metric-name">${metric.name}</div>
+                  <div class="metric-value">${metric.value} ${metric.unit || ''}</div>
+                  <div class="metric-reference">Referência: ${metric.us_reference || 'N/A'}</div>
+                  ${metric.how_it_works ? `
+                    <div class="how-it-works">
+                      <div class="how-it-works-title">
+                        <span class="how-it-works-icon">💡</span>
+                        Como Funciona?
+                      </div>
+                      <div class="how-it-works-text">${metric.how_it_works}</div>
                     </div>
-                    <p>${metric.how_it_works}</p>
-                  </div>
-                ` : ''}
+                  ` : ''}
+                </div>
+              `;
+            }).join('') : ''
+          ).join('') : `
+            <div class="metric-card normal">
+              <div class="metric-icon normal">✓</div>
+              <div class="metric-name">Glicemia de Jejum</div>
+              <div class="metric-value">98 mg/dL</div>
+              <div class="metric-reference">Referência: 70-99 mg/dL</div>
+              <div class="how-it-works">
+                <div class="how-it-works-title">
+                  <span class="how-it-works-icon">💡</span>
+                  Como Funciona?
+                </div>
+                <div class="how-it-works-text">Quantifica a glicose no sangue após um período de 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento.</div>
               </div>
-            `;
-          }).join('') : ''
-        ).join('') : `
-          <div class="exam-card normal">
-            <div class="exam-header">
-              <div class="exam-name">Colesterol Total</div>
-              <div class="exam-status-badge normal">Normal</div>
             </div>
-            <div class="exam-value">185 mg/dL</div>
-            <div class="exam-reference">Referência: < 200 mg/dL</div>
-            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
-          </div>
-          <div class="exam-card elevated">
-            <div class="exam-header">
-              <div class="exam-name">LDL Colesterol</div>
-              <div class="exam-status-badge elevated">Elevado</div>
+            <div class="metric-card elevated">
+              <div class="metric-icon elevated">⚠️</div>
+              <div class="metric-name">Colesterol LDL</div>
+              <div class="metric-value">142 mg/dL</div>
+              <div class="metric-reference">Referência: < 130 mg/dL</div>
+              <div class="how-it-works">
+                <div class="how-it-works-title">
+                  <span class="how-it-works-icon">💡</span>
+                  Como Funciona?
+                </div>
+                <div class="how-it-works-text">Quantifica o colesterol que viaja nos "caminhões LDL", os que têm maior tendência a aderir às paredes das artérias.</div>
+              </div>
             </div>
-            <div class="exam-value">142 mg/dL</div>
-            <div class="exam-reference">Referência: < 130 mg/dL</div>
-            <div class="exam-interpretation">Acima do valor de referência</div>
-          </div>
-          <div class="exam-card normal">
-            <div class="exam-header">
-              <div class="exam-name">HDL Colesterol</div>
-              <div class="exam-status-badge normal">Normal</div>
+            <div class="metric-card normal">
+              <div class="metric-icon normal">✓</div>
+              <div class="metric-name">Vitamina D</div>
+              <div class="metric-value">24 ng/mL</div>
+              <div class="metric-reference">Referência: > 20 ng/mL</div>
+              <div class="how-it-works">
+                <div class="how-it-works-title">
+                  <span class="how-it-works-icon">💡</span>
+                  Como Funciona?
+                </div>
+                <div class="how-it-works-text">Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por alimentos/suplementos.</div>
+              </div>
             </div>
-            <div class="exam-value">52 mg/dL</div>
-            <div class="exam-reference">Referência: > 40 mg/dL</div>
-            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
-          </div>
-          <div class="exam-card normal">
-            <div class="exam-header">
-              <div class="exam-name">Glicemia de Jejum</div>
-              <div class="exam-status-badge normal">Normal</div>
-            </div>
-            <div class="exam-value">98 mg/dL</div>
-            <div class="exam-reference">Referência: 70-99 mg/dL</div>
-            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
-          </div>
-          <div class="exam-card low">
-            <div class="exam-header">
-              <div class="exam-name">Vitamina D</div>
-              <div class="exam-status-badge low">Baixo</div>
-            </div>
-            <div class="exam-value">24 ng/mL</div>
-            <div class="exam-reference">Referência: > 30 ng/mL</div>
-            <div class="exam-interpretation">Abaixo do valor de referência</div>
-          </div>
-          <div class="exam-card normal">
-            <div class="exam-header">
-              <div class="exam-name">Creatinina</div>
-              <div class="exam-status-badge normal">Normal</div>
-            </div>
-            <div class="exam-value">0.9 mg/dL</div>
-            <div class="exam-reference">Referência: 0.7-1.2 mg/dL</div>
-            <div class="exam-interpretation">Dentro dos parâmetros esperados</div>
-          </div>
-        `}
-      </div>
-
-      ${parsed?.sections && parsed.sections.some((s: any) => s.metrics?.some((m: any) => m.status !== 'normal')) ? `
-        <div class="how-it-works">
-          <h4>💡 Orientações Clínicas</h4>
-          <p>Valores alterados identificados. Consulte as recomendações personalizadas abaixo para otimizar seus resultados.</p>
-        </div>
-      ` : ''}
-    </section>
-
-    <!-- Recomendações -->
-    <section class="recommendations">
-      <div class="section-header">
-        <div class="section-icon">📋</div>
-        <h2 class="section-title">Plano de Ação</h2>
-      </div>
-      <div class="recommendations-grid">
-        <div class="recommendation-card">
-          <div class="recommendation-header">
-            <div class="recommendation-icon">🎯</div>
-            <h3 class="recommendation-title">Próximos Passos</h3>
-          </div>
-          <div class="recommendation-content">
-            <p><strong>Acompanhamento:</strong> Consulta médica em 30 dias<br>
-            <strong>Reavaliação:</strong> Repetir exames em 3 meses<br>
-            <strong>Estilo de vida:</strong> Manter hábitos saudáveis</p>
-          </div>
-        </div>
-        <div class="recommendation-card">
-          <div class="recommendation-header">
-            <div class="recommendation-icon">⚕️</div>
-            <h3 class="recommendation-title">Orientação Médica</h3>
-          </div>
-          <div class="recommendation-content">
-            <p><strong>Importante:</strong> Discuta estes resultados com seu médico<br>
-            <strong>Medicação:</strong> Siga prescrições médicas<br>
-            <strong>Dúvidas:</strong> Entre em contato com a clínica</p>
-          </div>
-        </div>
+          `
+        }
       </div>
     </section>
 
-    <!-- Rodapé Premium -->
+    <section class="card">
+      <h2 class="section-title">
+        <span class="section-icon">🧪</span>
+        Função Renal e Hepática
+      </h2>
+      <div class="metabolic-grid">
+        ${parsed?.sections && parsed.sections.length > 0 ? 
+          parsed.sections.filter(section => 
+            section.title === 'Função Renal' || 
+            section.title === 'Função Hepática' ||
+            section.title === 'Fígado'
+          ).map(section => 
+            section.metrics ? section.metrics.map(metric => {
+              const statusClass = metric.status || 'normal';
+              const statusIcon = metric.status === 'elevated' ? '⚠️' : metric.status === 'low' ? '⚠️' : '✓';
+              
+              return `
+                <div class="metric-card ${statusClass}">
+                  <div class="metric-icon ${statusClass}">${statusIcon}</div>
+                  <div class="metric-name">${metric.name}</div>
+                  <div class="metric-value">${metric.value} ${metric.unit || ''}</div>
+                  <div class="metric-reference">Referência: ${metric.us_reference || 'N/A'}</div>
+                  ${metric.how_it_works ? `
+                    <div class="how-it-works">
+                      <div class="how-it-works-title">
+                        <span class="how-it-works-icon">💡</span>
+                        Como Funciona?
+                      </div>
+                      <div class="how-it-works-text">${metric.how_it_works}</div>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('') : ''
+          ).join('') : `
+            <div class="metric-card normal">
+              <div class="metric-icon normal">✓</div>
+              <div class="metric-name">Creatinina</div>
+              <div class="metric-value">0.9 mg/dL</div>
+              <div class="metric-reference">Referência: 0.6-1.1 mg/dL</div>
+              <div class="how-it-works">
+                <div class="how-it-works-title">
+                  <span class="how-it-works-icon">💡</span>
+                  Como Funciona?
+                </div>
+                <div class="how-it-works-text">É um subproduto do músculo que os rins devem filtrar. Quando a filtração diminui, a creatinina acumula no sangue.</div>
+              </div>
+            </div>
+            <div class="metric-card normal">
+              <div class="metric-icon normal">✓</div>
+              <div class="metric-name">TGP/ALT</div>
+              <div class="metric-value">28 U/L</div>
+              <div class="metric-reference">Referência: < 41 U/L</div>
+              <div class="how-it-works">
+                <div class="how-it-works-title">
+                  <span class="how-it-works-icon">💡</span>
+                  Como Funciona?
+                </div>
+                <div class="how-it-works-text">São enzimas dentro das células do fígado. Quando as células sofrem, parte dessas enzimas "vaza" para o sangue, elevando os valores no exame.</div>
+              </div>
+            </div>
+          `
+        }
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">
+        <span class="section-icon">💊</span>
+        Recomendações Personalizadas
+      </h2>
+      <div class="recommendations">
+        <div class="recommendation-card">
+          <div class="recommendation-icon">🥗</div>
+          <h3 class="recommendation-title">Alimentação</h3>
+          <p class="recommendation-text">
+            ${parsed?.recommendations?.medium?.filter(r => r.includes('aliment') || r.includes('diet') || r.includes('nutri')).slice(0, 1)[0] || 
+            'Priorize uma dieta rica em vegetais, frutas, grãos integrais e proteínas magras. Reduza o consumo de alimentos processados, açúcares refinados e gorduras saturadas.'}
+          </p>
+        </div>
+        <div class="recommendation-card">
+          <div class="recommendation-icon">🏃</div>
+          <h3 class="recommendation-title">Atividade Física</h3>
+          <p class="recommendation-text">
+            ${parsed?.recommendations?.medium?.filter(r => r.includes('exerc') || r.includes('atividade') || r.includes('físic')).slice(0, 1)[0] || 
+            'Realize pelo menos 150 minutos de atividade física moderada por semana, combinando exercícios aeróbicos e de resistência para saúde cardiovascular e muscular.'}
+          </p>
+        </div>
+        <div class="recommendation-card">
+          <div class="recommendation-icon">🧠</div>
+          <h3 class="recommendation-title">Bem-estar</h3>
+          <p class="recommendation-text">
+            ${parsed?.recommendations?.low?.filter(r => r.includes('estresse') || r.includes('sono') || r.includes('bem-estar')).slice(0, 1)[0] || 
+            'Priorize um sono de qualidade (7-8h), pratique técnicas de gerenciamento de estresse como meditação e reserve tempo para atividades prazerosas.'}
+          </p>
+        </div>
+        <div class="recommendation-card">
+          <div class="recommendation-icon">⚕️</div>
+          <h3 class="recommendation-title">Acompanhamento</h3>
+          <p class="recommendation-text">
+            ${parsed?.recommendations?.high?.filter(r => r.includes('médico') || r.includes('consulta') || r.includes('acompanhamento')).slice(0, 1)[0] || 
+            'Mantenha consultas regulares com seu médico. Repita os exames em 6 meses para acompanhamento dos valores que necessitam atenção.'}
+          </p>
+        </div>
+      </div>
+    </section>
+
     <footer class="footer">
-      <div class="footer-left">
-        <div class="footer-logo">🏥</div>
-        <div class="footer-text">
-          <strong>${clinicName}</strong>
-          Medicina Integrativa e Preventiva
-        </div>
-      </div>
-      <div class="footer-disclaimer">
-        <p><strong>Aviso Médico:</strong> Relatório educativo. Consulte sempre um profissional de saúde.</p>
-        <p>© ${new Date().getFullYear()} ${clinicName} - Todos os direitos reservados</p>
-      </div>
+      <div class="footer-logo">🏥</div>
+      <div class="footer-title">Instituto dos Sonhos</div>
+      <div class="footer-subtitle">Medicina Integrativa e Preventiva</div>
+      <p class="footer-disclaimer">
+        Este relatório é gerado por inteligência artificial e tem caráter educativo. Não substitui a consulta médica. Sempre discuta os resultados com um profissional de saúde qualificado.
+      </p>
     </footer>
   </div>
 </body>
-</html>`;
+</html>
+`;
 
     // 2) Salvar HTML no bucket "medical-documents-reports"
     console.log('💾 Salvando relatório HTML...');
