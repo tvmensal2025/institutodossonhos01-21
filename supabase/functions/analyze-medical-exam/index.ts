@@ -1676,54 +1676,49 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
           enhancedPrompt += '\n\nANALISE A IMAGEM ACIMA E EXTRAIA TODOS OS DADOS DOS EXAMES LABORATORIAIS.';
         }
         
-        // Configuração adaptada para modelos premium
-        const isPremiumModel = model.includes('gpt-5') || model.includes('gpt-4.1') || model.includes('gpt-4-turbo');
-        const body = isPremiumModel ? {
-          model,
-          messages: [{
-            role: 'user',
-            content: [
-              { 
-                type: 'text', 
-                text: enhancedPrompt
-              },
-              ...imagesLimited.map((img, idx) => {
-                console.log(`📸 Imagem ${idx + 1}: ${img.mime}, tamanho: ${img.data.length} chars`);
-                return {
-                  type: 'image_url',
-                  image_url: { 
-                    url: img.data, 
-                    detail: imageDetail 
-                  }
-                };
-              })
-            ]
-          }],
-          max_completion_tokens: adjustedTokens // Tokens ajustados conforme o número de imagens
-        } : {
-          model,
-          messages: [{
-            role: 'user',
-            content: [
-              { 
-                type: 'text', 
-                text: enhancedPrompt
-              },
-              ...imagesLimited.map((img, idx) => {
-                console.log(`📸 Imagem ${idx + 1}: ${img.mime}, tamanho: ${img.data.length} chars`);
-                return {
-                  type: 'image_url',
-                  image_url: { 
-                    url: img.data, 
-                    detail: imageDetail 
-                  }
-                };
-              })
-            ]
-          }],
-          temperature: 0.2,
-          max_tokens: adjustedTokens // Tokens ajustados conforme o número de imagens
-        };
+        // Verificar se o modelo suporta imagens (lista específica de modelos que sabemos que funcionam)
+        const modelsWithVision = ['gpt-4o', 'gpt-4-turbo', 'gpt-4-turbo-preview', 'gpt-4-vision-preview'];
+        const supportsImages = modelsWithVision.includes(model);
+        
+        let body;
+        if (supportsImages && imagesLimited.length > 0) {
+          console.log(`📸 Usando modelo ${model} com ${imagesLimited.length} imagens`);
+          body = {
+            model,
+            messages: [{
+              role: 'user',
+              content: [
+                { 
+                  type: 'text', 
+                  text: enhancedPrompt
+                },
+                ...imagesLimited.map((img, idx) => {
+                  console.log(`📸 Imagem ${idx + 1}: ${img.mime}, tamanho: ${img.data.length} chars`);
+                  return {
+                    type: 'image_url',
+                    image_url: { 
+                      url: img.data, 
+                      detail: imageDetail 
+                    }
+                  };
+                })
+              ]
+            }],
+            temperature: 0.2,
+            max_tokens: adjustedTokens
+          };
+        } else {
+          console.log(`📝 Usando modelo ${model} apenas com texto (não suporta imagens ou sem imagens)`);
+          body = {
+            model,
+            messages: [{
+              role: 'user',
+              content: enhancedPrompt + (extractedText ? `\n\nTEXTO EXTRAÍDO:\n${extractedText}` : '')
+            }],
+            temperature: 0.2,
+            max_tokens: adjustedTokens
+          };
+        }
         
         console.log(`🤖 Enviando ${imagesLimited.length} imagens para OpenAI (detail: ${imageDetail})`);
         
@@ -2105,6 +2100,30 @@ Exemplo:
     const doctorName = parsed.doctor_name || 'Dr. Vital - IA Médica';
     const clinicName = parsed.clinic_name || 'Instituto dos Sonhos';
     
+    // Enriquecer métricas com explicações e montar lista completa + resumo limpo
+    if (parsed.sections && Array.isArray(parsed.sections)) {
+      for (const section of parsed.sections) {
+        if (section.metrics && Array.isArray(section.metrics)) {
+          section.metrics = section.metrics.map((metric: any) => {
+            if (!metric) return metric;
+            if (!metric.how_it_works && metric.name) {
+              const explicacao = getExplicacaoDidatica(metric.name);
+              if (explicacao?.explicacao) {
+                metric.how_it_works = explicacao.explicacao;
+              }
+            }
+            return metric;
+          });
+        }
+      }
+    }
+    const allMetrics = (parsed.sections || []).flatMap((s: any) => Array.isArray(s?.metrics) ? s.metrics : []);
+    const summaryText = (parsed.summary || analysis || '')
+      .replace(/```json|```/gi, '')
+      .replace(/JSON:/gi, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
     // HTML Clínico Premium do Dr. Vital - Layout Corporativo
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -2544,6 +2563,16 @@ Exemplo:
         <div class="info-label">ID Exame</div>
         <div class="info-value">#${documentId.substring(0, 8)}</div>
       </div>
+      ${examTypeEffective ? `
+      <div class="info-item">
+        <div class="info-label">Tipo do Exame</div>
+        <div class="info-value">${examTypeEffective}</div>
+      </div>` : ''}
+      ${doctorName ? `
+      <div class="info-item">
+        <div class="info-label">Médico</div>
+        <div class="info-value">${doctorName}</div>
+      </div>` : ''}
     </div>
 
     <section class="card">
@@ -2552,7 +2581,7 @@ Exemplo:
         Resumo Clínico
       </h2>
       <div class="summary-text">
-        ${analysis ? analysis.substring(0, 800) + (analysis.length > 800 ? '...' : '') : `
+        ${summaryText ? summaryText.substring(0, 1200) + (summaryText.length > 1200 ? '...' : '') : `
           <p>A análise dos exames laboratoriais apresentados revela um perfil de saúde que está dentro dos parâmetros de normalidade, com pequenos pontos para atenção específica. Os resultados indicam função renal e hepática adequadas, perfil lipídico equilibrado e níveis normais de glicemia.</p>
           <p>Recomenda-se manter os hábitos saudáveis e seguir as orientações personalizadas abaixo para otimização dos resultados.</p>
         `}
@@ -2636,6 +2665,38 @@ Exemplo:
             </div>
           `
         }
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">
+        <span class="section-icon">🧾</span>
+        Exames Detalhados
+      </h2>
+      <div class="metabolic-grid">
+        ${allMetrics && allMetrics.length > 0 ? allMetrics.map(metric => {
+          const statusClass = metric.status || 'normal';
+          const statusIcon = metric.status === 'elevated' ? '⚠️' : metric.status === 'low' ? '⚠️' : '✓';
+          return `
+            <div class="metric-card ${statusClass}">
+              <div class="metric-icon ${statusClass}">${statusIcon}</div>
+              <div class="metric-name">${metric.name || ''}</div>
+              <div class="metric-value">${metric.value || ''} ${metric.unit || ''}</div>
+              <div class="metric-reference">Referência: ${metric.us_reference || metric.reference || 'N/A'}</div>
+              ${metric.how_it_works ? `
+                <div class="how-it-works">
+                  <div class="how-it-works-title">
+                    <span class="how-it-works-icon">💡</span>
+                    Como Funciona?
+                  </div>
+                  <div class="how-it-works-text">${metric.how_it_works}</div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('') : `
+          <div style="color: var(--text-medium); font-size: 0.95rem;">Nenhum exame reconhecido automaticamente.</div>
+        `}
       </div>
     </section>
 
