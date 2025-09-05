@@ -349,7 +349,7 @@ Gere uma análise clara e didática dos resultados encontrados.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-5-2025-08-07',
         messages: [{
           role: 'user',
           content: [
@@ -360,8 +360,7 @@ Gere uma análise clara e didática dos resultados encontrados.`;
             }))
           ]
         }],
-        temperature: 0.2,
-        max_completion_tokens: 2500 // Reduzido para ser mais rápido
+        max_completion_tokens: 8000 // Modelo premium com mais tokens
       }),
     });
     
@@ -384,7 +383,7 @@ Gere uma análise clara e didática dos resultados encontrados.`;
     return {
       analysis: analysisText,
       imageCount: examImages.length,
-      service: 'openai-gpt-4o'
+      service: 'openai-gpt-5-premium'
     };
     
   } catch (error) {

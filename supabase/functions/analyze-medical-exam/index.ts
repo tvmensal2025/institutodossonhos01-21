@@ -519,16 +519,15 @@ serve(async (req) => {
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    // Modelo premium: GPT-4o (análise avançada e precisa)
+    // Modelo premium: GPT-5 (análise avançada ultra-precisa)
     const config = {
       service: 'openai' as const,
-      model: 'gpt-4o',
-      max_tokens: 8000,
-      temperature: 0.05,
+      model: 'gpt-5-2025-08-07',
+      max_completion_tokens: 8000,
       openai_key: OPENAI_API_KEY
     };
 
-    console.log(`🔬 Análise médica usando: ${config.service} ${config.model} (${config.max_tokens} tokens, temp: ${config.temperature})`);
+    console.log(`🔬 Análise médica usando: ${config.service} ${config.model} (${config.max_completion_tokens} tokens)`);
     
     if (config.service === 'gemini' && !GOOGLE_AI_API_KEY) {
       throw new Error('GOOGLE_AI_API_KEY não configurada');
@@ -1172,7 +1171,31 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
           enhancedPrompt += '\n\nANALISE A IMAGEM ACIMA E EXTRAIA TODOS OS DADOS DOS EXAMES LABORATORIAIS.';
         }
         
-        const body = {
+        // Configuração adaptada para modelos premium
+        const isPremiumModel = model.includes('gpt-5') || model.includes('gpt-4.1');
+        const body = isPremiumModel ? {
+          model,
+          messages: [{
+            role: 'user',
+            content: [
+              { 
+                type: 'text', 
+                text: enhancedPrompt
+              },
+              ...imagesLimited.map((img, idx) => {
+                console.log(`📸 Imagem ${idx + 1}: ${img.mime}, tamanho: ${img.data.length} chars`);
+                return {
+                  type: 'image_url',
+                  image_url: { 
+                    url: img.data, 
+                    detail: imageDetail 
+                  }
+                };
+              })
+            ]
+          }],
+          max_completion_tokens: 8000 // Modelo premium - mais tokens
+        } : {
           model,
           messages: [{
             role: 'user',
@@ -1194,7 +1217,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
             ]
           }],
           temperature: 0.2,
-          max_completion_tokens: 4000 // Aumentado para garantir resposta completa
+          max_tokens: 4000 // Modelo legado - configuração antiga
         };
         
         console.log(`🤖 Enviando ${imagesLimited.length} imagens para OpenAI (detail: ${imageDetail})`);
@@ -1219,14 +1242,14 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
         return json;
       };
 
-      let usedModel = 'gpt-4o';
+      let usedModel = 'gpt-5-2025-08-07';
       let aiResponse: any;
       
-      console.log('🤖 Chamando OpenAI com modelo:', usedModel);
+      console.log('🤖 Chamando OpenAI com modelo PREMIUM:', usedModel);
       await supabase
         .from('medical_documents')
         .update({ 
-          processing_stage: 'chamando_openai', 
+          processing_stage: 'chamando_openai_premium', 
           progress_pct: 85 
         })
         .eq('id', documentId || '')
@@ -1234,18 +1257,18 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       
       try { 
         aiResponse = await callOpenAI(usedModel); 
-        console.log('✅ OpenAI respondeu com sucesso');
+        console.log('✅ OpenAI Premium respondeu com sucesso');
       }
       catch (e) {
-        console.log('⚠️ Fallback para modelo alternativo:', e);
+        console.log('⚠️ Fallback para modelo avançado:', e);
         try { 
-          usedModel = 'gpt-4o-mini'; 
+          usedModel = 'gpt-4.1-2025-04-14'; 
           aiResponse = await callOpenAI(usedModel); 
           console.log('✅ Fallback 1 funcionou');
         }
         catch (e2) {
-          console.log('⚠️ Fallback para último modelo disponível:', e2);
-          usedModel = 'gpt-3.5-turbo'; 
+          console.log('⚠️ Fallback para modelo básico:', e2);
+          usedModel = 'gpt-4o'; 
           aiResponse = await callOpenAI(usedModel); 
           console.log('✅ Fallback 2 funcionou');
         }
