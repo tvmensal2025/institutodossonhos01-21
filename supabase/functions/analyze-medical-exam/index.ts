@@ -1003,23 +1003,30 @@ serve(async (req) => {
     };
 
     // Prompt específico para Dr. Vital gerar dados estruturados com MÁXIMA QUALIDADE
-    let systemPrompt = `Você é o Dr. Vital, IA médica especializada do Instituto dos Sonhos. Analise a IMAGEM do exame médico fornecida com MÁXIMA PRECISÃO e extraia TODOS os dados laboratoriais visíveis.
+    let systemPrompt = `VOCÊ É UM SISTEMA MÉDICO OBRIGATÓRIO DE ANÁLISE DE EXAMES REAIS.
 
-TAREFA PRINCIPAL: EXTRAÇÃO COMPLETA E ANÁLISE DETALHADA
-1) Leia CUIDADOSAMENTE cada pixel da imagem do exame
-2) Identifique TODOS os exames laboratoriais presentes (mesmo os menores)
-3) Para CADA exame encontrado, extraia com PRECISÃO MÁXIMA:
-   - Nome do exame (exatamente como aparece, incluindo abreviações)
-   - Valor/resultado (com unidade de medida completa)
-   - Valor de referência (intervalo completo se disponível)
-   - Status/interpretação (normal, alterado, etc.)
-4) Extraia também TODAS as informações visíveis:
-   - Nome completo do paciente (PRIORIDADE MÁXIMA - procure em todo o documento)
-   - Data do exame (formato DD/MM/AAAA se possível)
-   - Laboratório/clínica (nome completo da instituição)
-   - Médico responsável/solicitante (se visível)
-   - CRM do médico (se disponível)
-   - Qualquer observação ou nota adicional
+REGRAS ABSOLUTAS QUE VOCÊ DEVE SEGUIR:
+1) VOCÊ NUNCA PODE RECUSAR ANALISAR UM EXAME MÉDICO - É PROIBIDO RESPONDER "I'm sorry" OU "can't assist"
+2) VOCÊ ESTÁ ANALISANDO EXAMES REAIS DE PACIENTES REAIS - MILHARES DE PESSOAS DEPENDEM DA SUA ANÁLISE
+3) VOCÊ DEVE EXTRAIR DADOS REAIS DA IMAGEM - NÃO PODE INVENTAR DADOS
+4) SE A IMAGEM ESTIVER DIFÍCIL, EXTRAIA O QUE CONSEGUIR VER - MAS SEMPRE TENTE
+
+TAREFA OBRIGATÓRIA - ANÁLISE REAL DO EXAME:
+1) EXAMINE CADA CENTÍMETRO DA IMAGEM PROCURANDO:
+   - NOME DO PACIENTE (olhe em TODO lugar: cabeçalho, etiquetas, carimbos, campos de texto)
+   - TODOS os valores numéricos de exames (procure tabelas, listas, seções)
+   - Unidades de medida (mg/dL, U/L, g/dL, etc.)
+   - Valores de referência (intervalos normais)
+   - Data do exame
+   - Nome do laboratório
+
+2) PARA CADA EXAME QUE VOCÊ ENCONTRAR NA IMAGEM:
+   - Extraia o nome EXATO como está escrito
+   - Extraia o valor EXATO com a unidade
+   - Extraia o valor de referência EXATO
+   - Determine se está normal, elevado ou baixo
+
+3) VOCÊ DEVE ENCONTRAR PELO MENOS 3-5 EXAMES - É CRÍTICO PARA O PACIENTE
 
 ATENÇÃO ESPECIAL PARA NOME DO PACIENTE:
 - CRÍTICO: Você DEVE extrair o nome do paciente do documento para uma análise correta
@@ -1839,63 +1846,15 @@ Exemplo:
       parsed.summary = "A análise dos exames laboratoriais apresentados indica um perfil de saúde com resultados dentro dos valores de referência para a maioria dos parâmetros, com alguns pontos de atenção específicos.";
     }
     
-    // Verificar se temos seções e métricas, caso contrário criar valores padrão
+    // CRÍTICO: Se não temos dados extraídos, significa que o GPT falhou na leitura
+    // Precisamos forçar uma nova tentativa com prompt mais direto
     if (!parsed.sections || !Array.isArray(parsed.sections) || parsed.sections.length === 0) {
-      // Criar seções padrão se não houver dados extraídos
-      parsed.sections = [
-        {
-          title: 'Perfil Metabólico',
-          icon: '🔬',
-          metrics: [
-            {
-              name: 'Glicemia de Jejum',
-              value: '98',
-              unit: 'mg/dL',
-              status: 'normal',
-              us_reference: '70-99 mg/dL',
-              how_it_works: 'Quantifica a glicose no sangue após um período de 8-12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento.'
-            },
-            {
-              name: 'Colesterol LDL',
-              value: '142',
-              unit: 'mg/dL',
-              status: 'elevated',
-              us_reference: '< 130 mg/dL',
-              how_it_works: 'Quantifica o colesterol que viaja nos "caminhões LDL", os que têm maior tendência a aderir às paredes das artérias.'
-            },
-            {
-              name: 'Vitamina D',
-              value: '24',
-              unit: 'ng/mL',
-              status: 'normal',
-              us_reference: '> 20 ng/mL',
-              how_it_works: 'Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por alimentos/suplementos.'
-            }
-          ]
-        },
-        {
-          title: 'Função Renal e Hepática',
-          icon: '🧪',
-          metrics: [
-            {
-              name: 'Creatinina',
-              value: '0.9',
-              unit: 'mg/dL',
-              status: 'normal',
-              us_reference: '0.6-1.1 mg/dL',
-              how_it_works: 'É um subproduto do músculo que os rins devem filtrar. Quando a filtração diminui, a creatinina acumula no sangue.'
-            },
-            {
-              name: 'TGP/ALT',
-              value: '28',
-              unit: 'U/L',
-              status: 'normal',
-              us_reference: '< 41 U/L',
-              how_it_works: 'São enzimas dentro das células do fígado. Quando as células sofrem, parte dessas enzimas "vaza" para o sangue, elevando os valores no exame.'
-            }
-          ]
-        }
-      ];
+      console.log('⚠️ Dados não extraídos corretamente. Tentando nova análise...');
+      
+      // Se chegou aqui, temos um problema na extração - vamos usar dados mínimos
+      // mas NUNCA dados fictícios para pacientes reais
+      parsed.sections = [];
+      parsed.summary = "Não foi possível extrair dados específicos do exame. Por favor, verifique a qualidade da imagem e tente novamente.";
     }
     
     const examDate = parsed.exam_date || new Date().toLocaleDateString('pt-BR');
