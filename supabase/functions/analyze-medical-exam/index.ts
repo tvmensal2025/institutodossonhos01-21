@@ -804,6 +804,10 @@ function generateDidacticHTML(data, profile, documentId) {
 }
 
 serve(async (req) => {
+  console.log('🚀 Função analyze-medical-exam iniciada');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -811,14 +815,23 @@ serve(async (req) => {
   let documentId: string | undefined;
   let userIdEffective: string | null = null;
   
-  // Inicializar Supabase (usar service role para ler configs com segurança)
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
   try {
-    console.log('🚀 Iniciando função analyze-medical-exam...');
+    // Verificar variáveis de ambiente
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    console.log('Verificando variáveis de ambiente...');
+    console.log('SUPABASE_URL existe:', !!supabaseUrl);
+    console.log('SUPABASE_SERVICE_ROLE_KEY existe:', !!supabaseKey);
+    console.log('SUPABASE_ANON_KEY existe:', !!SUPABASE_ANON_KEY);
+    
+    if (!supabaseUrl || !supabaseKey || !SUPABASE_ANON_KEY) {
+      throw new Error('Variáveis de ambiente não configuradas corretamente');
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase client criado com sucesso');
     console.log('⏰ Timestamp:', new Date().toISOString());
     
     // Validar se a requisição tem body
@@ -2895,24 +2908,42 @@ Exemplo:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (e) {
+  } catch (e: any) {
     console.error('❌ Erro crítico na análise de exame:', e);
+    console.error('Stack trace:', e.stack);
+    console.error('Tipo de erro:', e.constructor?.name);
+    
+    // Log detalhado do erro
+    const errorDetails = {
+      message: e.message || 'Erro interno do servidor',
+      stack: e.stack,
+      type: e.constructor?.name,
+      documentId: documentId,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.error('Detalhes completos do erro:', JSON.stringify(errorDetails, null, 2));
     
     // Marcar documento como erro para não ficar travado
-    if (documentId) {
-      await supabase
-        .from('medical_documents')
-        .update({ 
-          analysis_status: 'error',
-          processing_stage: 'erro_durante_processamento',
-          progress_pct: 0,
-          error_message: e.message || 'Erro interno do servidor'
-        })
-        .eq('id', documentId);
+    if (documentId && typeof supabase !== 'undefined') {
+      try {
+        await supabase
+          .from('medical_documents')
+          .update({ 
+            analysis_status: 'error',
+            processing_stage: 'erro_durante_processamento',
+            progress_pct: 0,
+            error_message: e.message || 'Erro interno do servidor'
+          })
+          .eq('id', documentId);
+      } catch (updateError) {
+        console.error('Erro ao atualizar status do documento:', updateError);
+      }
     }
     
     return new Response(JSON.stringify({ 
       error: e.message || 'Erro interno do servidor',
+      stack: e.stack?.substring(0, 500), // Incluir parte do stack trace
       documentId: documentId,
       timestamp: new Date().toISOString()
     }), {
