@@ -44,36 +44,96 @@ function calculateBMI(weight: number, height: number): { value: number, category
   return { value: Math.round(bmi * 10) / 10, category, risk };
 }
 
-// Dicionário de exames pré-prontos
+// Dicionário premium de exames com explicações educativas completas
 const examDictionary = {
   "colesterol_total": {
-    title: "🫀 Colesterol Total",
-    howItWorks: "O laboratório mede o colesterol total no sangue, que é a soma do que circula nas \"ruas do corpo\": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL.",
+    title: "🫀 Colesterol Total — Como funciona?",
+    howItWorks: "O laboratório mede o colesterol total no sangue, que é a soma do que circula nas \"ruas do corpo\": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL. É um retrato pontual do tráfego de colesterol e pode variar conforme alimentação recente, álcool, medicações e condições clínicas.",
     whatItIsFor: [
-      "Oferece visão geral da carga de colesterol circulante.",
-      "Ajuda a acompanhar tendência (antes/depois de mudanças).",
-      "Permite calcular o não-HDL (Total – HDL).",
-      "Entra em painéis de risco cardiovascular."
+      "Oferece visão geral da carga de colesterol circulante",
+      "Ajuda a acompanhar tendência (antes/depois de mudanças)",
+      "Permite calcular o não-HDL (Total – HDL)",
+      "Entra em painéis de risco cardiovascular"
     ]
   },
   "ldl": {
-    title: "🫀 LDL",
-    howItWorks: "Quantifica o colesterol que viaja nos \"caminhões LDL\", os que mais tendem a grudar nas paredes das artérias.",
+    title: "🫀 LDL — Como funciona?",
+    howItWorks: "Quantifica o colesterol que viaja nos \"caminhões LDL\", os que têm maior tendência a aderir às paredes das artérias. Dependendo do laboratório, o LDL pode ser medido diretamente ou calculado a partir de Total, HDL e triglicerídeos. Por refletir média recente, é sensível a jejum/álcool, dieta e hormônios da tireoide.",
     whatItIsFor: [
-      "É o alvo principal para prevenir entupimento de artérias.",
-      "Define metas objetivas conforme o perfil de risco.",
-      "Funciona como termômetro de resposta a hábitos.",
-      "Complementa a avaliação com não-HDL e ApoB."
+      "É o alvo principal para prevenir entupimento de artérias",
+      "Define metas objetivas conforme o perfil de risco",
+      "Funciona como termômetro de resposta a hábitos",
+      "Complementa a avaliação com não-HDL e ApoB"
+    ]
+  },
+  "hdl": {
+    title: "🫀 HDL — Como funciona?",
+    howItWorks: "Mede o colesterol presente no \"caminhão de limpeza\": partículas que retiram excesso de gordura dos tecidos e levam de volta ao fígado. Parte do nível é constitucional (genética), mas atividade física, peso corporal e hábitos influenciam bastante ao longo do tempo.",
+    whatItIsFor: [
+      "Protege contra entupimento das artérias",
+      "Reflete benefícios do exercício físico",
+      "Indicador de saúde metabólica geral",
+      "Complementa análise do perfil lipídico"
+    ]
+  },
+  "triglicerideos": {
+    title: "🫀 Triglicerídeos (TG) — Como funciona?",
+    howItWorks: "Dosam a gordura de transporte que sobe facilmente após açúcares, refeições ricas e álcool. Mesmo com jejum, os TG refletem como o corpo processa e estoca energia. Varia com resistência à insulina, peso abdominal, medicações e doenças da tireoide.",
+    whatItIsFor: [
+      "Avalia metabolismo de gorduras",
+      "Detecta resistência à insulina",
+      "Monitora resposta a mudanças alimentares",
+      "Complementa avaliação cardiovascular"
     ]
   },
   "glicose": {
-    title: "🍬 Glicose em jejum",
-    howItWorks: "Quantifica a glicose no sangue após 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento.",
+    title: "🍬 Glicose em jejum — Como funciona?",
+    howItWorks: "Quantifica a glicose no sangue após um período de 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento. Pode oscilar com estresse, infecções, corticoides, café muito forte e quebra de jejum, por isso a preparação importa.",
     whatItIsFor: [
-      "Triagem para pré-diabetes e diabetes.",
-      "Complementa HbA1c e OGTT na avaliação.",
-      "Ajuda a monitorar rotina e efeitos de hábitos.",
-      "Simples e amplamente disponível."
+      "Triagem para pré-diabetes e diabetes",
+      "Complementa HbA1c e OGTT na avaliação",
+      "Ajuda a monitorar rotina e efeitos de hábitos",
+      "Simples e amplamente disponível"
+    ]
+  },
+  "hemoglobina_glicada": {
+    title: "🍬 Hemoglobina glicada (HbA1c) — Como funciona?",
+    howItWorks: "Mostra a porcentagem de hemoglobina que ficou \"açucarada\" ao longo de ~3 meses. Como os glóbulos vermelhos vivem semanas, a HbA1c funciona como uma média de longo prazo da glicose e sofre interferência de anemias, hemoglobinopatias e transfusões.",
+    whatItIsFor: [
+      "Controle de longo prazo da glicose",
+      "Diagnóstico e monitoramento de diabetes",
+      "Independe do jejum",
+      "Reflete últimos 2-3 meses"
+    ]
+  },
+  "creatinina": {
+    title: "💧 Creatinina — Como funciona?",
+    howItWorks: "É um subproduto do músculo que os rins devem filtrar. Quando a filtração diminui, a creatinina acumula no sangue. O valor também depende de massa muscular, hidratação e algumas medicações; por isso é interpretado junto de outros parâmetros.",
+    whatItIsFor: [
+      "Avalia função dos rins",
+      "Detecta problemas renais precocemente",
+      "Monitora medicações nefrotóxicas",
+      "Base para cálculo da filtração glomerular"
+    ]
+  },
+  "tsh": {
+    title: "🧠 TSH — Como funciona?",
+    howItWorks: "O TSH é o comando da hipófise para a tireoide; funciona como um termostato que aumenta quando precisa estimular mais a tireoide e diminui quando ela está trabalhando demais. Ensaios imunoquímicos quantificam esses níveis, permitindo ver se o \"motor\" está acelerado, lento ou equilibrado.",
+    whatItIsFor: [
+      "Primeira triagem da função da tireoide",
+      "Monitora tratamento hormonal",
+      "Detecta hipo e hipertireoidismo",
+      "Guia ajustes de medicação"
+    ]
+  },
+  "hemograma": {
+    title: "🩸 Hemograma completo — Como funciona?",
+    howItWorks: "Usa contadores automatizados (e, se preciso, esfregaço no microscópio) para medir glóbulos vermelhos, brancos e plaquetas, além de índices como VCM e HCM. É um painel amplo, sensível a infecções, deficiências nutricionais e sangramentos.",
+    whatItIsFor: [
+      "Avalia células do sangue",
+      "Detecta anemias e infecções",
+      "Monitora tratamentos médicos",
+      "Screening geral de saúde"
     ]
   }
 };

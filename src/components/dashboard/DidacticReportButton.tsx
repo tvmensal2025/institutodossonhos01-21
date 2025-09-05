@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { GraduationCap, Loader2 } from 'lucide-react';
+import { GraduationCap, Loader2, Sparkles } from 'lucide-react';
 
 interface DidacticReportButtonProps {
   documentId: string;
@@ -18,39 +18,44 @@ const DidacticReportButton: React.FC<DidacticReportButtonProps> = ({ documentId,
     try {
       setIsLoading(true);
       
-      // Chamar a função smart-medical-exam
+      toast({
+        title: '🚀 Iniciando Relatório Premium',
+        description: 'Gerando análise educativa com GPT-5...',
+      });
+      
+      // Chamar a função smart-medical-exam para relatório premium
       const { data, error } = await supabase.functions.invoke('smart-medical-exam', {
         body: { userId, documentId }
       });
       
       if (error) throw error;
       
-      // Verificar se temos um caminho de relatório (múltiplas opções)
+      // Verificar se temos um caminho de relatório
       const reportPath = data?.reportPath || data?.data?.reportPath;
       
       if (!reportPath) {
         throw new Error('Caminho do relatório não retornado');
       }
       
-      // Obter URL assinada para o relatório
+      // Obter URL assinada para o relatório premium
       const { data: signedUrlData, error: signedUrlError } = await supabase.storage
         .from('medical-documents-reports')
         .createSignedUrl(reportPath, 60 * 60); // 1 hora
       
       if (signedUrlError) throw signedUrlError;
       
-      // Abrir o relatório em uma nova aba
+      // Abrir o relatório premium em uma nova aba
       window.open(signedUrlData.signedUrl, '_blank');
       
       toast({
-        title: '🎓 Relatório didático gerado!',
-        description: 'Abrindo relatório educativo em nova aba...',
+        title: '✨ Relatório Premium Gerado!',
+        description: 'Abrindo relatório educativo premium com explicações completas...',
       });
     } catch (error) {
-      console.error('Erro ao gerar relatório didático:', error);
+      console.error('Erro ao gerar relatório premium:', error);
       toast({
-        title: 'Erro ao gerar relatório',
-        description: error.message || 'Ocorreu um erro ao gerar o relatório didático',
+        title: 'Erro ao gerar relatório premium',
+        description: error.message || 'Ocorreu um erro ao gerar o relatório educativo',
         variant: 'destructive',
       });
     } finally {
@@ -64,15 +69,27 @@ const DidacticReportButton: React.FC<DidacticReportButtonProps> = ({ documentId,
       size="sm"
       onClick={generateDidacticReport}
       disabled={disabled || isLoading}
-      title="Gerar relatório didático com explicações simples"
-      className="flex items-center gap-2"
+      title="Gerar relatório premium com explicações educativas completas usando GPT-5"
+      className="flex items-center gap-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-colors group"
     >
       {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin" />
+        <Loader2 className="w-4 h-4 animate-spin text-primary" />
       ) : (
-        <GraduationCap className="w-4 h-4" />
+        <>
+          <div className="relative">
+            <GraduationCap className="w-4 h-4 text-primary" />
+            <Sparkles className="w-3 h-3 text-yellow-500 absolute -top-1 -right-1 group-hover:animate-pulse" />
+          </div>
+        </>
       )}
-      {isLoading ? 'Gerando...' : 'Didático'}
+      <span className="text-primary font-medium">
+        {isLoading ? 'Gerando Premium...' : 'Premium'}
+      </span>
+      {!isLoading && (
+        <span className="text-xs bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent font-bold">
+          GPT-5
+        </span>
+      )}
     </Button>
   );
 };
