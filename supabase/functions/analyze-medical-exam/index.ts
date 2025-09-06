@@ -2426,12 +2426,7 @@ EXTRAIA EXATAMENTE O QUE ESTÁ ESCRITO NA IMAGEM. NÃO INVENTE DADOS.`;
       } else {
         analysis = `Não foi possível analisar a imagem do exame. ${error.message || 'Erro desconhecido'}. 
         
-Por favor, você pode fornecer os dados dos exames em texto para que eu possa criar um relatório completo?
-
-Exemplo:
-- Colesterol Total: 210 mg/dL (Referência: < 190 mg/dL)
-- Glicose: 98 mg/dL (Referência: 70-99 mg/dL)
-- Hemoglobina: 14.5 g/dL (Referência: 13.5-17.5 g/dL)`;
+Por favor, analise as imagens dos exames médicos e extraia todos os valores encontrados. Retorne um relatório completo baseado nos dados reais extraídos das imagens.`;
       }
     }
 
@@ -3046,43 +3041,17 @@ Exemplo:
               `;
             }).join('') : ''
           ).join('') : `
-            <div class="metric-card normal">
-              <div class="metric-icon normal">✓</div>
-              <div class="metric-name">Glicemia de Jejum</div>
-              <div class="metric-value">98 mg/dL</div>
-              <div class="metric-reference">Referência: 70-99 mg/dL</div>
+            <div class="metric-card error">
+              <div class="metric-icon error">❌</div>
+              <div class="metric-name">Erro na Extração</div>
+              <div class="metric-value">Não foi possível extrair dados</div>
+              <div class="metric-reference">Verifique a qualidade das imagens</div>
               <div class="how-it-works">
                 <div class="how-it-works-title">
                   <span class="how-it-works-icon">💡</span>
-                  Como Funciona?
+                  O que fazer?
                 </div>
-                <div class="how-it-works-text">Quantifica a glicose no sangue após um período de 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento.</div>
-              </div>
-            </div>
-            <div class="metric-card elevated">
-              <div class="metric-icon elevated">⚠️</div>
-              <div class="metric-name">Colesterol LDL</div>
-              <div class="metric-value">142 mg/dL</div>
-              <div class="metric-reference">Referência: < 130 mg/dL</div>
-              <div class="how-it-works">
-                <div class="how-it-works-title">
-                  <span class="how-it-works-icon">💡</span>
-                  Como Funciona?
-                </div>
-                <div class="how-it-works-text">Quantifica o colesterol que viaja nos "caminhões LDL", os que têm maior tendência a aderir às paredes das artérias.</div>
-              </div>
-            </div>
-            <div class="metric-card normal">
-              <div class="metric-icon normal">✓</div>
-              <div class="metric-name">Vitamina D</div>
-              <div class="metric-value">24 ng/mL</div>
-              <div class="metric-reference">Referência: > 20 ng/mL</div>
-              <div class="how-it-works">
-                <div class="how-it-works-title">
-                  <span class="how-it-works-icon">💡</span>
-                  Como Funciona?
-                </div>
-                <div class="how-it-works-text">Mede a forma de reserva da vitamina D, produzida na pele pelo sol e obtida por alimentos/suplementos.</div>
+                <div class="how-it-works-text">Certifique-se de que as imagens dos exames estão nítidas e legíveis. Tente fazer upload novamente com imagens de melhor qualidade.</div>
               </div>
             </div>
           `

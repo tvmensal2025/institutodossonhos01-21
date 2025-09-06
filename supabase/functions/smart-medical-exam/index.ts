@@ -472,7 +472,7 @@ serve(async (req) => {
                     content: [
                       {
                         type: 'text',
-                        text: 'Extraia todos os valores de exames laboratoriais desta imagem. Retorne apenas um JSON com array de objetos contendo: name, value, unit, reference. Exemplo: [{"name": "Colesterol Total", "value": "210", "unit": "mg/dL", "reference": "< 190 mg/dL"}]'
+                        text: 'Extraia todos os valores de exames laboratoriais desta imagem. Retorne apenas um JSON com array de objetos contendo: name, value, unit, reference. Seja preciso e extraia apenas os dados reais que você consegue ver na imagem.'
                       },
                       {
                         type: 'image_url',
@@ -523,13 +523,15 @@ serve(async (req) => {
       console.error('❌ Erro ao extrair dados das imagens:', error);
     }
     
-    // Se não conseguiu extrair dados, usar dados de exemplo como fallback
+    // Se não conseguiu extrair dados, mostrar erro em vez de dados fictícios
     if (exams.length === 0) {
-      console.log('⚠️ Usando dados de exemplo como fallback');
+      console.log('❌ ERRO: Não foi possível extrair dados das imagens');
       exams = [
-        { name: "Colesterol Total", value: "210 mg/dL", reference: "Desejável: < 190 mg/dL" },
-        { name: "LDL", value: "130 mg/dL", reference: "Ótimo: < 100 mg/dL" },
-        { name: "Glicose", value: "98 mg/dL", reference: "Normal: 70-99 mg/dL" }
+        { 
+          name: "ERRO NA EXTRAÇÃO", 
+          value: "Não foi possível processar as imagens", 
+          reference: "Verifique a qualidade das imagens e tente novamente" 
+        }
       ];
     }
     
