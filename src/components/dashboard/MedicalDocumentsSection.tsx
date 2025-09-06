@@ -39,7 +39,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { useExamAccess } from '@/hooks/useExamAccess';
-import DidacticReportButton from './DidacticReportButton';
+import PremiumAnalysisButton from './PremiumAnalysisButton';
 
 interface MedicalDocument {
   id: string;
@@ -442,16 +442,27 @@ const MedicalDocumentsSection: React.FC = () => {
         report_meta: doc.report_meta
       });
 
-      await supabase.functions.invoke('analyze-medical-exam', {
+      // 🚀 Disparar análise premium com GPT-5
+      const { data, error } = await supabase.functions.invoke('analyze-medical-exam', {
         body: {
           documentId: doc.id,
           images: doc.report_meta?.image_paths || [],
           userId: user.id,
-          examType: doc.type
+          examType: doc.type,
+          forcePremium: true, // 💎 Forçar modelo premium
+          generateReport: true // 📊 Gerar relatório completo
         }
       });
 
-      toast({ title: 'Análise iniciada', description: 'Gerando o relatório. Atualize em 30–60s.' });
+      if (error) {
+        console.error('❌ Erro na análise premium:', error);
+        throw error;
+      }
+
+      toast({ 
+        title: '🚀 Análise Premium Iniciada', 
+        description: 'Processando com GPT-5. Aguarde 30-60s para o relatório completo.' 
+      });
       setTimeout(() => loadDocuments(), 1500);
     } catch (err: any) {
       console.error(err);
@@ -834,6 +845,12 @@ const MedicalDocumentsSection: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                      {/* Botão de Análise Premium */}
+                      <PremiumAnalysisButton 
+                        documentId={doc.id}
+                        onAnalysisStart={() => console.log('Análise premium iniciada')}
+                      />
+                      
                       {(doc.didactic_report_path || doc.report_path) ? (
                         <>
                           <Button

@@ -11,43 +11,74 @@ const corsHeaders = {
   'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
 };
 
-// 📚 EXPLICAÇÕES DIDÁTICAS PRÉ-PRONTAS (economia de tokens)
-const EXPLICACOES_DIDATICAS: Record<string, {categoria: string, icone: string, explicacao: string}> = {
-  // 🫀 PERFIL LIPÍDICO
-  'colesterol_total': {
-    categoria: '🫀 Perfil Lipídico',
-    icone: '🫀',
-    explicacao: `Como funciona?
-O laboratório mede o colesterol total no sangue, que é a soma do que circula nas "ruas do corpo": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL. É um retrato pontual do tráfego de colesterol e pode variar com alimentação, álcool, medicações e condições clínicas recentes.
+// 📊 CONFIGURAÇÃO DO MODELO PREMIUM
+const AI_CONFIG = {
+  // Modelo premium principal
+  premium_model: "gpt-5-2025-08-07",
+  fallback_models: ["gpt-4.1-2025-04-14", "gpt-4o"],
+  max_completion_tokens: 4096,
+  temperature: 0.2
+};
 
-Para que serve
-• Oferece visão geral da carga de colesterol circulante.
-• Ajuda a acompanhar tendência (antes/depois de mudanças).
-• Permite calcular o não-HDL (Total – HDL), útil quando triglicerídeos estão altos.
-• Entra em painéis de risco cardiovascular junto com as outras frações.`
-  },
-  
-  'ldl': {
-    categoria: '🫀 Perfil Lipídico',
-    icone: '🫀',
-    explicacao: `Como funciona?
-Quantifica o colesterol que viaja nos "caminhões LDL", os que mais tendem a grudar nas paredes das artérias. Em alguns laudos, o LDL é medido diretamente; em outros, calculado a partir de Total, HDL e TG. Por refletir o período recente, responde a jejum/álcool, dieta e hormônios da tireoide.
+// 🎯 TEMPLATE PARA ANÁLISE PREMIUM DE EXAMES
+const PREMIUM_ANALYSIS_PROMPT = `Você é um médico especialista em análises laboratoriais. Analise os resultados de exames médicos fornecidos e crie um relatório completo e educativo.
 
-Para que serve
-• É o alvo principal para prevenir entupimento de artérias (aterosclerose).
-• Define metas objetivas conforme o perfil de risco.
-• Funciona como termômetro de resposta a hábitos e/ou tratamento.
-• Complementa a avaliação com não-HDL e ApoB.`
-  },
-  
-  'hdl': {
-    categoria: '🫀 Perfil Lipídico',
-    icone: '🫀',
-    explicacao: `Como funciona?
-Mede o colesterol no "caminhão de limpeza": partículas que retiram excesso de gordura dos tecidos e levam de volta ao fígado. Parte depende da genética, mas atividade física, peso e hábitos influenciam ao longo do tempo.
+ESTRUTURA OBRIGATÓRIA DO RELATÓRIO:
 
-Para que serve
-• Indica a capacidade de limpeza do sistema.
+## 📋 ANÁLISE MÉDICA COMPLETA
+**Paciente:** [Nome se disponível]
+**Data:** [Data do exame]
+**Laboratório:** [Nome do laboratório]
+**ID Exame:** [Número de identificação]
+
+## 📝 RESUMO CLÍNICO
+Texto de 2-3 linhas explicando os principais achados e orientações gerais.
+
+## 📊 RESULTADOS POR CATEGORIA
+
+Para cada exame encontrado, criar cards formatados como:
+
+### [CATEGORIA - ex: 🫀 Perfil Lipídico]
+
+**[NOME DO EXAME]** 
+- **Resultado:** [valor] [unidade]
+- **Referência:** [valor de referência]
+- **Status:** ✅ Normal / ⚠️ Atenção / 🔴 Alterado
+
+**Como Funciona?**
+[Explicação didática de 3-4 linhas sobre como o exame funciona e o que avalia]
+
+**Para que serve:**
+• [Ponto 1 sobre utilidade clínica]
+• [Ponto 2 sobre interpretação]
+• [Ponto 3 sobre acompanhamento]
+
+---
+
+## 🎯 RECOMENDAÇÕES PERSONALIZADAS
+
+### 🥗 Alimentação
+[Orientações específicas baseadas nos resultados]
+
+### 🏃‍♂️ Atividade Física
+[Recomendações de exercícios adequadas]
+
+### 🧘‍♀️ Bem-estar
+[Dicas de estilo de vida e manejo do estresse]
+
+### 👨‍⚕️ Acompanhamento
+[Orientações sobre retorno médico e próximos exames]
+
+INSTRUÇÕES IMPORTANTES:
+1. Use sempre emojis para categorizar exames
+2. Seja didático e educativo
+3. Evite linguagem técnica excessiva
+4. Destaque valores alterados com ⚠️ ou 🔴
+5. Inclua sempre explicações sobre "Como Funciona"
+6. Personalize as recomendações com base nos resultados`;
+
+// 📚 BANCO DE EXPLICAÇÕES DIDÁTICAS PRÉ-PRONTAS
+const EXPLICACOES_EXAMES = {
 • Costuma se associar a menor risco cardiovascular.
 • Ajuda a contextualizar Total e não-HDL.
 • Não é um alvo terapêutico isolado (o foco permanece em LDL/não-HDL).`
