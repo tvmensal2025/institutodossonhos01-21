@@ -35,11 +35,8 @@ import DebugDataVerification from '@/components/DebugDataVerification';
 import MyProgress from '@/components/MyProgress';
 import SaboteurTest from '@/components/SaboteurTest';
 
-// Removido avatar roxo com upload; vamos usar o mesmo estilo do avatar do menu
-import { UserProfileSidebar } from "@/components/ui/user-profile-sidebar";
+// Core dashboard components
 import LockedMenuItem from '@/components/LockedMenuItem';
-import LockedSection from '@/components/LockedSection';
-import BluetoothWeighingSystem from '@/components/weighing/BluetoothWeighingSystem';
 
 type DashboardSection = 
   | 'dashboard' 
