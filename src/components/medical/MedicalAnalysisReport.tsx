@@ -173,24 +173,28 @@ export const MedicalAnalysisReport: React.FC<MedicalAnalysisReportProps> = ({
     >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Premium */}
-        <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-r from-primary/90 to-purple-600/90 text-white">
-          <div className="absolute inset-0 bg-black/10"></div>
+        <Card className="relative overflow-hidden border-0 shadow-2xl bg-gradient-to-r from-primary via-purple-600 to-pink-600 text-white">
+          <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-white/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-600/20 to-pink-600/20 blur-xl opacity-50"></div>
           <CardHeader className="relative z-10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-white/20 backdrop-blur-sm">
-                  <FileText className="w-8 h-8" />
+                <div className="flex items-center gap-6">
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    className="p-4 rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md border border-white/20"
+                  >
+                    <FileText className="w-10 h-10" />
+                  </motion.div>
+                  <div>
+                    <CardTitle className="text-3xl font-bold flex items-center gap-3 mb-2">
+                      <Sparkles className="w-8 h-8 animate-pulse" />
+                      Análise Médica Completa
+                    </CardTitle>
+                    <Badge className="bg-gradient-to-r from-yellow-400/90 to-orange-500/90 text-black border-0 px-4 py-2 text-sm font-bold">
+                      🤖 IA Premium - GPT-5 Inteligência Médica Avançada
+                    </Badge>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle className="text-2xl font-bold flex items-center gap-2">
-                    <Sparkles className="w-6 h-6" />
-                    Análise Médica Completa
-                  </CardTitle>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 mt-2">
-                    IA Premium - Inteligência Médica Avançada
-                  </Badge>
-                </div>
-              </div>
               
               <div className="flex gap-2">
                 <Button
@@ -217,8 +221,8 @@ export const MedicalAnalysisReport: React.FC<MedicalAnalysisReportProps> = ({
         </Card>
 
         {/* Informações do Paciente */}
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-6">
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-background to-primary/5 backdrop-blur-sm">
+          <CardContent className="p-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5 text-primary" />
@@ -253,17 +257,21 @@ export const MedicalAnalysisReport: React.FC<MedicalAnalysisReportProps> = ({
         </Card>
 
         {/* Resumo Clínico */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-background to-purple-600/5 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-primary" />
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-600/20">
+                <Brain className="w-6 h-6 text-primary" />
+              </div>
               📝 Resumo Clínico
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed">
-              {exampleData.clinicalSummary}
-            </p>
+            <div className="p-6 rounded-xl bg-gradient-to-br from-primary/5 to-purple-600/5 border border-primary/10">
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                {exampleData.clinicalSummary}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
