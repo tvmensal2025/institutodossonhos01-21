@@ -14,8 +14,8 @@ const corsHeaders = {
 // 📊 CONFIGURAÇÃO DO MODELO PREMIUM
 const AI_CONFIG = {
   // Modelo premium principal
-  premium_model: "gpt-5-2025-08-07",
-  fallback_models: ["gpt-4.1-2025-04-14", "gpt-4o"],
+  premium_model: "gpt-4o",
+  fallback_models: ["gpt-4-vision-preview", "gpt-4-turbo"],
   max_completion_tokens: 4096,
   temperature: 0.2
 };
@@ -79,34 +79,60 @@ INSTRUÇÕES IMPORTANTES:
 
 // 📚 BANCO DE EXPLICAÇÕES DIDÁTICAS PRÉ-PRONTAS
 const EXPLICACOES_EXAMES = {
-• Costuma se associar a menor risco cardiovascular.
-• Ajuda a contextualizar Total e não-HDL.
-• Não é um alvo terapêutico isolado (o foco permanece em LDL/não-HDL).`
+  'colesterol_total': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `Como funciona?
+O laboratório mede o colesterol total no sangue, que é a soma do que circula nas "ruas do corpo": o que é transportado por LDL/VLDL e o que é recolhido pelo HDL. É um retrato pontual do tráfego de colesterol e pode variar conforme alimentação recente, álcool, medicações e condições clínicas.`
+  },
+  
+  'ldl': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `Como funciona?
+Quantifica o colesterol que viaja nos "caminhões LDL", os que têm maior tendência a aderir às paredes das artérias. Dependendo do laboratório, o LDL pode ser medido diretamente ou calculado a partir de Total, HDL e triglicerídeos. Por refletir média recente, é sensível a jejum/álcool, dieta e hormônios da tireoide.`
+  },
+  
+  'hdl': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `Como funciona?
+Mede o colesterol presente no "caminhão de limpeza": partículas que retiram excesso de gordura dos tecidos e levam de volta ao fígado. Parte do nível é constitucional (genética), mas atividade física, peso corporal e hábitos influenciam bastante ao longo do tempo.`
   },
   
   'triglicerideos': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
     explicacao: `Como funciona?
-Dosam a "gordura de transporte" que sobe facilmente após açúcares, refeições ricas e álcool. Mesmo em jejum, os TG refletem como o corpo usa e guarda energia. Variam com resistência à insulina, gordura abdominal, medicações e tireoide.
-
-Para que serve
-• Mostram o impacto de carboidratos simples e álcool.
-• Valores altos mantidos se associam a risco cardiovascular.
-• Níveis muito altos elevam risco de pancreatite.
-• Orientam foco adicional em não-HDL e ApoB.`
+Dosam a gordura de transporte que sobe facilmente após açúcares, refeições ricas e álcool. Mesmo com jejum, os TG refletem como o corpo processa e estoca energia. Varia com resistência à insulina, peso abdominal, medicações e doenças da tireoide.`
   },
   
   'vldl': {
     categoria: '🫀 Perfil Lipídico',
     icone: '🫀',
     explicacao: `Como funciona?
-Avalia (muitas vezes estima) as partículas que o fígado fabrica para levar triglicerídeos aos tecidos. Caminha de perto com os TG e tende a subir/baixar junto com eles.
-
-Para que serve
-• Espelha o comportamento dos triglicerídeos.
-• Completa o painel lipídico.
-• Não é alvo direto de tratamento.`
+Avalia (muitas vezes estima) as partículas que o fígado fabrica para levar triglicerídeos até os tecidos. Como acompanha de perto os TG, tende a subir e descer junto com eles. Em jejum inadequado ou TG muito alto, a estimativa perde precisão.`
+  },
+  
+  'colesterol_nao_hdl': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `Como funciona?
+É um valor derivado: Total – HDL. Na prática, reúne todas as frações que podem "sujar os canos" (LDL, VLDL e remanescentes). Por agregar múltiplas partículas, costuma ser estável mesmo quando os TG variam.`
+  },
+  
+  'apob': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `Como funciona?
+É a contagem direta da proteína ApoB, presente uma por partícula nas lipoproteínas que podem entupir (LDL, VLDL, IDL, Lp(a)). Em vez de medir só quanto colesterol há, a ApoB mostra quantas partículas potencialmente aterogênicas estão circulando.`
+  },
+  
+  'lipoproteina_a': {
+    categoria: '🫀 Perfil Lipídico',
+    icone: '🫀',
+    explicacao: `Como funciona?
+Mede uma partícula semelhante ao LDL, mas com uma "peça extra" (apolipoproteína(a)) que tende a aumentar o risco ao longo da vida. É largamente herdada e pouco muda com dieta ou exercício; por isso, muitas vezes basta dosagem única em algum momento da vida adulta.`
   },
   
   // 🍬 GLICOSE & INSULINA
@@ -114,26 +140,14 @@ Para que serve
     categoria: '🍬 Glicose & Insulina',
     icone: '🍬',
     explicacao: `Como funciona?
-Quantifica a glicose no sangue após 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento. Pode oscilar com estresse, infecções, corticoides e quebra de jejum.
-
-Para que serve
-• Triagem para pré-diabetes e diabetes.
-• Complementa HbA1c e OGTT na avaliação.
-• Ajuda a monitorar rotina e efeitos de hábitos.
-• Simples e amplamente disponível.`
+Quantifica a glicose no sangue após um período de 8–12 horas sem comer, oferecendo um retrato do açúcar circulante naquele momento. Pode oscilar com estresse, infecções, corticoides, café muito forte e quebra de jejum, por isso a preparação importa.`
   },
   
   'hba1c': {
     categoria: '🍬 Glicose & Insulina',
     icone: '🍬',
     explicacao: `Como funciona?
-Mostra a porcentagem de hemoglobina que ficou "açucarada" ao longo de ~3 meses. Como as hemácias vivem semanas, a HbA1c funciona como média de longo prazo da glicose; pode sofrer interferência de anemias, hemoglobinopatias e transfusões.
-
-Para que serve
-• Avalia controle glicêmico crônico.
-• Útil para acompanhar tratamento.
-• Menos afetada por jejum que a glicose isolada.
-• Entra em critérios diagnósticos quando indicado.`
+Mostra a porcentagem de hemoglobina que ficou "açucarada" ao longo de ~3 meses. Como os glóbulos vermelhos vivem semanas, a HbA1c funciona como uma média de longo prazo da glicose e sofre interferência de anemias, hemoglobinopatias e transfusões.`
   },
   
   'insulina': {
@@ -320,6 +334,10 @@ function getExplicacaoDidatica(nomeExame: string): {categoria: string, icone: st
     .replace(/ldl/g, 'ldl')
     .replace(/hdl/g, 'hdl')
     .replace(/triglicerid/g, 'triglicerideos')
+    .replace(/vldl/g, 'vldl')
+    .replace(/colesterol_nao_hdl|nao_hdl|não_hdl/g, 'colesterol_nao_hdl')
+    .replace(/apob|apo_b/g, 'apob')
+    .replace(/lipoproteina_a|lp_a|lp\(a\)/g, 'lipoproteina_a')
     .replace(/glicose/g, 'glicose')
     .replace(/hba1c|hemoglobina_glicada/g, 'hba1c')
     .replace(/insulina/g, 'insulina')
@@ -336,7 +354,7 @@ function getExplicacaoDidatica(nomeExame: string): {categoria: string, icone: st
     .replace(/pcr|proteina_c_reativa/g, 'pcr')
     .replace(/vhs/g, 'vhs');
   
-  return EXPLICACOES_DIDATICAS[nomeNormalizado] || null;
+  return EXPLICACOES_EXAMES[nomeNormalizado] || null;
 }
 
 // Funções para agrupar exames similares
@@ -645,15 +663,22 @@ function generateDidacticHTML(data, profile, documentId) {
     return sections.map(section => {
       const metricsHTML = section.metrics.map(metric => {
         const explicacao = getExplicacaoDidatica(metric.name);
+        const status = metric.status || 'normal';
+        const statusIcon = status === 'normal' ? '✅' : status === 'elevated' ? '⚠️' : '🔴';
+        
         return `
-          <div class="metric-card status-${metric.status || 'normal'}">
+          <div class="metric-card ${status}">
+            <div class="metric-icon ${status}">${statusIcon}</div>
             <div class="metric-name">${metric.name}</div>
             <div class="metric-value">${metric.value} ${metric.unit || ''}</div>
-            <div class="metric-ref">Referência: ${metric.reference_range || 'N/A'}</div>
+            <div class="metric-reference">Referência: ${metric.reference_range || 'N/A'}</div>
             ${explicacao ? `
-              <div class="explanation">
-                <h4>Como funciona este exame?</h4>
-                <p>${explicacao.explicacao.replace(/\n/g, '<br>')}</p>
+              <div class="how-it-works">
+                <div class="how-it-works-title">
+                  <span class="how-it-works-icon">🔬</span>
+                  Como funciona?
+                </div>
+                <div class="how-it-works-text">${explicacao.explicacao.replace(/\n/g, '<br>')}</div>
               </div>
             ` : ''}
           </div>
@@ -661,12 +686,15 @@ function generateDidacticHTML(data, profile, documentId) {
       }).join('');
       
       return `
-        <div class="section">
-          <h2>${section.icon || '🧪'} ${section.title}</h2>
-          <div class="metrics-grid">
+        <section class="card">
+          <h2 class="section-title">
+            <span class="section-icon">${section.icon || '🧪'}</span>
+            ${section.title}
+          </h2>
+          <div class="metabolic-grid">
             ${metricsHTML}
           </div>
-        </div>
+        </section>
       `;
     }).join('');
   };
@@ -676,125 +704,399 @@ function generateDidacticHTML(data, profile, documentId) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório Didático - ${patientName}</title>
+  <title>Relatório Médico Completo - ${patientName}</title>
   <style>
     :root {
-      --primary: #1E40AF;
-      --secondary: #3B82F6;
-      --text: #1F2937;
-      --bg: #F9FAFB;
-      --white: #FFFFFF;
-      --border: #E5E7EB;
-      --success: #10B981;
-      --warning: #F59E0B;
-      --danger: #EF4444;
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --accent: #f59e0b;
+      --text-dark: #1f2937;
+      --text-medium: #4b5563;
+      --text-light: #9ca3af;
+      --bg-white: #ffffff;
+      --bg-light: #f3f4f6;
+      --bg-secondary: #f8fafc;
+      --border-color: #e5e7eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border-radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
+
+    * {
       margin: 0;
-      padding: 20px;
-      line-height: 1.6;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.5;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
     .container {
-      max-width: 900px;
-      margin: auto;
-      background: var(--white);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+      position: relative;
       overflow: hidden;
     }
-    .header {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: var(--white);
-      padding: 30px;
-      text-align: center;
+
+    .header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
     }
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
     }
-    .header p {
-      margin: 5px 0 0;
+
+    .header-icon {
+      background-color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
       opacity: 0.9;
     }
-    .content {
-      padding: 30px;
-    }
-    .summary {
-      background: #EFF6FF;
-      border-left: 5px solid var(--primary);
+
+    .welcome-message {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
       padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
     }
-    .section h2 {
-      font-size: 22px;
-      color: var(--primary);
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 10px;
-      margin: 30px 0 20px;
+
+    .welcome-icon {
+      font-size: 24px;
+      flex-shrink: 0;
     }
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+
+    .welcome-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-dark);
     }
-    .metric-card {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-      background: var(--white);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    .info-bar {
+      display: flex;
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
+      margin-bottom: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
-    .metric-name {
+
+    .info-item {
+      flex: 1;
+      padding: 16px;
+      text-align: center;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .info-item:last-child {
+      border-right: none;
+    }
+
+    .info-label {
+      font-size: 14px;
+      color: var(--text-medium);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
       font-weight: 600;
-      font-size: 18px;
-      margin-bottom: 10px;
+      color: var(--text-dark);
     }
+
+    .card {
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background-color: var(--primary-light);
+      color: white;
+      border-radius: 6px;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    .summary-text {
+      color: var(--text-medium);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .metabolic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .metric-card {
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      border-left: 4px solid var(--primary-light);
+    }
+
+    .metric-card.normal {
+      border-left-color: var(--success);
+    }
+
+    .metric-card.elevated {
+      border-left-color: var(--warning);
+    }
+
+    .metric-card.low {
+      border-left-color: var(--danger);
+    }
+
+    .metric-icon {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: white;
+    }
+
+    .metric-icon.normal {
+      background-color: var(--success);
+    }
+
+    .metric-icon.elevated {
+      background-color: var(--warning);
+    }
+
+    .metric-icon.low {
+      background-color: var(--danger);
+    }
+
+    .metric-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
     .metric-value {
       font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 5px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      font-family: var(--font-main);
     }
-    .metric-ref {
-      font-size: 14px;
-      color: #6B7280;
-      margin-bottom: 15px;
+
+    .metric-reference {
+      font-size: 13px;
+      color: var(--text-medium);
+      margin-bottom: 16px;
     }
-    .metric-card.status-elevated .metric-value {
-      color: var(--danger);
-    }
-    .metric-card.status-low .metric-value {
-      color: var(--warning);
-    }
-    .metric-card.status-normal .metric-value {
-      color: var(--success);
-    }
-    .explanation {
-      margin-top: 15px;
-      padding: 15px;
-      background: #F3F4F6;
+
+    .how-it-works {
+      margin-top: 16px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(59, 130, 246, 0.08) 100%);
       border-radius: 8px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
     }
-    .explanation h4 {
-      margin-top: 0;
-      font-size: 16px;
-      color: var(--primary);
+
+    .how-it-works::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
     }
-    .explanation p {
+
+    .how-it-works-title {
+      display: flex;
+      align-items: center;
       font-size: 14px;
-      margin-bottom: 0;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
     }
+
+    .how-it-works-icon {
+      margin-right: 6px;
+    }
+
+    .how-it-works-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-medium);
+      position: relative;
+      z-index: 1;
+    }
+
     .footer {
       text-align: center;
-      padding: 20px;
-      font-size: 14px;
-      color: #6B7280;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      background-color: var(--primary-dark);
+      color: white;
+      border-radius: 10px;
+      margin-top: 24px;
     }
+
+    .footer-logo {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .footer-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .footer-subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 16px;
+    }
+
+    .footer-contact {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .contact-icon {
+      font-size: 16px;
+    }
+
+    .footer-disclaimer {
+      font-size: 12px;
+      opacity: 0.8;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .header {
+        padding: 20px;
+      }
+
+      .info-bar {
+        flex-direction: column;
+      }
+
+      .info-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .info-item:last-child {
+        border-bottom: none;
+      }
+
+      .metabolic-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-contact {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
     @media print {
       body { background: white; }
       .container { box-shadow: none; }
@@ -808,27 +1110,76 @@ function generateDidacticHTML(data, profile, documentId) {
   </button>
   
   <div class="container">
-    <div class="header">
-      <h1>🎓 Relatório Didático de Exames</h1>
-      <p>Dr. Vital - IA Médica do Instituto dos Sonhos</p>
+    <header class="header">
+      <div class="header-content">
+        <div class="header-icon">👨‍⚕️</div>
+        <div>
+          <h1 class="header-title">Relatório Médico Completo</h1>
+          <p class="header-subtitle">Dr. Vital - IA Médica Avançada</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="welcome-message">
+      <div class="welcome-icon">👋</div>
+      <div class="welcome-text">
+        <strong>Olá! Sou o Dr. Vital, sua IA médica.</strong> Vou explicar seus exames de forma bem simples, como se estivesse conversando com um amigo. Não se preocupe com termos complicados - vou explicar tudo de forma clara e fácil de entender!
+      </div>
     </div>
+
+    <div class="info-bar">
+      <div class="info-item">
+        <div class="info-label">Nome Paciente</div>
+        <div class="info-value">${patientName}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Data</div>
+        <div class="info-value">${examDate}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Laboratório/Clínica</div>
+        <div class="info-value">Instituto dos Sonhos</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">ID Exame</div>
+        <div class="info-value">#${documentId.substring(0, 8)}</div>
+      </div>
+    </div>
+
+    <section class="card">
+      <h2 class="section-title">
+        <span class="section-icon">📊</span>
+        Resumo Clínico
+      </h2>
+      <div class="summary-text">
+        ${data.summary || 'Análise em andamento...'}
+      </div>
+    </section>
     
-    <div class="content">
-      <div class="summary">
-        <strong>Paciente:</strong> ${patientName}<br>
-        <strong>Data do Exame:</strong> ${examDate}<br>
-        <strong>Resumo:</strong> ${data.summary || 'Análise didática dos seus exames com explicações detalhadas.'}
+    ${renderSections(data.sections)}
+    
+    <footer class="footer">
+      <div class="footer-logo">🏥</div>
+      <div class="footer-title">Instituto dos Sonhos</div>
+      <div class="footer-subtitle">Análise Médica Inteligente</div>
+      
+      <div class="footer-contact">
+        <div class="contact-item">
+          <span class="contact-icon">📱</span>
+          <span>WhatsApp: (11) 98900-0650</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">🌐</span>
+          <span>www.institutodossonhos.com.br</span>
+        </div>
       </div>
       
-      <p>Este relatório didático explica cada um dos seus exames de forma simples e educativa, ajudando você a entender melhor o que cada teste mede e como interpretar seus resultados.</p>
-      
-      ${renderSections(data.sections)}
-    </div>
-    
-    <div class="footer">
-      <p><strong>⚠️ Importante:</strong> Este relatório é educativo e não substitui uma consulta médica. Discuta seus resultados com um profissional de saúde.</p>
-      <p>Instituto dos Sonhos • Documento gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
-    </div>
+      <div class="footer-disclaimer">
+        <strong>⚠️ IMPORTANTE:</strong> Este relatório é gerado automaticamente por IA e tem caráter educativo. 
+        <strong>NÃO substitui a consulta com um profissional de saúde.</strong> 
+        Consulte sempre um médico para interpretação clínica adequada e orientações personalizadas.
+      </div>
+    </footer>
   </div>
 </body>
 </html>`;
@@ -1507,7 +1858,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
             // TIMEOUT DRÁSTICO: 5s para evitar CPU timeout
             const downloadPromise = supabase.storage.from('medical-documents').download(p);
             const timeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout no download da imagem')), 5000)
+              setTimeout(() => reject(new Error('Timeout no download da imagem')), 15000)
             );
             
             const { data: dl, error: dlErr } = await Promise.race([downloadPromise, timeoutPromise]) as any;
@@ -2161,7 +2512,7 @@ Exemplo:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Análise Médica Completa</title>
+  <title>Relatório Médico Completo</title>
   <style>
     :root {
       --primary: #1e40af;
@@ -2262,17 +2613,26 @@ Exemplo:
       opacity: 0.9;
     }
 
-    .premium-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background-color: var(--accent);
-      color: white;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-      box-shadow: var(--shadow-sm);
+    .welcome-message {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .welcome-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .welcome-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-dark);
     }
 
     .info-bar {
@@ -2528,11 +2888,31 @@ Exemplo:
       margin-bottom: 16px;
     }
 
+    .footer-contact {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .contact-icon {
+      font-size: 16px;
+    }
+
     .footer-disclaimer {
       font-size: 12px;
-      opacity: 0.7;
-      max-width: 600px;
+      opacity: 0.8;
+      max-width: 700px;
       margin: 0 auto;
+      line-height: 1.5;
     }
 
     @media (max-width: 768px) {
@@ -2561,21 +2941,32 @@ Exemplo:
       .recommendations {
         grid-template-columns: 1fr;
       }
+
+      .footer-contact {
+        flex-direction: column;
+        gap: 12px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header class="header">
-      <div class="premium-badge">Premium</div>
       <div class="header-content">
         <div class="header-icon">👨‍⚕️</div>
         <div>
-          <h1 class="header-title">Análise Médica Completa</h1>
-          <p class="header-subtitle">Dr. Vital - Inteligência Médica Avançada</p>
+          <h1 class="header-title">Relatório Médico Completo</h1>
+          <p class="header-subtitle">Dr. Vital - IA Médica Avançada</p>
         </div>
       </div>
     </header>
+
+    <div class="welcome-message">
+      <div class="welcome-icon">👋</div>
+      <div class="welcome-text">
+        <strong>Olá! Sou o Dr. Vital, sua IA médica.</strong> Vou explicar seus exames de forma bem simples, como se estivesse conversando com um amigo. Não se preocupe com termos complicados - vou explicar tudo de forma clara e fácil de entender!
+      </div>
+    </div>
 
     <div class="info-bar">
       <div class="info-item">
@@ -2841,10 +3232,24 @@ Exemplo:
     <footer class="footer">
       <div class="footer-logo">🏥</div>
       <div class="footer-title">Instituto dos Sonhos</div>
-      <div class="footer-subtitle">Medicina Integrativa e Preventiva</div>
-      <p class="footer-disclaimer">
-        Este relatório é gerado por inteligência artificial e tem caráter educativo. Não substitui a consulta médica. Sempre discuta os resultados com um profissional de saúde qualificado.
-      </p>
+      <div class="footer-subtitle">Análise Médica Inteligente</div>
+      
+      <div class="footer-contact">
+        <div class="contact-item">
+          <span class="contact-icon">📱</span>
+          <span>WhatsApp: (11) 98900-0650</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">🌐</span>
+          <span>www.institutodossonhos.com.br</span>
+        </div>
+      </div>
+      
+      <div class="footer-disclaimer">
+        <strong>⚠️ IMPORTANTE:</strong> Este relatório é gerado automaticamente por IA e tem caráter educativo. 
+        <strong>NÃO substitui a consulta com um profissional de saúde.</strong> 
+        Consulte sempre um médico para interpretação clínica adequada e orientações personalizadas.
+      </div>
     </footer>
   </div>
 </body>
@@ -2982,13 +3387,18 @@ Exemplo:
         
         console.log('📊 Total de exames estruturados extraídos:', structuredExams.length);
         
-        // Se ainda não tem exames, criar alguns de exemplo para não deixar vazio
-        if (structuredExams.length === 0 && analysis.includes('Erro ao processar')) {
-          console.log('⚠️ Usando exames de exemplo devido a erro no processamento');
+        // Se ainda não tem exames, criar mensagem de erro em vez de dados fictícios
+        if (structuredExams.length === 0) {
+          console.log('⚠️ Nenhum exame extraído das imagens');
           structuredExams = [
-            { exam_name: "Colesterol Total", name: "Colesterol Total", value: "210 mg/dL", result: "210 mg/dL", reference: "< 190 mg/dL", normal_range: "< 190 mg/dL" },
-            { exam_name: "Glicose", name: "Glicose", value: "98 mg/dL", result: "98 mg/dL", reference: "70-99 mg/dL", normal_range: "70-99 mg/dL" },
-            { exam_name: "Hemoglobina", name: "Hemoglobina", value: "14.5 g/dL", result: "14.5 g/dL", reference: "13.5-17.5 g/dL", normal_range: "13.5-17.5 g/dL" }
+            { 
+              exam_name: "Erro na Extração", 
+              name: "Erro na Extração", 
+              value: "Não foi possível extrair dados", 
+              result: "Verifique a qualidade das imagens", 
+              reference: "Tente novamente", 
+              normal_range: "Erro de processamento" 
+            }
           ];
         }
       } catch (parseError) {

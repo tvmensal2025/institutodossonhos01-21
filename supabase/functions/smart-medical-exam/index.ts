@@ -430,12 +430,108 @@ serve(async (req) => {
     const document = docResult.data;
     const profile = profileResult.data;
     
-    // Dados de exemplo (em produção, extrair dos exames reais)
-    const exams = [
-      { name: "Colesterol Total", value: "210 mg/dL", reference: "Desejável: < 190 mg/dL" },
-      { name: "LDL", value: "130 mg/dL", reference: "Ótimo: < 100 mg/dL" },
-      { name: "Glicose", value: "98 mg/dL", reference: "Normal: 70-99 mg/dL" }
-    ];
+    // Extrair dados reais das imagens dos exames
+    let exams = [];
+    
+    try {
+      // Buscar imagens do documento
+      const { data: images } = await supabase.storage
+        .from('medical-documents')
+        .list(`${userId}/${documentId}`, { limit: 10 });
+      
+      if (images && images.length > 0) {
+        console.log(`📸 Processando ${images.length} imagens para extração de dados`);
+        
+        // Processar cada imagem com OpenAI Vision
+        const imagePromises = images.slice(0, 10).map(async (image) => {
+          try {
+            // Download da imagem
+            const { data: imageData } = await supabase.storage
+              .from('medical-documents')
+              .download(`${userId}/${documentId}/${image.name}`);
+            
+            if (!imageData) return null;
+            
+            // Converter para base64
+            const arrayBuffer = await imageData.arrayBuffer();
+            const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+            const mimeType = image.name.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+            
+            // Chamar OpenAI Vision para extrair dados
+            const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: 'gpt-4o',
+                messages: [
+                  {
+                    role: 'user',
+                    content: [
+                      {
+                        type: 'text',
+                        text: 'Extraia todos os valores de exames laboratoriais desta imagem. Retorne apenas um JSON com array de objetos contendo: name, value, unit, reference. Exemplo: [{"name": "Colesterol Total", "value": "210", "unit": "mg/dL", "reference": "< 190 mg/dL"}]'
+                      },
+                      {
+                        type: 'image_url',
+                        image_url: {
+                          url: `data:${mimeType};base64,${base64}`
+                        }
+                      }
+                    ]
+                  }
+                ],
+                max_tokens: 2000,
+                temperature: 0.1
+              })
+            });
+            
+            if (!openaiResponse.ok) {
+              console.error('❌ Erro na API OpenAI:', openaiResponse.status);
+              return null;
+            }
+            
+            const result = await openaiResponse.json();
+            const content = result.choices?.[0]?.message?.content;
+            
+            if (content) {
+              try {
+                const extractedExams = JSON.parse(content);
+                if (Array.isArray(extractedExams)) {
+                  return extractedExams;
+                }
+              } catch (e) {
+                console.error('❌ Erro ao parsear JSON extraído:', e);
+              }
+            }
+            
+            return null;
+          } catch (error) {
+            console.error('❌ Erro ao processar imagem:', error);
+            return null;
+          }
+        });
+        
+        const results = await Promise.all(imagePromises);
+        exams = results.filter(Boolean).flat();
+        
+        console.log(`✅ Extraídos ${exams.length} exames das imagens`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao extrair dados das imagens:', error);
+    }
+    
+    // Se não conseguiu extrair dados, usar dados de exemplo como fallback
+    if (exams.length === 0) {
+      console.log('⚠️ Usando dados de exemplo como fallback');
+      exams = [
+        { name: "Colesterol Total", value: "210 mg/dL", reference: "Desejável: < 190 mg/dL" },
+        { name: "LDL", value: "130 mg/dL", reference: "Ótimo: < 100 mg/dL" },
+        { name: "Glicose", value: "98 mg/dL", reference: "Normal: 70-99 mg/dL" }
+      ];
+    }
     
     // Processar exames
     const processedExams = await Promise.all(

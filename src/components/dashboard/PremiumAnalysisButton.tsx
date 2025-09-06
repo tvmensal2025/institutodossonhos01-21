@@ -39,7 +39,7 @@ export const PremiumAnalysisButton: React.FC<PremiumAnalysisButtonProps> = ({
 
       toast({
         title: '🚀 Iniciando Análise Premium',
-        description: 'Processando com GPT-5 para análise médica completa...',
+        description: 'Processando com GPT-4o para análise médica completa...',
       });
 
       // Chamar a função de análise premium
@@ -115,7 +115,7 @@ export const PremiumAnalysisButton: React.FC<PremiumAnalysisButtonProps> = ({
             <div className="flex items-center gap-1">
               <Crown className="w-3 h-3 text-yellow-300" />
               <span className="text-xs font-bold bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                GPT-5
+                GPT-4o
               </span>
             </div>
           )}
