@@ -1285,10 +1285,10 @@ serve(async (req) => {
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    // Modelo GPT-4o (omni - suporta imagens nativamente)
+    // Modelo GPT-4.1 (melhor para análise médica detalhada)
     const config = {
       service: 'openai' as const,
-      model: 'gpt-4o', // GPT-4o é o modelo mais recente com suporte nativo para visão
+      model: 'gpt-4.1-2025-04-14', // GPT-4.1 é mais confiável para análise médica
       max_completion_tokens: 4000, // Valor base que será ajustado conforme o número de imagens
       openai_key: OPENAI_API_KEY
     };
