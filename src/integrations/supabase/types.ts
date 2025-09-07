@@ -3145,6 +3145,39 @@ export type Database = {
         }
         Relationships: []
       }
+      image_cache: {
+        Row: {
+          access_count: number | null
+          accessed_at: string | null
+          base64_data: string
+          created_at: string | null
+          file_size: number | null
+          id: string
+          mime_type: string
+          storage_path: string
+        }
+        Insert: {
+          access_count?: number | null
+          accessed_at?: string | null
+          base64_data: string
+          created_at?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string
+          storage_path: string
+        }
+        Update: {
+          access_count?: number | null
+          accessed_at?: string | null
+          base64_data?: string
+          created_at?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string
+          storage_path?: string
+        }
+        Relationships: []
+      }
       impacto_ambiental: {
         Row: {
           alimento_id: number | null
@@ -3711,8 +3744,10 @@ export type Database = {
           credit_cost: number
           credits_charged_at: string | null
           description: string | null
+          didactic_report_path: string | null
           doctor_name: string | null
           draft_tmp_path: string | null
+          error_message: string | null
           estimated_minutes: number | null
           exam_date: string | null
           file_name: string | null
@@ -3727,6 +3762,7 @@ export type Database = {
           processing_stage: string | null
           processing_started_at: string | null
           progress_pct: number | null
+          report_content: Json | null
           report_meta: Json | null
           report_path: string | null
           results: string | null
@@ -3743,8 +3779,10 @@ export type Database = {
           credit_cost?: number
           credits_charged_at?: string | null
           description?: string | null
+          didactic_report_path?: string | null
           doctor_name?: string | null
           draft_tmp_path?: string | null
+          error_message?: string | null
           estimated_minutes?: number | null
           exam_date?: string | null
           file_name?: string | null
@@ -3759,6 +3797,7 @@ export type Database = {
           processing_stage?: string | null
           processing_started_at?: string | null
           progress_pct?: number | null
+          report_content?: Json | null
           report_meta?: Json | null
           report_path?: string | null
           results?: string | null
@@ -3775,8 +3814,10 @@ export type Database = {
           credit_cost?: number
           credits_charged_at?: string | null
           description?: string | null
+          didactic_report_path?: string | null
           doctor_name?: string | null
           draft_tmp_path?: string | null
+          error_message?: string | null
           estimated_minutes?: number | null
           exam_date?: string | null
           file_name?: string | null
@@ -3791,6 +3832,7 @@ export type Database = {
           processing_stage?: string | null
           processing_started_at?: string | null
           progress_pct?: number | null
+          report_content?: Json | null
           report_meta?: Json | null
           report_path?: string | null
           results?: string | null
@@ -8492,6 +8534,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_old_image_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_orphaned_user_sessions: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -8522,8 +8568,10 @@ export type Database = {
           credit_cost: number
           credits_charged_at: string | null
           description: string | null
+          didactic_report_path: string | null
           doctor_name: string | null
           draft_tmp_path: string | null
+          error_message: string | null
           estimated_minutes: number | null
           exam_date: string | null
           file_name: string | null
@@ -8538,6 +8586,7 @@ export type Database = {
           processing_stage: string | null
           processing_started_at: string | null
           progress_pct: number | null
+          report_content: Json | null
           report_meta: Json | null
           report_path: string | null
           results: string | null
