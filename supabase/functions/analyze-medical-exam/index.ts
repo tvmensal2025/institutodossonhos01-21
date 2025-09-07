@@ -1285,11 +1285,12 @@ serve(async (req) => {
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    // Modelo GPT-4.1 (melhor para análise médica detalhada)
+    // Modelo GPT-4o (melhor para análise de imagens médicas)
     const config = {
       service: 'openai' as const,
-      model: 'gpt-4.1-2025-04-14', // GPT-4.1 é mais confiável para análise médica
-      max_completion_tokens: 4000, // Valor base que será ajustado conforme o número de imagens
+      model: 'gpt-4o', // GPT-4o tem melhor suporte nativo para análise de imagens
+      max_tokens: 8000, // Usar max_tokens para GPT-4o
+      temperature: 0.1, // Temperatura baixa para maior precisão
       openai_key: OPENAI_API_KEY
     };
 
@@ -2030,14 +2031,14 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
       }
       // Função otimizada para chamar OpenAI
       const callOpenAI = async (model: string) => {
-        // Ajustar tokens conforme o número de imagens
-        const tokensPerImage = 2000; // Base de tokens por imagem
-        // Aumentando limite de tokens para processar exames com muitas páginas (10-30 páginas)
-        const adjustedTokens = Math.min(8000, Math.max(4000, imagesLimited.length * tokensPerImage));
+        // Ajustar tokens conforme o número de imagens - mais tokens para melhor precisão
+        const tokensPerImage = 3000; // Aumentar base de tokens por imagem
+        // Tokens máximos para processar exames com muitas páginas (até 30 páginas)
+        const adjustedTokens = Math.min(16000, Math.max(8000, imagesLimited.length * tokensPerImage));
         console.log(`🔢 Tokens ajustados: ${adjustedTokens} para ${imagesLimited.length} imagens`);
         
-        // Qualidade adaptativa: high para poucas imagens, auto para muitas
-        const imageDetail = imagesLimited.length <= 1 ? 'high' : 'auto';
+        // Sempre usar 'high' para máxima precisão na leitura de exames médicos
+        const imageDetail = 'high';
         
         // Validar formato das imagens
         for (const img of imagesLimited) {
@@ -2086,7 +2087,7 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
                 })
               ]
             }],
-            temperature: 0.2,
+            temperature: config.temperature || 0.1,
             max_tokens: adjustedTokens
           };
         } else {
