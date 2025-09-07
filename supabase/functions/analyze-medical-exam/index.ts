@@ -1302,7 +1302,7 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY não configurada');
     }
 
-    const { imageData, storagePath, storagePaths, images: inputImages, examType, userId, documentId: docId, tmpPaths, title } = requestBody;
+    const { imageData, storagePath, storagePaths, images: requestImages, examType, userId, documentId: docId, tmpPaths, title } = requestBody;
     userIdEffective = userId || null;
     let examTypeEffective: string | null = examType || null;
     
@@ -1347,7 +1347,7 @@ serve(async (req) => {
     console.log('- documentId:', documentId);
     console.log('- userId:', userIdEffective);
     console.log('- examType:', examTypeEffective);
-    console.log('- inputImages (array):', inputImages?.length || 0, 'caminhos');
+    console.log('- requestImages (array):', requestImages?.length || 0, 'caminhos');
     console.log('- storagePaths:', storagePaths?.length || 0, 'imagens');
     
     // Verificar se documento existe e está em processamento
@@ -1774,10 +1774,10 @@ ANTES DO JSON, escreva uma análise clínica objetiva baseada APENAS nos dados l
     };
 
     // Resolver paths de imagens a partir do corpo ou do documento no banco
-    let resolvedPaths: string[] | undefined = Array.isArray(inputImages) && inputImages.length > 0 ? inputImages : (Array.isArray(storagePaths) && storagePaths.length > 0 ? storagePaths : undefined);
+    let resolvedPaths: string[] | undefined = Array.isArray(requestImages) && requestImages.length > 0 ? requestImages : (Array.isArray(storagePaths) && storagePaths.length > 0 ? storagePaths : undefined);
 
     console.log('🔍 Debug de imagens recebidas:');
-    console.log('- inputImages (array):', inputImages?.length || 0, inputImages?.slice(0, 2));
+    console.log('- requestImages (array):', requestImages?.length || 0, requestImages?.slice(0, 2));
     console.log('- storagePaths (array):', storagePaths?.length || 0, storagePaths?.slice(0, 2));
     console.log('- resolvedPaths inicial:', resolvedPaths?.length || 0);
 
