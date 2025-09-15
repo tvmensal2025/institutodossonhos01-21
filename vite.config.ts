@@ -6,8 +6,17 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
-    port: 5353, // Porta alterada para 5353
+    host: "localhost", // Mudado de "::" para "localhost" para evitar problemas de rede
+    port: 8080, // Voltando para a porta original 8080
+    strictPort: true, // Falhar se a porta estiver ocupada
+    hmr: {
+      port: 8081, // Porta diferente para HMR (Hot Module Replacement)
+      host: "localhost"
+    },
+    watch: {
+      usePolling: false, // Desabilitar polling para melhor performance
+      ignored: ['**/node_modules/**', '**/.git/**']
+    }
   },
   build: {
     outDir: 'dist',
@@ -27,6 +36,10 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
+  // Configurações adicionais para estabilidade
+  optimizeDeps: {
+    exclude: ['@lovable/tagger']
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -34,5 +47,6 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     global: 'globalThis',
+    'process.env.NODE_ENV': JSON.stringify(mode),
   }
 }));

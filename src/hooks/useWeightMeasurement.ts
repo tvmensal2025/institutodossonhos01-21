@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { BodyMetricsCalculator } from '@/services/BodyMetricsCalculator';
 
 export interface WeightMeasurement {
   id: string;
@@ -78,106 +79,41 @@ export const useWeightMeasurement = () => {
     return Math.abs(a - b) <= eps;
   };
 
-  // Espelha as fórmulas do banco para consistência
+  // Usa o novo serviço centralizado para cálculos padronizados
   const computeDerivedMetrics = (measurement: WeightMeasurement, physical: UserPhysicalData): DerivedMetrics => {
-    const altura = Number(physical.altura_cm || 0);
-    const idade = Number(physical.idade || 0);
-    const sexo = (physical.sexo || 'masculino').toLowerCase();
-    const peso = Number(measurement.peso_kg || 0);
-    const cintura = Number(measurement.circunferencia_abdominal_cm || 0);
     const device = (measurement.device_type || '').toLowerCase();
     const isManual = ['manual', 'digital_scale', 'professional_evaluation'].includes(device) || ((measurement as any).measurement_type === 'manual');
 
-    const imc = altura > 0 ? peso / Math.pow(altura / 100, 2) : 0;
+    // Converter dados para o formato do calculador
+    const physicalData = {
+      altura_cm: Number(physical.altura_cm || 0),
+      idade: Number(physical.idade || 0),
+      sexo: (physical.sexo || 'masculino').toLowerCase() as 'masculino' | 'feminino'
+    };
 
-    let risco_metabolico = 'normal';
-    if (imc < 18.5) risco_metabolico = 'baixo_peso';
-    else if (imc < 25) risco_metabolico = 'normal';
-    else if (imc < 30) risco_metabolico = 'sobrepeso';
-    else if (imc < 35) risco_metabolico = 'obesidade_grau1';
-    else if (imc < 40) risco_metabolico = 'obesidade_grau2';
-    else risco_metabolico = 'obesidade_grau3';
+    const bodyMeasurement = {
+      peso_kg: Number(measurement.peso_kg || 0),
+      circunferencia_abdominal_cm: Number(measurement.circunferencia_abdominal_cm || 0) || undefined,
+      gordura_corporal_percent: measurement.gordura_corporal_percent ? Number(measurement.gordura_corporal_percent) : undefined,
+      agua_corporal_percent: measurement.agua_corporal_percent ? Number(measurement.agua_corporal_percent) : undefined,
+      massa_muscular_kg: measurement.massa_muscular_kg ? Number(measurement.massa_muscular_kg) : undefined,
+      osso_kg: measurement.osso_kg ? Number(measurement.osso_kg) : undefined,
+      metabolismo_basal_kcal: measurement.metabolismo_basal_kcal ? Number(measurement.metabolismo_basal_kcal) : undefined
+    };
 
-    // CORREÇÃO: Fórmula de Deurenberg com limites realistas
-    let gorduraEstimBMI = sexo === 'masculino'
-      ? (1.20 * imc) + (0.23 * idade) - 16.2
-      : (1.20 * imc) + (0.23 * idade) - 5.4;
-    
-    // Aplicar limites realistas para gordura corporal
-    gorduraEstimBMI = Math.max(5, Math.min(50, gorduraEstimBMI));
-
-    // Preferir RFM (Relative Fat Mass) quando tivermos cintura e altura
-    // Homens: RFM = 64 - 20 * (altura/cintura)
-    // Mulheres: RFM = 76 - 20 * (altura/cintura)
-    let gorduraEstimRFM: number | undefined;
-    if (altura > 0 && cintura > 0) {
-      const ratioAlturaCintura = altura / cintura; // ambas em cm
-      const base = sexo === 'masculino' ? 64 : 76;
-      gorduraEstimRFM = base - 20 * ratioAlturaCintura;
-      // Aplicar limites realistas para RFM também
-      gorduraEstimRFM = Math.max(5, Math.min(50, gorduraEstimRFM));
-    }
-
-    const gorduraEstim = gorduraEstimRFM !== undefined ? gorduraEstimRFM : gorduraEstimBMI;
-    // Manual: se não veio do dispositivo, calcular; Automático: usar somente o medido
-    const gordura_corporal_percent = measurement.gordura_corporal_percent != null
-      ? Number(measurement.gordura_corporal_percent)
-      : (isManual ? gorduraEstim : undefined);
-
-    let aguaEstim: number;
-    if (sexo === 'masculino') {
-      aguaEstim = 2.447 - (0.09516 * idade) + (0.1074 * altura) + (0.3362 * peso);
-    } else {
-      aguaEstim = -2.097 + (0.1069 * altura) + (0.2466 * peso);
-    }
-    aguaEstim = peso > 0 ? (aguaEstim / peso) * 100 : 0;
-    // Aplicar limites realistas para água corporal
-    aguaEstim = Math.max(40, Math.min(70, aguaEstim));
-    // Manual: calcular se ausente; Automático: usar somente o medido
-    const agua_corporal_percent = measurement.agua_corporal_percent != null
-      ? Number(measurement.agua_corporal_percent)
-      : (isManual ? aguaEstim : undefined);
-
-    const massaOssea = Number(measurement.osso_kg) || peso * 0.15;
-    // REAL: usar apenas valor medido (sem estimativa/derivação)
-    const massa_muscular_kg = measurement.massa_muscular_kg != null
-      ? Number(measurement.massa_muscular_kg)
-      : undefined;
-
-    // Manual: calcular BMR (Harris-Benedict revisado) se ausente
-    let metabolismo_basal_kcal = measurement.metabolismo_basal_kcal != null
-      ? Number(measurement.metabolismo_basal_kcal)
-      : (isManual
-          ? Math.round(
-              sexo === 'masculino'
-                ? 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * idade)
-                : 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * idade)
-            )
-          : undefined);
-
-    // Manual: calcular idade metabólica se ausente
-    const idade_metabolica = measurement.idade_metabolica != null
-      ? Number(measurement.idade_metabolica)
-      : (isManual ? Math.round(idade + 0.5 * (imc - 22)) : undefined);
-
-    const rce = altura > 0 && cintura > 0 ? cintura / altura : undefined;
-    let risco_cardiometabolico: 'BAIXO' | 'MODERADO' | 'ALTO' | undefined;
-    if (rce != null) {
-      if (rce >= 0.6) risco_cardiometabolico = 'ALTO';
-      else if (rce >= 0.5) risco_cardiometabolico = 'MODERADO';
-      else risco_cardiometabolico = 'BAIXO';
-    }
+    // Calcular métricas usando o serviço padronizado
+    const calculatedMetrics = BodyMetricsCalculator.calculateMetrics(bodyMeasurement, physicalData, isManual);
 
     return {
-      imc,
-      risco_metabolico,
-      gordura_corporal_percent,
-      agua_corporal_percent,
-      massa_muscular_kg,
-      metabolismo_basal_kcal,
-      idade_metabolica,
-      rce,
-      risco_cardiometabolico,
+      imc: calculatedMetrics.imc,
+      risco_metabolico: calculatedMetrics.risco_metabolico,
+      gordura_corporal_percent: calculatedMetrics.gordura_corporal_percent,
+      agua_corporal_percent: calculatedMetrics.agua_corporal_percent,
+      massa_muscular_kg: calculatedMetrics.massa_muscular_kg,
+      metabolismo_basal_kcal: calculatedMetrics.metabolismo_basal_kcal,
+      idade_metabolica: calculatedMetrics.idade_metabolica,
+      rce: calculatedMetrics.rce,
+      risco_cardiometabolico: calculatedMetrics.risco_cardiometabolico,
     };
   };
 

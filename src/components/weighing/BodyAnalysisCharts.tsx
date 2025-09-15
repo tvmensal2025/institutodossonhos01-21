@@ -4,6 +4,7 @@ import { Scale, User, Droplets, Activity, Heart, Target, Zap, TrendingUp, AlertT
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BodyMetricsCalculator } from '@/services/BodyMetricsCalculator';
 
 declare global {
   interface Window {
@@ -182,25 +183,30 @@ const graphHistory = {
   }
 };
 
-// Função para calcular métricas baseadas no peso
-const calculateMetrics = (peso: number, altura: number = 170): BodyMetrics => {
-  const imc = peso / ((altura / 100) ** 2);
+// Função para calcular métricas baseadas no peso usando o serviço padronizado
+const calculateMetrics = (peso: number, altura: number = 170, idade: number = 30, sexo: 'masculino' | 'feminino' = 'masculino'): BodyMetrics => {
+  // Usar dados padrão para cálculos aproximados
+  const physicalData = { altura_cm: altura, idade, sexo };
+  const bodyMeasurement = { peso_kg: peso };
   
-  // Fórmulas aproximadas baseadas em dados biomédicos
-  const massaGorda = Math.min(Math.max(15 + (imc - 20) * 2.5, 10), 50);
+  // Calcular usando o serviço centralizado
+  const metrics = BodyMetricsCalculator.calculateMetrics(bodyMeasurement, physicalData, true);
+  
+  // Converter para o formato esperado pelo componente
+  const massaGorda = metrics.gordura_corporal_percent || 20;
   const massaMagra = 100 - massaGorda;
-  const massaMuscular = massaMagra * 0.4; // 40% da massa magra é músculo
+  const massaMuscular = (metrics.massa_muscular_kg || peso * 0.3) / peso * 100; // Converter para %
   const hidratacao = Math.max(1.5, 4.0 - (massaGorda / 100) * 1.5);
   const aguaIntracelular = Math.max(45, 65 - (massaGorda / 100) * 15);
   const aguaExtracelular = 100 - aguaIntracelular;
   const anguloFase = Math.max(4, 9 - (massaGorda / 100) * 3);
-  const idadeCelular = Math.min(80, 25 + (massaGorda / 100) * 30);
-  const tmb = 655 + (9.6 * peso) + (1.8 * altura) - (4.7 * 40); // Fórmula Harris-Benedict
+  const idadeCelular = metrics.idade_metabolica || Math.min(80, 25 + (massaGorda / 100) * 30);
+  const tmb = metrics.metabolismo_basal_kcal || 1500;
   const rcest = Math.max(0.4, Math.min(0.8, 0.45 + (massaGorda / 100) * 0.3));
   
   return {
     peso,
-    imc,
+    imc: metrics.imc,
     massaGorda,
     massaMagra,
     massaMuscular,
