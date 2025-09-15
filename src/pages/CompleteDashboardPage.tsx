@@ -97,25 +97,10 @@ const CompleteDashboardPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Auto-análise no mount do dashboard
-  useEffect(() => {
-    if (hasAutoAnalyzedRef.current) return;
-    hasAutoAnalyzedRef.current = true;
-
-    let cancelled = false;
-    (async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!cancelled && user) {
-          await performAnalysis(user.id, 'automatic');
-        }
-      } catch (error) {
-        console.error('Erro na auto-análise do dashboard:', error);
-      }
-    })();
-
-    return () => { cancelled = true; };
-  }, [performAnalysis]);
+  // Auto-análise removida - agora executa de 15 em 15 dias via scheduler
+  // useEffect(() => {
+  //   // Auto-análise desabilitada para melhorar performance da interface
+  // }, []);
 
   // Fallback adicional: se por algum motivo o estado "loading" persistir, force a saída após 3s
   useEffect(() => {

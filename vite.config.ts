@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080, // Voltando para a porta original
+    port: 5353, // Porta alterada para 5353
   },
   build: {
     outDir: 'dist',
