@@ -74,20 +74,22 @@ export const useScheduledAnalysis = () => {
   // Buscar logs das análises anteriores
   const getAnalysisLogs = async (limit: number = 10) => {
     try {
-      const { data, error } = await supabase
-        .from('scheduled_analysis_logs')
-        .select('*')
-        .order('execution_date', { ascending: false })
-        .limit(limit);
+      // Comentado temporariamente - tabela não existe
+      // const { data, error } = await supabase
+      //   .from('scheduled_analysis_logs')
+      //   .select('*')
+      //   .order('execution_date', { ascending: false })
+      //   .limit(limit);
 
-      if (error) {
-        console.error('❌ Erro ao buscar logs:', error);
-        throw error;
-      }
+      // if (error) {
+      //   console.error('❌ Erro ao buscar logs:', error);
+      //   throw error;
+      // }
 
-      return data;
+      // return data || [];
+      return [];
     } catch (error) {
-      console.error('💥 Erro ao buscar logs de análise:', error);
+      console.error('❌ Erro ao buscar logs de análise:', error);
       return [];
     }
   };
