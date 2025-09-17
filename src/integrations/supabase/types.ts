@@ -3979,6 +3979,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_needing_analysis"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       notifications_sent: {
@@ -4965,9 +4972,11 @@ export type Database = {
           height: number | null
           height_cm: number | null
           id: string
+          is_active: boolean | null
           is_admin: boolean | null
           is_super_admin: boolean | null
           language: string | null
+          last_analysis_date: string | null
           password_changed_at: string | null
           phone: string | null
           postal_code: string | null
@@ -5004,9 +5013,11 @@ export type Database = {
           height?: number | null
           height_cm?: number | null
           id?: string
+          is_active?: boolean | null
           is_admin?: boolean | null
           is_super_admin?: boolean | null
           language?: string | null
+          last_analysis_date?: string | null
           password_changed_at?: string | null
           phone?: string | null
           postal_code?: string | null
@@ -5043,9 +5054,11 @@ export type Database = {
           height?: number | null
           height_cm?: number | null
           id?: string
+          is_active?: boolean | null
           is_admin?: boolean | null
           is_super_admin?: boolean | null
           language?: string | null
+          last_analysis_date?: string | null
           password_changed_at?: string | null
           phone?: string | null
           postal_code?: string | null
@@ -5502,6 +5515,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      scheduled_analysis_logs: {
+        Row: {
+          created_at: string | null
+          error_count: number
+          execution_date: string
+          execution_time_ms: number | null
+          id: string
+          results: Json | null
+          success_count: number
+          users_processed: number
+        }
+        Insert: {
+          created_at?: string | null
+          error_count?: number
+          execution_date?: string
+          execution_time_ms?: number | null
+          id?: string
+          results?: Json | null
+          success_count?: number
+          users_processed?: number
+        }
+        Update: {
+          created_at?: string | null
+          error_count?: number
+          execution_date?: string
+          execution_time_ms?: number | null
+          id?: string
+          results?: Json | null
+          success_count?: number
+          users_processed?: number
+        }
+        Relationships: []
       }
       seguranca_alimentar: {
         Row: {
@@ -7169,6 +7215,13 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "fk_user_goals_profiles"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_needing_analysis"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "user_goals_challenge_id_fkey"
             columns: ["challenge_id"]
             isOneToOne: false
@@ -8373,6 +8426,18 @@ export type Database = {
       }
     }
     Views: {
+      analysis_statistics: {
+        Row: {
+          analysis_date: string | null
+          avg_execution_time_ms: number | null
+          success_rate_percentage: number | null
+          total_errors: number | null
+          total_executions: number | null
+          total_success: number | null
+          total_users_processed: number | null
+        }
+        Relationships: []
+      }
       google_fit_analysis: {
         Row: {
           active_minutes: number | null
@@ -8439,6 +8504,39 @@ export type Database = {
         Row: {
           id: number | null
           nome: string | null
+        }
+        Relationships: []
+      }
+      users_needing_analysis: {
+        Row: {
+          created_at: string | null
+          days_since_registration: number | null
+          email: string | null
+          full_name: string | null
+          last_analysis_date: string | null
+          last_analysis_status: string | null
+          profile_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          days_since_registration?: never
+          email?: string | null
+          full_name?: string | null
+          last_analysis_date?: string | null
+          last_analysis_status?: never
+          profile_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          days_since_registration?: never
+          email?: string | null
+          full_name?: string | null
+          last_analysis_date?: string | null
+          last_analysis_status?: never
+          profile_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -8531,6 +8629,10 @@ export type Database = {
         Returns: Json
       }
       cleanup_old_ai_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_old_analysis_logs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -8656,6 +8758,17 @@ export type Database = {
           key: string
           memory_type: string
           value: Json
+        }[]
+      }
+      get_users_needing_analysis: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          days_since_last_analysis: number
+          email: string
+          full_name: string
+          profile_id: string
+          user_id: string
         }[]
       }
       gtrgm_compress: {
@@ -8798,6 +8911,10 @@ export type Database = {
       update_goal_progress: {
         Args: { evidence_url?: string; goal_id: string; new_value: number }
         Returns: Json
+      }
+      update_last_analysis_date: {
+        Args: { p_analysis_type?: string; p_user_id: string }
+        Returns: undefined
       }
       update_user_profile_admin: {
         Args: {
