@@ -24,7 +24,7 @@ import { MealPlanHistoryModal } from '@/components/meal-plan/MealPlanHistoryModa
 import { MealPlanSuccessEffect } from '@/components/meal-plan/MealPlanSuccessEffect';
 import { UnifiedAnalysisHistory } from '@/components/analysis/UnifiedAnalysisHistory';
 import { useMealPlanGeneratorV2 } from '@/hooks/useMealPlanGeneratorV2';
-import { CalorieGoalSection } from '@/components/nutrition/CalorieGoalSection';
+
 
 export const SofiaNutricionalPage: React.FC = () => {
   const { meals, goals, loading, error, getDailyNutrition, getNutritionStats, updateGoals } = useNutritionTracking();
@@ -103,9 +103,6 @@ export const SofiaNutricionalPage: React.FC = () => {
         </TabsList>
 
         <TabsContent value="tracker" className="space-y-6">
-          {/* Meta Calórica - início da seção */}
-          <CalorieGoalSection className="mb-6" />
-          
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {/* Resumo diário */}
             <Card className="bg-white shadow-sm border-0">
