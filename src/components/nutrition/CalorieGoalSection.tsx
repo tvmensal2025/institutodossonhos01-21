@@ -167,14 +167,76 @@ export const CalorieGoalSection: React.FC<CalorieGoalSectionProps> = ({ classNam
             Meta Calórica
           </CardTitle>
           <CardDescription>
-            Defina seu objetivo para calcular suas calorias diárias
+            Configure seu objetivo nutricional
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Seletor de Objetivo */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Objetivo</Label>
+            <Select 
+              value={objective} 
+              onValueChange={handleObjectiveChange}
+              disabled={saving}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(OBJECTIVE_CONFIG).map(([key, config]) => (
+                  <SelectItem key={key} value={key}>
+                    <div className="flex items-center gap-2">
+                      <span>{config.emoji}</span>
+                      <span>{config.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Meta Calórica Padrão */}
+          <div className={`rounded-lg p-4 ${OBJECTIVE_CONFIG[objective].bgColor}`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{OBJECTIVE_CONFIG[objective].emoji}</span>
+                <span className={`font-medium ${OBJECTIVE_CONFIG[objective].color}`}>
+                  {OBJECTIVE_CONFIG[objective].label}
+                </span>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                Estimado
+              </Badge>
+            </div>
+            
+            <div className="text-3xl font-bold text-foreground mb-1">
+              2000
+              <span className="text-base font-normal text-muted-foreground ml-2">
+                kcal/dia
+              </span>
+            </div>
+            
+            {/* Macronutrientes Estimados */}
+            <div className="grid grid-cols-3 gap-3 mt-3 text-sm">
+              <div className="text-center">
+                <div className="font-semibold text-foreground">150g</div>
+                <div className="text-muted-foreground">Proteína</div>
+              </div>
+              <div className="text-center">
+                <div className="font-semibold text-foreground">200g</div>
+                <div className="text-muted-foreground">Carboidratos</div>
+              </div>
+              <div className="text-center">
+                <div className="font-semibold text-foreground">67g</div>
+                <div className="text-muted-foreground">Gordura</div>
+              </div>
+            </div>
+          </div>
+
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Complete seus dados físicos (altura, idade, sexo) e registre uma pesagem para calcular suas metas calóricas personalizadas.
+              Complete seus dados físicos e registre uma pesagem para metas personalizadas.
             </AlertDescription>
           </Alert>
         </CardContent>
