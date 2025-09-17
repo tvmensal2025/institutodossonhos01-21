@@ -604,51 +604,51 @@ const SaboteurTest: React.FC = () => {
             onValueChange={(value) => handleAnswer(parseInt(value))}
             className="space-y-2 md:space-y-4"
           >
-            <div 
+            <Label 
+              htmlFor={`q${currentQ.id}-1`} 
               className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg border hover:bg-muted/20 cursor-pointer transition-colors"
-              onClick={() => handleAnswer(1)}
             >
               <RadioGroupItem value="1" id={`q${currentQ.id}-1`} />
-              <Label htmlFor={`q${currentQ.id}-1`} className="text-sm md:text-base cursor-pointer flex-1">
+              <span className="text-sm md:text-base flex-1">
                 Discordo Totalmente
-              </Label>
-            </div>
-            <div 
+              </span>
+            </Label>
+            <Label 
+              htmlFor={`q${currentQ.id}-2`} 
               className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg border hover:bg-muted/20 cursor-pointer transition-colors"
-              onClick={() => handleAnswer(2)}
             >
               <RadioGroupItem value="2" id={`q${currentQ.id}-2`} />
-              <Label htmlFor={`q${currentQ.id}-2`} className="text-sm md:text-base cursor-pointer flex-1">
+              <span className="text-sm md:text-base flex-1">
                 Discordo
-              </Label>
-            </div>
-            <div 
+              </span>
+            </Label>
+            <Label 
+              htmlFor={`q${currentQ.id}-3`} 
               className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg border hover:bg-muted/20 cursor-pointer transition-colors"
-              onClick={() => handleAnswer(3)}
             >
               <RadioGroupItem value="3" id={`q${currentQ.id}-3`} />
-              <Label htmlFor={`q${currentQ.id}-3`} className="text-sm md:text-base cursor-pointer flex-1">
+              <span className="text-sm md:text-base flex-1">
                 Neutro
-              </Label>
-            </div>
-            <div 
+              </span>
+            </Label>
+            <Label 
+              htmlFor={`q${currentQ.id}-4`} 
               className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg border hover:bg-muted/20 cursor-pointer transition-colors"
-              onClick={() => handleAnswer(4)}
             >
               <RadioGroupItem value="4" id={`q${currentQ.id}-4`} />
-              <Label htmlFor={`q${currentQ.id}-4`} className="text-sm md:text-base cursor-pointer flex-1">
+              <span className="text-sm md:text-base flex-1">
                 Concordo
-              </Label>
-            </div>
-            <div 
+              </span>
+            </Label>
+            <Label 
+              htmlFor={`q${currentQ.id}-5`} 
               className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg border hover:bg-muted/20 cursor-pointer transition-colors"
-              onClick={() => handleAnswer(5)}
             >
               <RadioGroupItem value="5" id={`q${currentQ.id}-5`} />
-              <Label htmlFor={`q${currentQ.id}-5`} className="text-sm md:text-base cursor-pointer flex-1">
+              <span className="text-sm md:text-base flex-1">
                 Concordo Totalmente
-              </Label>
-            </div>
+              </span>
+            </Label>
           </RadioGroup>
         </CardContent>
       </Card>
