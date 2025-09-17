@@ -14,7 +14,7 @@ import { BodyEvolutionChart } from './BodyEvolutionChart';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
-import { CalorieGoalSection } from '@/components/nutrition/CalorieGoalSection';
+
 
 const weeklyStats = [{
   day: 'Seg',
@@ -407,9 +407,6 @@ const DashboardOverview: React.FC = () => {
           </button>
         </div>
       )}
-
-      {/* Nova seção de Meta Calórica */}
-      <CalorieGoalSection className="mb-6" />
 
       {/* Quick Stats - Layout responsivo melhorado */}
       <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 xs:gap-4 sm:gap-5 md:gap-6">
