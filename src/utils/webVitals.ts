@@ -1,28 +1,4 @@
-import { onCLS, onFCP, onLCP, onTTFB } from 'web-vitals';
-
-interface VitalMetric {
-  name: string;
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  delta: number;
-}
-
-export function reportWebVitals() {
-  const handleMetric = (metric: any) => {
-    const color = metric.rating === 'good' ? 'green' : 
-                  metric.rating === 'needs-improvement' ? 'orange' : 'red';
-    
-    console.log(
-      `%c[Web Vital] ${metric.name}: ${metric.value.toFixed(2)}ms`,
-      `color: ${color}; font-weight: bold;`
-    );
-  };
-
-  onCLS(handleMetric);
-  onFCP(handleMetric);
-  onLCP(handleMetric);
-  onTTFB(handleMetric);
-}
+import { onCLS, onFCP, onFID, onLCP, onTTFB } from 'web-vitals';
 
 interface VitalMetric {
   name: string;
@@ -59,6 +35,32 @@ function sendToAnalytics(metric: VitalMetric) {
       `color: ${color}; font-weight: bold;`
     );
   }
+  
+  // Enviar para analytics em produção
+  if (import.meta.env.PROD) {
+    // Google Analytics
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', metric.name, {
+        value: Math.round(metric.value),
+        metric_rating: metric.rating,
+        non_interaction: true,
+      });
+    }
+    
+    // Ou enviar para seu backend
+    fetch('/api/metrics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        metric: metric.name,
+        value: metric.value,
+        rating: metric.rating,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(() => {
+      // Silently fail - não queremos quebrar a app se o envio falhar
+    });
+  }
 }
 
 export function reportWebVitals() {
@@ -73,7 +75,7 @@ export function reportWebVitals() {
   };
 
   onCLS(handleMetric);
-  onFID(handleMetric);  
+  onFID(handleMetric);  // FID agora está importado corretamente
   onFCP(handleMetric);
   onLCP(handleMetric);
   onTTFB(handleMetric);
@@ -99,6 +101,7 @@ export function monitorPerformance() {
       observer.observe({ entryTypes: ['longtask'] });
     } catch (e) {
       // Long task observer not supported
+      console.debug('Long task observer not supported in this browser');
     }
   }
   
@@ -112,6 +115,6 @@ export function monitorPerformance() {
       if (usedMemoryMB > totalMemoryMB * 0.9) {
         console.warn(`[Memory Warning] Using ${usedMemoryMB}MB of ${totalMemoryMB}MB`);
       }
-    }, 10000);
+    }, 10000); // Verifica a cada 10 segundos
   }
 }
